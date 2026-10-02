@@ -639,6 +639,8 @@ const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catc
    practice songs generated in code. There's no database of our own.
    ============================================================ */
 const SEARCH_URL = q => `/api/search?q=${encodeURIComponent(q)}`;
+// the Claude preview and local files have no search function; Vercel previews (even for claude/ branches) do
+const LIVE_HOST = /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1)$|(^|\.)(claude\.ai|claude\.com|claudeusercontent\.com|anthropic\.com)$/.test(location.hostname);
 let liveOK = true;
 const BAND_A = ['Marigold','Paper','Velvet','Coconut','Saffron','Nilgiri','Harbour','Tin Can','Mango','Soft','Dusk','Blue','Tidewater','Monsoon','Lighthouse','Paperboat','Neon','Rickshaw','Glasshouse','Cardamom','Static','Salt','Night Bus','Backwater','Rooftop','Sunday','Pocket','Verandah'];
 const BAND_B = ['Static','Moons','Arcade','Radio','Drive','Mist','Club','Orchestra','Season','Engine','Parade','Trio','Machine','Society','Choir','Kid','Postcards','Tapes','Collective','Sisters','Quartet','Social','Ensemble','Sound System','Players','Hour','Weather'];
@@ -1094,10 +1096,13 @@ function drawVinyl(r, size, side){
   g.fillStyle = '#0a0a0a'; g.beginPath(); g.arc(h, h, size*.012, 0, 7); g.fill();
   g.restore(); return c;
 }
-const imgCache = new Map();
+// every design change makes new images, so keep only the most recent ones
+const imgCache = new Map(), IMG_CACHE_MAX = 120;
+function cached(k, make){ let v = imgCache.get(k); if (v !== undefined){ imgCache.delete(k); imgCache.set(k, v); return v; }
+  v = make(); imgCache.set(k, v); while (imgCache.size > IMG_CACHE_MAX) imgCache.delete(imgCache.keys().next().value); return v; }
 const designKey = r => JSON.stringify([r.d, r.name, r.line, r.by, r.to, r.cat, r.photo ? r.photo.length + r.photo.slice(-24) : '']);
-function sleeveURL(r, size){ const k = 's' + size + designKey(r); if (!imgCache.has(k)) imgCache.set(k, drawSleeve(r, size).toDataURL('image/jpeg', .9)); return imgCache.get(k); }
-function vinylURL(r, size, side){ const k = 'v' + size + side + designKey(r); if (!imgCache.has(k)) imgCache.set(k, drawVinyl(r, size, side).toDataURL('image/png')); return imgCache.get(k); }
+function sleeveURL(r, size){ return cached('s' + size + designKey(r), () => drawSleeve(r, size).toDataURL('image/jpeg', .9)); }
+function vinylURL(r, size, side){ return cached('v' + size + side + designKey(r), () => drawVinyl(r, size, side).toDataURL('image/png')); }
 const recSize = r => (r.A.length + r.B.length) > 10 ? 12 : 10;
 function backHTML(r, A, B){
   const li = (arr, sd) => arr.length ? arr.map((s,i) => `<li><em>${sd}${i+1}</em><div>${esc(s.name)}<span>${esc(s.artist)}</span></div></li>`).join('') : `<li><em></em><div><span>Nothing here yet</span></div></li>`;
@@ -1116,31 +1121,62 @@ function renderNotes(container, r, face, editable){
 const MINS = 6, MAXSIDE = 12;
 const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'',
   d:{ way:1, pat:'sunburst', type:'script', obi:false, sticker:false, worn:false, pm:'full', vinyl:'marble', v1:8, v2:11, shape:'round', label:'solid', lab:4 }, A:[], B:[], notes:[] });
-let draft = Object.assign(blank(), store.get('sideb-press') || {}); draft.d = Object.assign(blank().d, draft.d || {});
+// a record can come from anyone's link, so check every field before it is drawn or played
+const MEDIA_HOSTS = /(^|\.)(apple\.com|mzstatic\.com)$/;
+function safeURL(v){ try { const u = new URL(String(v)); return u.protocol === 'https:' && MEDIA_HOSTS.test(u.hostname) && !/["'()\s\\<>]/.test(u.href) ? u.href : ''; } catch(e){ return ''; } }
+function cleanRec(r){
+  r = r && typeof r === 'object' ? r : {}; const b = blank(), d = r.d && typeof r.d === 'object' ? r.d : {};
+  const str = (v, n, def='') => typeof v === 'string' ? v.slice(0, n) : typeof v === 'number' ? String(v).slice(0, n) : def;
+  const num = (v, lo, hi, def) => Number.isFinite(+v) && v !== '' && v !== null ? clamp(+v, lo, hi) : def;
+  const idx = (v, list, def) => Number.isInteger(v) && v >= 0 && v < list.length ? v : def;
+  const pick = (v, list, def) => list.some(o => o[0] === v) ? v : def;
+  const song = s => { if (!s || typeof s !== 'object') return null;
+    if (s.s === 'd'){ const al = idx(s.al, DEMO, -1); if (al < 0) return null; const ti = idx(s.ti, DEMO[al].tracks, -1); return ti < 0 ? null : { s:'d', al, ti }; }
+    if (s.s === 'it'){ const t = str(s.t, 200); if (!t) return null; return { s:'it', id:str(s.id, 40), t, a:str(s.a, 200), c:safeURL(s.c), p:safeURL(s.p), u:safeURL(s.u) }; }
+    return null; };
+  const side = v => (Array.isArray(v) ? v : []).map(song).filter(Boolean).slice(0, MAXSIDE);
+  const photo = typeof r.photo === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(r.photo) ? r.photo : '';
+  return { name:str(r.name, 80), line:str(r.line, 120), by:str(r.by, 60), to:str(r.to, 60), year:str(r.year, 10, b.year), cat:str(r.cat, 20, b.cat), photo,
+    d:{ way:idx(d.way, WAYS, b.d.way), pat:pick(d.pat, PATS, b.d.pat), type:pick(d.type, TYPES, b.d.type), obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
+      pm:pick(d.pm, PHOTOMODES, b.d.pm), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:idx(d.v1, VCOLS, b.d.v1), v2:idx(d.v2, VCOLS, b.d.v2),
+      shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:idx(d.lab, WAYS, b.d.lab) },
+    A:side(r.A), B:side(r.B),
+    notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:idx(n.c, NOTECOLS, 0),
+      x:num(n.x, -6, 70, 30), y:num(n.y, -6, 82, 30), r:num(n.r, -15, 15, 0), f:n.f === 'B' ? 'B' : 'F' })) };
+}
+let draft = cleanRec(store.get('sideb-press'));
 let step = 'songs', selNote = -1, face = 'F';
 const STEPS = ['songs','sleeve','vinyl','words','notes'];
 function saveDraft(){ if (!store.set('sideb-press', draft)){ const p = draft.photo; draft.photo = ''; store.set('sideb-press', draft); draft.photo = p; } }
 const songKey = s => s.key || (s.s === 'd' ? `d${s.al}-${s.ti}` : `it${s.id}`);
 function hydrateSong(s){ if (s.s === 'd'){ const a = DEMO[s.al]; return { ...s, name:a.tracks[s.ti], artist:a.band, album:a.title, key:songKey(s) }; } return { ...s, name:s.t, artist:s.a, key:songKey(s) }; }
+// Throws SEARCH_DOWN when the search function exists but Apple didn't answer, so the caller can say so.
+// Only falls back to practice songs where there is no search function at all (a local file, a preview).
+const SEARCH_DOWN = 'down';
 async function searchSongs(q){
   q = q.trim();
   if (q && liveOK){
-    try { const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 5000); const res = await fetch(SEARCH_URL(q), { signal:ctl.signal }); clearTimeout(to);
-      if (!res.ok) throw 0; const data = await res.json(); $('srcNote').textContent = 'From the Apple Music catalogue.';
-      return data.results.map(r => ({ s:'it', id:r.trackId, key:'it'+r.trackId, name:r.trackName, artist:r.artistName, album:r.collectionName, c:(r.artworkUrl100||'').replace('100x100bb','300x300bb'), p:r.previewUrl || '', u:r.trackViewUrl || '' }));
-    } catch(e){ liveOK = false; }
+    let data = null, timedOut = false;
+    try { const ctl = new AbortController(), to = setTimeout(() => { timedOut = true; ctl.abort(); }, 8000); const res = await fetch(SEARCH_URL(q), { signal:ctl.signal }); clearTimeout(to);
+      data = await res.json().catch(() => null); if (data && !res.ok) throw SEARCH_DOWN;
+    } catch(e){ if (e === SEARCH_DOWN || (timedOut && LIVE_HOST)) throw SEARCH_DOWN; }
+    if (data && Array.isArray(data.results)){ $('srcNote').textContent = 'From the Apple Music catalogue.';
+      return data.results.filter(r => r && r.trackName).map(r => ({ s:'it', id:String(r.trackId).slice(0, 40), key:'it'+r.trackId, name:String(r.trackName), artist:String(r.artistName || ''), album:String(r.collectionName || ''),
+        c:safeURL((r.artworkUrl100||'').replace('100x100bb','300x300bb')), p:safeURL(r.previewUrl), u:safeURL(r.trackViewUrl) })); }
+    if (LIVE_HOST) throw SEARCH_DOWN;
+    liveOK = false;
   }
   $('srcNote').textContent = 'Practice catalogue. The real site searches Apple Music.';
   const t = q.toLowerCase(); return SONGS.filter(s => !t || s.name.toLowerCase().includes(t) || s.artist.toLowerCase().includes(t) || s.album.toLowerCase().includes(t)).slice(0, 40);
 }
-let lastResults = [];
-function renderResults(list){
-  lastResults = list; const on = new Set([...draft.A, ...draft.B].map(songKey));
+let lastResults = [], lastMsg = '';
+function renderResults(list, msg = 'Nothing found. Try the artist on its own.'){
+  lastResults = list; lastMsg = msg; const on = new Set([...draft.A, ...draft.B].map(songKey));
   $('results').innerHTML = list.length ? list.map((s,i) => { const used = on.has(s.key); return `<li><span class="th" style="background-image:url(${songThumb(s)})"></span><span class="tx"><b>${esc(s.name)}</b><span>${esc(s.artist)}</span></span>
     <button class="rbtn" data-play="${i}" aria-label="Listen to ${esc(s.name)}">&#9654;</button>
     <button class="rbtn add" data-add="A" data-i="${i}" ${used || draft.A.length >= MAXSIDE ? 'disabled' : ''} aria-label="Add to side A">A</button>
     <button class="rbtn add" data-add="B" data-i="${i}" ${used || draft.B.length >= MAXSIDE ? 'disabled' : ''} aria-label="Add to side B">B</button></li>`; }).join('')
-    : '<li><span class="tx"><span>Nothing found. Try the artist on its own.</span></span></li>';
+    : `<li><span class="tx"><span>${esc(msg)}</span></span></li>`;
   $('results').querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => addSong(lastResults[+b.dataset.i], b.dataset.add)));
   $('results').querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', () => sample(lastResults[+b.dataset.play], b)));
 }
@@ -1161,7 +1197,7 @@ function renderSides(){
   $('sizeBadge').textContent = `${recSize(draft)}-INCH, ${n} SONG${n === 1 ? '' : 'S'}`;
   updateFoot();
 }
-function changed(){ saveDraft(); renderSides(); renderResults(lastResults); refreshPreview(); }
+function changed(){ saveDraft(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); }
 let prevTimer;
 function refreshPreview(){ clearTimeout(prevTimer); prevTimer = setTimeout(() => {
   $('pFront').style.backgroundImage = `url(${sleeveURL(draft, 720)})`; $('pVin').style.backgroundImage = `url(${vinylURL(draft, 720, 'A')})`;
@@ -1251,7 +1287,7 @@ function goStep(s){
   step = s; document.querySelectorAll('#steps button').forEach(b => b.setAttribute('aria-selected', b.dataset.step === s));
   document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', p.id === 'st-' + s));
   $('recwrap').classList.toggle('editing', s === 'notes');
-  if (s === 'vinyl' && face === 'B') face = 'F'; if (s === 'words' && face === 'F' && false) face = 'B';
+  if (s === 'vinyl' && face === 'B') face = 'F';
   setFace(face); document.querySelector('.dbody').scrollTop = 0; syncControls(); refreshPreview(); refreshTiles(); if (s === 'notes') renderNoteUI(); updateFoot();
 }
 document.querySelectorAll('#steps button').forEach(b => b.addEventListener('click', () => goStep(b.dataset.step)));
@@ -1265,8 +1301,14 @@ function updateFoot(){
   $('footNote').textContent = n < MINS ? `${MINS - n} more song${MINS - n === 1 ? '' : 's'} to press` : (!draft.name ? 'Name it in Words' : '');
   document.querySelectorAll('#steps button').forEach(b => { const k = b.dataset.step; b.classList.toggle('done', k === 'songs' ? n >= MINS : k === 'words' ? !!draft.name : k === 'notes' ? (draft.notes||[]).length > 0 : false); });
 }
-$('qBtn').addEventListener('click', async () => renderResults(await searchSongs($('q').value)));
-$('q').addEventListener('keydown', async e => { if (e.key === 'Enter') renderResults(await searchSongs($('q').value)); });
+// only the newest search gets to show its results, so a slow older one can't replace them
+let searchSeq = 0;
+async function runSearch(){ const my = ++searchSeq; let list, msg;
+  if (LIVE_HOST && !$('q').value.trim()){ renderResults([], 'Type a song or an artist to search.'); return; }
+  try { list = await searchSongs($('q').value); } catch(e){ list = []; msg = 'Search isn\'t answering right now. Try again in a moment.'; }
+  if (my === searchSeq) renderResults(list, msg); }
+$('qBtn').addEventListener('click', runSearch);
+$('q').addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
 
 // link encoding
 function b64url(bytes){ let s = ''; for (let i=0;i<bytes.length;i++) s += String.fromCharCode(bytes[i]); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
@@ -1387,10 +1429,10 @@ function synthFor(s){ if (s.s !== 'd') return null; const a = DEMO[s.al], ti = s
   const R = mulberry32(a.id*131 + ti*17 + 3), style = STYLE_LIST[(a.id + ti) % STYLE_LIST.length], sd = STYLES[style];
   const bank = BANKS[sd.banks[Math.floor(R()*sd.banks.length)]], bpm = Math.round(sd.bpm[0] + R()*(sd.bpm[1]-sd.bpm[0])), beats = sd.beats;
   return { id:a.id*20 + ti, style, bpm, beats, bars:Math.max(6, Math.floor((TRACK - 1.5)/(beats*60/bpm))), root:55 + Math.floor(R()*10), chords:bank.ch, scale:bank.sc, swing:sd.swing || 0 }; }
-let sampleTimer = null; const sampleAudio = new Audio();
-function stopSample(){ if (sampleTimer && ctx){ ramp(needleGain.gain, 0, .05); lastNG = 0; } clearInterval(sampleTimer); sampleTimer = null; sampleAudio.pause(); document.querySelectorAll('[data-play]').forEach(b => b.innerHTML = '&#9654;'); }
+let sampleTimer = null, sampleStop = null; const sampleAudio = new Audio();
+function stopSample(){ if (sampleTimer && ctx){ ramp(needleGain.gain, 0, .05); lastNG = 0; } clearInterval(sampleTimer); sampleTimer = null; clearTimeout(sampleStop); sampleStop = null; sampleAudio.pause(); document.querySelectorAll('[data-play]').forEach(b => b.innerHTML = '&#9654;'); }
 function sample(s, btn){ const me = btn.dataset.on === '1'; stopSample(); document.querySelectorAll('[data-play]').forEach(b => b.dataset.on = ''); if (me) return; btn.dataset.on = '1'; btn.innerHTML = '&#9632;';
-  if (s.s !== 'd'){ if (!s.p) return; sampleAudio.src = s.p; sampleAudio.play().catch(()=>{}); setTimeout(stopSample, 12000); return; }
+  if (s.s !== 'd'){ if (!s.p) return; sampleAudio.src = s.p; sampleAudio.play().catch(()=>{}); sampleStop = setTimeout(stopSample, 12000); return; }
   ensureAudio(); const song = synthFor(s), sd = 60/song.bpm/4; let st = 0; speed = 1; ramp(needleGain.gain, 1, .02); const start = ctx.currentTime + .05;
   sampleTimer = setInterval(() => { while (start + st*sd < ctx.currentTime + .15 && st < song.bars*song.beats*4){ playStep(song, st, start + st*sd); st++; } if (ctx.currentTime - start > 10) stopSample(); }, 25); }
 
@@ -1450,7 +1492,7 @@ function showTag(a, el){ const b = el.getBoundingClientRect(); tag.querySelector
 function hideTag(){ tag.classList.remove('show'); }
 $('shopBack').addEventListener('click', () => { sfx.bell(); go('outside'); });
 $('toShop').addEventListener('click', () => go('shop'));
-$('soundBtn').addEventListener('click', () => { muted = !muted; if (ctx) ramp(analyser.context.destination ? master.gain : master.gain, muted ? 0 : amp.vol*1.1, .05); pv.muted = muted; $('soundBtn').textContent = muted ? 'Sound on' : 'Sound off'; });
+$('soundBtn').addEventListener('click', () => { muted = !muted; if (ctx) ramp(master.gain, muted ? 0 : amp.vol*1.1, .05); pv.muted = muted; $('soundBtn').textContent = muted ? 'Sound on' : 'Sound off'; });
 
 /* ============================================================
    LISTENING ROOM (receiver)
@@ -1738,6 +1780,7 @@ function updateVU(){ let lvl = 0;
   document.querySelectorAll('#vuR .needle').forEach(n => n.setAttribute('transform', `rotate(${(-50 + vuR*100).toFixed(1)} 50 58)`)); }
 let lastTick = performance.now();
 setInterval(() => { const now = performance.now(), dt = Math.min(.1, (now - lastTick)/1000); lastTick = now; if (sampleTimer) return;
+  if (current !== 'gift' && !deck && lastNG <= 0 && lastCG <= 0) return; // nothing to spin or hear off the listening room
   const base = (rpm === 45 ? 1.35 : 1)*(1 + pitch/100), target = running ? base*(holding ? .55 : 1) : 0, rate = holding ? 6 : (running ? 2.6 : 1.1);
   speed += (target - speed)*Math.min(1, dt*rate); if (Math.abs(target - speed) < .002) speed = target; angle = (angle + speed*200*dt) % 360;
   if (needleDown && onVinyl && deck){ recTime += dt*speed; theta = thetaForDist(radiusFor(recTime));
@@ -1759,7 +1802,8 @@ function draw(){
    ============================================================ */
 async function route(){
   const h = location.hash;
-  if (h.startsWith('#r=')){ try { const r = await decodeRec(h.slice(3)); go('gift'); buildGift(r); } catch(e){ go('intro'); } }
+  if (h.startsWith('#r=')){ try { const r = cleanRec(await decodeRec(h.slice(3))); go('gift'); buildGift(r); }
+    catch(e){ go('intro'); setHintT('This record link looks broken. Ask the person who sent it for a fresh one.', 10000); } }
   else { if (focus.open){ $('focus').classList.remove('open','freed'); focus.open = false; const f = $('free'); if (f) f.remove(); putTag.classList.remove('show'); }
     if (current === 'gift'){ unloadDeck(); go(fromMaker ? 'studio' : 'intro'); fromMaker = false; } }
 }
@@ -1781,7 +1825,6 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   buildShop(); buildDeck(); syncDeckUI(); setPitch(0);
   $('print').innerHTML = printSVG(); $('leaves').innerHTML = leavesSVG(); $('leaner').style.backgroundImage = `url(${albumCover(DEMO[19])})`;
   fillFields(); syncControls(); renderSides(); refreshPreview();
-  const LIVE_HOST = /^https?:$/.test(location.protocol) && !/claude|localhost|127\.0\.0\.1/.test(location.hostname);
   if (LIVE_HOST){ $('results').innerHTML = '<li><span class="tx"><span>Search for any song to start your record.</span></span></li>'; $('srcNote').textContent = 'Searches the Apple Music catalogue.'; }
   else { renderResults(SONGS.filter((_,i) => i % 7 === 0).slice(0, 24)); $('srcNote').textContent = 'Browse, or search for something specific.'; }
   if (draft.photo) photoImage(draft.photo);
