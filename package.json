@@ -1,0 +1,7 @@
+{
+  "name": "side-b-records",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Press a record for someone and send it as a link.",
+  "engines": { "node": ">=18" }
+}
