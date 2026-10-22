@@ -11,20 +11,21 @@ It started as a record store simulator, then went through a few ideas: a shareab
 Ideas that were tried and dropped, and why:
 - Hiding a YouTube player to play full songs: YouTube's rules require the player to stay visible, and ads can't be turned off. Use 30-second previews plus "listen to the full song" links instead.
 - Deezer for search: not available in India. Apple's iTunes catalogue is used instead.
-- Photorealism: hand-coded scenes can't reach it. The style is now a deliberate 2D editorial illustration (see Style below).
+- Photorealism: hand-coded scenes can't fully reach it. A flat 2D editorial illustration style was tried next and dropped for feeling fake and boring. The scenes are now drawn ambient and lifelike, after reference photos (see Style below).
 
 ## Files
 
 - `index.html` is the entire site: HTML, CSS and JavaScript in one file.
 - `api/search.js` is a Vercel function. The site calls `/api/search?q=...` and it asks Apple's iTunes Search API (country `IN`, songs only) and returns track name, artist, album, artwork, preview URL and an Apple Music link. Apple blocks direct browser calls, which is why this function exists.
+- `api/albums.js` is a Vercel function. It holds the list of real albums on the shop's shelves (Ariana Grande, Tame Impala, The Beatles, Mac Miller, Sade and many more), looks up their cover art on iTunes and returns it. The answer is cached for a week. To change what's on the shelves, edit the list at the top of that file.
 - `package.json` only declares Node 18 or newer. There's no build step.
 - `README.md` has deployment steps.
 
 ## The experience, in order
 
-1. **Intro screen**: "Walk up to the shop". Also "Skip to your record" if a draft exists, and "Or open a finished record" which opens an example gift.
-2. **Outside**: an illustrated storefront at night in the rain. Tap the door, it opens and the view zooms in.
-3. **Shop interior**: a 1920 by 1080 stage scaled to fit. A dense record wall with paper lanterns, a cabinet of spines with speakers, floor crates, and the **Pressing Booth** at the back. Clicking the booth zooms in and opens the builder.
+1. **Intro screen**: the name, one line ("Make a record for someone.") and one button, "Walk up to the shop". Keep it this short. The example gift is still reachable from code as `window.__example()`.
+2. **Outside**: a shop front at night in the rain, after the Ultima Thule record shop: yellow sign with red script and red side panels, black frames, lit windows full of real album covers, a recessed wooden door, granite, double yellow lines. Tap the door, it opens and the view zooms in.
+3. **Shop interior**: a 1920 by 1080 stage scaled to fit. A wall of cubbies lit from the top, each holding a real album, paper lanterns, a long counter with turntables, an orange lamp and speakers, floor crates, a striped rug, and the **Pressing Booth**: a lit wooden display unit with ledges of covers, a turntable over an amp with blue meters, crates and speakers, under a glowing script sign. Clicking the booth zooms in and opens the builder.
 4. **Builder (the "studio")**: fits in one screen. The record preview stays on the left on a work mat; the controls are in a right-hand panel with five steps as folder tabs:
    - **01 Songs**: search songs, add to side A or B, reorder, move between sides, remove. Minimum 6 songs to press. 6 to 10 songs makes a 10-inch, 11 or more makes a 12-inch LP, up to 12 per side.
    - **02 Sleeve**: your own photo (full bleed, framed, duotone, circle), 14 colourways, 15 artwork patterns, 7 title styles, and extras (obi strip, hype sticker, worn edges). Options show as live thumbnails of the actual sleeve.
@@ -32,7 +33,7 @@ Ideas that were tried and dropped, and why:
    - **04 Words**: credits laid out like the back of a real record: title, line on the cover, pressed by, for, year, catalogue number.
    - **05 Notes**: up to 6 sticky notes in 5 colours, placed on the front or back of the sleeve and dragged into position.
    - **Press the record** creates the share link.
-5. **Receiving it**: a kraft record bag with a name tag opens onto a listening room (plaster wall, framed print, a record leaning on the wall, walnut credenza). The sleeve and a card sit on the left, the turntable in the middle, a receiver on the right. Pull the sleeve forward, flip it to read the tracklist and notes, slide the record out, carry it to the turntable.
+5. **Receiving it**: a kraft record bag with a name tag opens onto a listening room (plaster wall, a framed album, a small wooden radio, a real record leaning on the wall with its vinyl out, walnut credenza, silver turntable). The sleeve and a card sit on the left, the turntable in the middle, a receiver on the right. Pull the sleeve forward, flip it to read the tracklist and notes, slide the record out, carry it to the turntable.
 
 ## The turntable (everything works)
 
@@ -49,15 +50,17 @@ Playback: each song is a 30-second preview. Real songs play the Apple preview th
 
 ## Style
 
-The look is a **contemporary mid-century editorial illustration**: 1960s to 70s graphic design, black ink outlines with a slight hand-drawn wobble, flat colour, simplified perspective, geometric composition, hard-edged offset shadows instead of soft blur, graphic light (bands and rings, not realistic glow), subtle paper grain and a halftone screen over everything. Nostalgic but not distressed, retro but not kitschy.
+The look is **ambient and lifelike**, like a real record shop photographed at night: warm light from lanterns, shelf lights and lamps, soft shadows and glow, real materials (wood grain, granite, plaster, brushed metal), depth and falloff into darkness, and real album covers on every shelf. The reference photos were the Ultima Thule shop front, a backlit record wall with paper lanterns, a wooden listening unit with JBL-style speakers and a striped rug, and a silver turntable on a wooden credenza.
 
-Palette: burgundy `#7B2A2E`, mustard `#D9A33A`, walnut browns (`#5B3A22`, `#6A3F22`, `#B07A45`), cream (`#E5D5B5`, `#F7F1E3`), faded black `#2B2522`, ink `#1b1714`, with teal, navy and orange as accents.
+Everything is still drawn in code (CSS, SVG and canvas textures), so it won't be photographic. Get closer with lighting, texture and shading, not outlines.
+
+Palette: warm walnut and oak browns, cream, faded black, the shop sign's yellow `#F1BD2B` and red `#B8232A`, burgundy `#7B2A2E` and mustard `#D9A33A` for the interface, warm light around `#FFD49A`.
 
 Type: Archivo (grotesk), Archivo Narrow, IBM Plex Mono (labels and archival details), Caveat (handwriting), Yellowtail (sign-painter script), DM Serif Display.
 
-UI language for the builder: paper texture, thin borders and double rules, folder tabs, small boxed archival labels, square buttons with a small offset shadow.
+UI language for the builder: paper texture, thin borders and double rules, folder tabs, small boxed archival labels, square buttons.
 
-Avoid: photorealism, 3D renders, glossy gradients, childish cartoon styling.
+Avoid: thick black ink outlines, flat colour fills, hard offset shadows, halftone screens, made-up album covers where real ones fit, childish cartoon styling.
 
 ## Writing rules for anything on the site
 
@@ -67,7 +70,7 @@ Avoid: photorealism, 3D renders, glossy gradients, childish cartoon styling.
 ## Known limits and ideas for later
 
 - Photos in links (see above).
-- The record wall uses practice covers. It could show real albums from Apple's catalogue.
+- The shelves show practice covers until `/api/albums` answers, and for good where there's no search function (a local file, the Claude preview).
 - A person browsing the record wall was in the reference images but left out until it can be drawn well.
 - Performance: the turntable redraws only when something changes. Keep it that way.
 

@@ -6,6 +6,7 @@ A small record shop with a pressing booth in the back. Pick songs, design a reco
 
 - `index.html` is the whole site.
 - `api/search.js` searches Apple's music catalogue (India store). The site calls it when you search for songs.
+- `api/albums.js` finds cover art for the real albums on the shop's shelves. Edit the list at the top of it to change what's on display.
 
 ## Put it online with Vercel
 
