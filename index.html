@@ -1125,6 +1125,7 @@ function cleanRec(r){
   const num = (v, lo, hi, def) => Number.isFinite(+v) && v !== '' && v !== null ? clamp(+v, lo, hi) : def;
   const idx = (v, list, def) => Number.isInteger(v) && v >= 0 && v < list.length ? v : def;
   const pick = (v, list, def) => list.some(o => o[0] === v) ? v : def;
+  const hex = (v, def) => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v.toUpperCase() : def;
   const song = s => { if (!s || typeof s !== 'object') return null;
     if (s.s === 'd'){ const al = idx(s.al, DEMO, -1); if (al < 0) return null; const ti = idx(s.ti, DEMO[al].tracks, -1); return ti < 0 ? null : { s:'d', al, ti }; }
     if (s.s === 'it'){ const t = str(s.t, 200); if (!t) return null; return { s:'it', id:str(s.id, 40), t, a:str(s.a, 200), c:safeURL(s.c), p:safeURL(s.p), u:safeURL(s.u) }; }
@@ -1137,7 +1138,6 @@ function cleanRec(r){
   const texts = (Array.isArray(r.texts) ? r.texts : []).filter(t => t && typeof t === 'object').slice(0, 8).map(t => ({ t:str(t.t, 80), f:idx(t.f, TEXT_FONTS, 0), c:hex(t.c, '#1b1714'),
     s:num(t.s, 2, 40, 9), x:num(t.x, -10, 110, 50), y:num(t.y, -10, 110, 50), r:num(t.r, -45, 45, 0) }));
   const hy = r.hype && typeof r.hype === 'object' ? r.hype : b.hype, hype = { a:str(hy.a, 24), b:str(hy.b, 40), c:str(hy.c, 30) };
-  const hex = (v, def) => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v.toUpperCase() : def;
   const filt = d.pm === 'duotone' ? 'duotone' : d.filt, pm = d.pm === 'duotone' ? 'full' : d.pm;
   // older records stored colours as numbers into fixed lists; turn those into the colours they meant
   // older records chose one of seven title styles; each becomes the typeface and layout it looked most like
@@ -1157,7 +1157,8 @@ function cleanRec(r){
 }
 // every visit starts a new record; the last one is kept so it can be picked up again from the booth
 const hasWork = r => r.A.length + r.B.length > 0 || !!r.name;
-let lastDraft = cleanRec(store.get('sideb-press')), draft = cleanRec(null);
+// a saved draft that can't be read is simply dropped, so it can never stop the site from starting
+let lastDraft = (() => { try { return cleanRec(store.get('sideb-press')); } catch(e){ return cleanRec(null); } })(), draft = cleanRec(null);
 let step = 'songs', selNote = -1, face = 'F';
 const STEPS = ['songs','words','sleeve','vinyl','notes'];
 function saveDraft(){ if (!hasWork(draft) && hasWork(lastDraft)) return; if (!store.set('sideb-press', draft)){ const p = draft.photo; draft.photo = ''; store.set('sideb-press', draft); draft.photo = p; } }
