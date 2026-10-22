@@ -1674,14 +1674,14 @@ function buildShop(){
   for (let x = WALL_L; x <= WALL_R; x += 64){ const a = PJ(x, FLOOR, BACK), b = PJ(x, FLOOR, Z_NEAR); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#7A4422" stroke-width="1.6"/>`; }
   for (let i=0;i<40;i++){ const x = WALL_L + 32 + (i*137)%1720, z = -40 - (i*211)%1000, a = PJ(x, FLOOR, z), b = PJ(x + 64, FLOOR, z); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#7A4422" stroke-width="1.2"/>`; }
   s += `<g transform="${plane(BACK)}"><rect x="${WALL_L}" y="40" width="${WALL_R - WALL_L}" height="${FLOOR - 40}" fill="${IN.orange}"/><rect x="${WALL_L}" y="40" width="${WALL_R - WALL_L}" height="12" fill="rgba(0,0,0,.25)"/>
-    <rect x="1140" y="56" width="26" height="${FLOOR - 56}" fill="${IN.shade}"/></g>`;
+    <rect x="1140" y="144" width="26" height="${FLOOR - 144}" fill="${IN.shade}"/></g>`;
   // sunlight from the windows behind us on the left, falling across the floor
   s += poly([PJ(300,FLOOR,-200), PJ(700,FLOOR,-200), PJ(960,FLOOR,-700), PJ(520,FLOOR,-700)], 'rgba(255,228,178,.16)') + poly([PJ(820,FLOOR,-220), PJ(940,FLOOR,-220), PJ(1160,FLOOR,-700), PJ(1040,FLOOR,-700)], 'rgba(255,228,178,.12)');
 
   // THE RECORD WALL: walnut cubbies from the counter to the ceiling, each lit from a strip under its top edge, an album in each
-  const RW = { x0:110, x1:1140, y0:56, zf:-48 };
+  const RW = { x0:110, x1:1140, y0:144, zf:-48 };
   s += box(RW.x0, RW.x1, RW.y0, FLOOR, BACK, RW.zf, { front:WD.front });
-  for (let r=0;r<6;r++) for (let c=0;c<12;c++){ const x0 = RW.x0 + 8 + c*85, y0 = RW.y0 + 8 + r*88, x1 = x0 + 79, y1 = y0 + 82, k = r*12 + c;
+  for (let r=0;r<5;r++) for (let c=0;c<12;c++){ const x0 = RW.x0 + 8 + c*85, y0 = RW.y0 + 8 + r*88, x1 = x0 + 79, y1 = y0 + 82, k = r*12 + c;
     s += litRecess(x0, x1, y0, y1, -6, RW.zf) + coverAt(k, x0 + 2.5, y1 - 1, -22, 74, (((k*37)%5) - 2)*.4, { lit:true }); }
   s += `<g transform="${plane(RW.zf)}"><rect x="${RW.x0}" y="${RW.y0}" width="${RW.x1 - RW.x0}" height="4" fill="rgba(255,236,200,.3)"/></g>`;
   // the counter in front of it, 90cm high and 60cm deep: a hi-fi speaker at each end, cubbies of LPs, an amplifier in the middle
@@ -1704,65 +1704,72 @@ function buildShop(){
   s += turntable(586, CT.y0, -70, { lid:true, lidH:80 }) + lamp(744, CT.y0, -120, '#C9302C', '#EF6A5A') + turntable(792, CT.y0, -70, { silver:true, closed:true, label:IN.mustard });
   s += bin(924, 1124, CT.y0, -64, -170, 104);
 
-  // THE PRESSING BOOTH: a walnut listening wall set into the back of the shop, with a counter in front
+  // THE PRESSING BOOTH: a walnut booth built out from the back wall, warm light inside, a desk to sit at and a stool in front
   s += `<g id="booth" role="button" tabindex="0" aria-label="Step into the pressing booth" style="cursor:pointer">`;
-  const BU = { x0:1180, x1:1830, y0:56, zf:-40 }, BX = (BU.x0 + BU.x1)/2;
-  s += box(BU.x0, BU.x1, BU.y0, FLOOR, BACK, BU.zf, { front:WD.dark, side:'#2a1408' });
-  // the sign: lettering lit from behind, on a walnut fascia
-  s += `<g transform="${plane(BU.zf)}"><rect x="${BU.x0 + 16}" y="${BU.y0 + 16}" width="${BU.x1 - BU.x0 - 32}" height="104" fill="#2a1408"/><rect x="${BU.x0 + 16}" y="${BU.y0 + 16}" width="${BU.x1 - BU.x0 - 32}" height="104" fill="none" stroke="#5a3216" stroke-width="2"/>
-    <text x="${BX}" y="${BU.y0 + 82}" text-anchor="middle" font-family="Yellowtail,cursive" font-size="62" fill="#FFB547" filter="url(#signGlow)" opacity=".9">Pressing Booth</text>
-    <text x="${BX}" y="${BU.y0 + 82}" text-anchor="middle" font-family="Yellowtail,cursive" font-size="62" fill="#FFE2A0">Pressing Booth</text>
-    <text x="${BX}" y="${BU.y0 + 106}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="10" letter-spacing="4" fill="${IN.cream}" opacity=".85">MAKE A RECORD FOR SOMEONE</text></g>`;
-  // the middle: three shelves of covers against white tiles, lit from above, some with the record pulled half out
-  const NC = { x0:1365, x1:1645, y0:192, y1:520 }, LEDGES = [302, 412, 520];
-  s += recess(NC.x0, NC.x1, NC.y0, NC.y1, -4, BU.zf, { side:'#5a3216', ceil:'#FFE3A6', floor:'#8a5530', back:'url(#tileS)' });
-  LEDGES.forEach((y, r) => { const top = r ? LEDGES[r - 1] + 6 : NC.y0; s += poly([PJ(NC.x0, top, -4), PJ(NC.x1, top, -4), PJ(NC.x1, y, -4), PJ(NC.x0, y, -4)], 'url(#nicheGlow)');
-    for (let c=0;c<3;c++){ const k = r*3 + c; s += coverAt(72 + k, NC.x0 + 11 + c*92, y, -18, 74, ((k*29) % 5 - 2)*.5, { lit:true, disc: k % 3 === 1 ? ['#EDB33A','#B3252B','#F1E3C4'][r] : '' }); }
-    if (r < 2) s += box(NC.x0, NC.x1, y, y + 6, -4, BU.zf - 2, { front:WD.lip, top:'#E0A66A', under:'#6b3a1a' }) + `<g transform="${plane(-8)}"><rect x="${NC.x0}" y="${y + 6}" width="${NC.x1 - NC.x0}" height="3" fill="#FFF2CC"/></g>`; });
-  s += `<g transform="${plane(BU.zf + 4)}"><rect x="${NC.x0}" y="${NC.y0}" width="${NC.x1 - NC.x0}" height="3" fill="#FFF2CC"/></g>`;
-  // either side: a studio monitor set into the walnut, and a lit niche below it
-  [BU.x0 + 18, NC.x1 + 12].forEach((x, i) => { const x1 = x + 156;
-    s += recess(x, x1, 192, 420, -8, BU.zf, { side:'#1e1008', ceil:'#140a04', floor:'#3a1f0e', back:'#0e0703' }) + monitor(x + 12, 200, 132, 214, -22);
-    s += litRecess(x, x1, 444, 604, -6, BU.zf);
-    if (!i){ // records framed on the wall, four to a frame
-      s += `<g transform="${plane(-10)}"><rect x="${x + 14}" y="452" width="128" height="128" fill="#B07A44"/>${[0,1,2,3].map(j => { const cx = x + 47 + (j % 2)*62, cy = 485 + Math.floor(j/2)*62;
-        return `<rect x="${cx - 28}" y="${cy - 28}" width="56" height="56" fill="#EFE6D2"/><circle cx="${cx}" cy="${cy}" r="25" fill="#141414"/><circle cx="${cx}" cy="${cy}" r="18" fill="none" stroke="rgba(255,255,255,.1)"/><circle cx="${cx}" cy="${cy}" r="8" fill="${['#EDB33A','#D86A2C','#6FB3C9','#E86A9A'][j]}"/>`; }).join('')}</g>`; }
-    else { // a stack of records lying flat, and a plant
-      s += coverAt(81, x + 30, 578, -12, 74, -4, { lit:true });
-      for (let j=0;j<5;j++) s += box(x + 18, x + 104, 600 - j*5 - 5, 600 - j*5, -14, -34, { front:['#1F3A63','#E9DCC0','#B3252B','#2a2a2a','#EDB33A'][j], top:['#2E5488','#F4EEE0','#C9454A','#3a3a3a','#F5C860'][j] });
-      s += succulent(x + 128, 600, -24); } });
-  // the counter: 87cm high, rounded at the right end, a bin of records, a receiver and lit LP cubbies in its front
-  const BC = { x0:1220, x1:1740, y0:690, zb:-40, zf:-170 }, R = (BC.zb - BC.zf)/2, ZC = (BC.zb + BC.zf)/2;
-  s += poly([PJ(BC.x0 + 20, FLOOR, BC.zf), PJ(BC.x1 + R, FLOOR, ZC - R*.6), PJ(BC.x1 + R + 70, FLOOR, ZC), PJ(BC.x0 + 90, FLOOR, BC.zf + 20)], IN.shade);
-  s += box(BC.x0, BC.x1, BC.y0, FLOOR, BC.zb, BC.zf, { front:WD.front, top:WD.top, side:WD.side });
-  { const arc = Array.from({length:17}, (_,i) => { const a = -Math.PI/2 + i/16*Math.PI; return [BC.x1 + R*Math.cos(a), ZC + R*Math.sin(a), a]; });
-    for (let i=0;i<16;i++){ const [xa, za] = arc[i], [xb, zb, ab] = arc[i + 1], am = (arc[i][2] + ab)/2, xm = (xa + xb)/2, zm = (za + zb)/2;
-      if ((VP.x - xm)*Math.cos(am) + (-FOCUS - zm)*Math.sin(am) > 0) s += poly([PJ(xa, BC.y0, za), PJ(xb, BC.y0, zb), PJ(xb, FLOOR, zb), PJ(xa, FLOOR, za)], `hsl(22,${(56 - i*1.5).toFixed(0)}%,${(27 - i*1.1).toFixed(1)}%)`); }
-    s += poly(arc.map(([x, z]) => PJ(x, BC.y0, z)), WD.top) + `<polyline points="${pts(arc.map(([x, z]) => PJ(x, BC.y0, z)))}" fill="none" stroke="${WD.lip}" stroke-width="3"/>`; }
-  s += `<g transform="${plane(BC.zf)}"><rect x="${BC.x0}" y="${BC.y0}" width="${BC.x1 - BC.x0}" height="4" fill="${WD.lip}"/>${Array.from({length:16}, (_,i) => `<rect x="${BC.x0 + 10 + i*14}" y="${BC.y0 + 10}" width="2" height="${FLOOR - BC.y0 - 18}" fill="rgba(0,0,0,.18)"/>`).join('')}</g>`;
-  s += litRecess(1470, 1730, BC.y0 + 14, BC.y0 + 100, -70, BC.zf) + `<g transform="${plane(-110)}"><rect x="1492" y="${BC.y0 + 46}" width="216" height="50" fill="#8FB4CC"/><rect x="1492" y="${BC.y0 + 46}" width="216" height="5" fill="#B9D4E4"/>
-    <rect x="1586" y="${BC.y0 + 56}" width="110" height="14" fill="#1b2a33"/><rect x="1590" y="${BC.y0 + 61}" width="80" height="2" fill="#8fe3ff"/>${[1506, 1524, 1542, 1560].map(x => `<circle cx="${x}" cy="${BC.y0 + 82}" r="5" fill="#d8dde0"/><circle cx="${x}" cy="${BC.y0 + 82}" r="2" fill="#7c8a92"/>`).join('')}
-    <rect x="1594" y="${BC.y0 + 78}" width="100" height="10" fill="#7DA2BA"/><circle cx="1512" cy="${BC.y0 + 62}" r="5" fill="#d8dde0"/></g>`;
-  [[1470, 1596], [1604, 1730]].forEach(([x0, x1], i) => s += litRecess(x0, x1, BC.y0 + 108, FLOOR - 8, -70, BC.zf) + `<g transform="${plane(-120)}">${spines(x0 + 4, FLOOR - 84, x1 - x0 - 8, 74, 901 + i)}</g>`);
-  s += `<g transform="${plane(BC.zf - 2)}"><g transform="translate(1340 ${BC.y0 + 130}) rotate(-2)"><rect x="-108" y="-22" width="216" height="44" fill="${IN.cream}"/><rect x="-108" y="-22" width="216" height="44" fill="url(#grainS)" opacity=".2" style="mix-blend-mode:multiply"/>
-    <text x="0" y="8" text-anchor="middle" font-family="Caveat,cursive" font-weight="700" font-size="26" fill="#231A14">Step into the booth</text></g></g>`;
-  // on the counter: records in a bin, a cream speaker, a turntable under its lid with a violet record, a little plant
-  s += bin(1236, 1450, BC.y0, -56, -160, 90);
-  s += box(1470, 1572, BC.y0 - 66, BC.y0, -78, -124, { front:'#D9D5C6', top:'#ECE8DC', side:'#B8B3A2' }) + `<g transform="${plane(-124)}"><rect x="1478" y="${BC.y0 - 58}" width="86" height="50" fill="#CDC9B9"/>
-    ${Array.from({length:6}, (_,i) => `<rect x="${1478 + i*14.3}" y="${BC.y0 - 58}" width="1.4" height="50" fill="#B4AF9C"/>`).join('')}${Array.from({length:4}, (_,i) => `<rect x="1478" y="${BC.y0 - 58 + i*12.5}" width="86" height="1.4" fill="#B4AF9C"/>`).join('')}
-    <circle cx="1521" cy="${BC.y0 - 62}" r="1.6" fill="#e0453a"/><rect x="1466" y="${BC.y0 - 48}" width="6" height="22" rx="3" fill="#7a5a3a"/></g>`;
-  s += succulent(1590, BC.y0, -150) + turntable(1606, BC.y0, -52, { closed:true, vinyl:'#6E62D0', label:'#F1E3C4' });
-  { const a = PJ(BU.x0 - 6, BU.y0 - 6, BU.zf), b2 = PJ(BC.x1 + R + 6, FLOOR, ZC); s += `<rect class="bring" x="${a[0]}" y="${a[1]}" width="${b2[0] - a[0]}" height="${PJ(0, FLOOR, BC.zf)[1] - a[1]}" fill="rgba(255,214,140,.08)" stroke="#FFD27A" stroke-width="4" opacity="0"/>`; }
+  const BO = { x0:1180, x1:1800, y0:144, zf:-130, hy:254 }, IX0 = BO.x0 + 92, IX1 = BO.x1 - 92, BX = (BO.x0 + BO.x1)/2;
+  s += poly([PJ(BO.x1, FLOOR, BO.zf), PJ(BO.x1 + 80, FLOOR, BO.zf + 50), PJ(BO.x1 + 80, FLOOR, 0), PJ(BO.x1, FLOOR, 0)], IN.shade);
+  // two walnut pillars and a header carrying the sign
+  s += box(BO.x0, IX0, BO.y0, FLOOR, BACK, BO.zf, { front:WD.dark, side:'#2a1408' }) + box(IX1, BO.x1, BO.y0, FLOOR, BACK, BO.zf, { front:WD.dark, side:'#2a1408' });
+  s += box(IX0, IX1, BO.y0, BO.hy, BACK, BO.zf, { front:WD.dark });
+  // the inside, lit warm, its back wall walnut
+  s += recess(IX0, IX1, BO.hy, FLOOR, BACK, BO.zf, { side:'#A8612E', ceil:'#5a3216', floor:'#8A4E26', back:'#5A2F14' });
+  s += poly([PJ(IX0, BO.hy, BACK), PJ(IX1, BO.hy, BACK), PJ(IX1, FLOOR, BACK), PJ(IX0, FLOOR, BACK)], 'url(#nicheGlow)');
+  // on the back wall: three shelves of covers against white tiles, lit from under each shelf, some with the record pulled half out
+  const TL = { x0:BX - 135, x1:BX + 135, y0:282, ledges:[388, 498, 608] };
+  s += `<g transform="${plane(-1)}"><rect x="${TL.x0}" y="${TL.y0}" width="${TL.x1 - TL.x0}" height="${TL.ledges[2] - TL.y0}" fill="url(#tileS)"/><rect x="${TL.x0}" y="${TL.y0}" width="${TL.x1 - TL.x0}" height="4" fill="#FFF2CC"/></g>`;
+  TL.ledges.forEach((y, r) => { const top = r ? TL.ledges[r - 1] + 6 : TL.y0; s += poly([PJ(TL.x0, top, -1), PJ(TL.x1, top, -1), PJ(TL.x1, y, -1), PJ(TL.x0, y, -1)], 'url(#nicheGlow)');
+    for (let c=0;c<3;c++){ const k = r*3 + c; s += coverAt(72 + k, TL.x0 + 10 + c*88, y, -12, 74, ((k*29) % 5 - 2)*.5, { lit:true, disc: k % 3 === 1 ? ['#EDB33A','#B3252B','#F1E3C4'][r] : '' }); }
+    s += box(TL.x0 - 6, TL.x1 + 6, y, y + 6, BACK, -26, { front:WD.lip, top:'#E0A66A', under:'#6b3a1a' }); });
+  // a speaker either side of the shelves, each on a little bracket
+  [IX0 + 6, TL.x1 + 6].forEach(x => s += box(x, x + 70, 476, 482, BACK, -30, { front:WD.lip, top:'#E0A66A', under:'#6b3a1a' }) + hifi(x + 2, 330, 66, 146, -18));
+  // a pendant lamp hanging over the desk
+  { const z = -80, top = PJ(BX, BO.hy, z), b = PJ(BX, 272, z); s += `<line x1="${top[0]}" y1="${top[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#1a0e06" stroke-width="2"/>`
+    + `<g transform="${plane(z)}"><path d="M${BX - 38} 306 Q${BX - 34} 274 ${BX} 272 Q${BX + 34} 274 ${BX + 38} 306 Z" fill="${IN.mustard}"/><path d="M${BX - 28} 298 Q${BX - 24} 282 ${BX - 6} 278" stroke="#F7D27A" stroke-width="4" fill="none"/></g>` + disc(BX, 306, z, 38, '#FFF0C8'); }
+  // the desk: lit LP cubbies and a pale blue receiver in its front
+  const DK = { x0:IX0 + 10, x1:IX1 - 10, y0:690, zb:-12, zf:-124 };
+  s += box(DK.x0, DK.x1, DK.y0, FLOOR, DK.zb, DK.zf, { front:WD.front, top:WD.top, side:WD.side });
+  s += `<g transform="${plane(DK.zf)}"><rect x="${DK.x0}" y="${DK.y0}" width="${DK.x1 - DK.x0}" height="4" fill="${WD.lip}"/></g>`;
+  [[DK.x0 + 10, DK.x0 + 116], [DK.x1 - 116, DK.x1 - 10]].forEach(([x0, x1], i) => [[DK.y0 + 14, DK.y0 + 102], [DK.y0 + 110, FLOOR - 8]].forEach(([y0, y1], r) =>
+    s += litRecess(x0, x1, y0, y1, -40, DK.zf) + `<g transform="${plane(-70)}">${spines(x0 + 4, y1 - 76, x1 - x0 - 8, 74, 901 + i*2 + r)}</g>`));
+  { const x0 = DK.x0 + 124, x1 = DK.x1 - 124; s += litRecess(x0, x1, DK.y0 + 14, DK.y0 + 102, -40, DK.zf) + `<g transform="${plane(-64)}"><rect x="${x0 + 12}" y="${DK.y0 + 44}" width="${x1 - x0 - 24}" height="50" fill="#8FB4CC"/><rect x="${x0 + 12}" y="${DK.y0 + 44}" width="${x1 - x0 - 24}" height="5" fill="#B9D4E4"/>
+    <rect x="${x0 + 70}" y="${DK.y0 + 54}" width="${x1 - x0 - 94}" height="14" fill="#1b2a33"/><rect x="${x0 + 74}" y="${DK.y0 + 59}" width="${x1 - x0 - 120}" height="2" fill="#8fe3ff"/>${[22, 38, 54].map(o => `<circle cx="${x0 + o}" cy="${DK.y0 + 80}" r="5" fill="#d8dde0"/><circle cx="${x0 + o}" cy="${DK.y0 + 80}" r="2" fill="#7c8a92"/>`).join('')}
+    <rect x="${x0 + 70}" y="${DK.y0 + 76}" width="${x1 - x0 - 94}" height="10" fill="#7DA2BA"/></g>`;
+    s += `<g transform="${plane(DK.zf - 2)}"><g transform="translate(${(x0 + x1)/2 + 30} ${DK.y0 + 150}) rotate(-2)"><rect x="-104" y="-24" width="208" height="48" fill="${IN.cream}"/><rect x="-104" y="-24" width="208" height="48" fill="url(#grainS)" opacity=".2" style="mix-blend-mode:multiply"/>
+    <text x="0" y="8" text-anchor="middle" font-family="Caveat,cursive" font-weight="700" font-size="27" fill="#231A14">Step into the booth</text></g></g>`; }
+  // on the desk: a turntable under its lid with a violet record, a sleeve leaning on the wall, headphones on a stand, a cream speaker, a plant
+  s += coverAt(90, DK.x0 + 132, DK.y0, -26, 74, -7);
+  s += turntable(DK.x0 + 12, DK.y0, -20, { closed:true, vinyl:'#6E62D0', label:'#F1E3C4' });
+  { const x = DK.x0 + 236, z = -70; s += disc(x, DK.y0, z, 14, '#2a2a2a') + `<g transform="${plane(z)}"><rect x="${x - 2}" y="${DK.y0 - 70}" width="4" height="70" fill="#3a3a3a"/><rect x="${x - 14}" y="${DK.y0 - 74}" width="28" height="6" rx="3" fill="#3a3a3a"/>
+    <path d="M${x - 22} ${DK.y0 - 34} Q${x - 24} ${DK.y0 - 84} ${x} ${DK.y0 - 84} Q${x + 24} ${DK.y0 - 84} ${x + 22} ${DK.y0 - 34}" stroke="#1c1c1c" stroke-width="5" fill="none"/>
+    <rect x="${x - 30}" y="${DK.y0 - 50}" width="14" height="26" rx="6" fill="#B3252B"/><rect x="${x + 16}" y="${DK.y0 - 50}" width="14" height="26" rx="6" fill="#B3252B"/></g>`; }
+  s += box(DK.x1 - 118, DK.x1 - 22, DK.y0 - 62, DK.y0, -24, -68, { front:'#D9D5C6', top:'#ECE8DC', side:'#B8B3A2' }) + `<g transform="${plane(-68)}"><rect x="${DK.x1 - 111}" y="${DK.y0 - 54}" width="82" height="46" fill="#CDC9B9"/>
+    ${Array.from({length:6}, (_,i) => `<rect x="${DK.x1 - 111 + i*13.7}" y="${DK.y0 - 54}" width="1.4" height="46" fill="#B4AF9C"/>`).join('')}${Array.from({length:4}, (_,i) => `<rect x="${DK.x1 - 111}" y="${DK.y0 - 54 + i*11.5}" width="82" height="1.4" fill="#B4AF9C"/>`).join('')}<circle cx="${DK.x1 - 70}" cy="${DK.y0 - 58}" r="1.6" fill="#e0453a"/></g>`;
+  s += succulent(DK.x1 - 136, DK.y0, -100);
+  // the pillars: tiled niches of covers on the left, records framed in a column on the right
+  [300, 412, 524].forEach((y, i) => s += litRecess(BO.x0 + 6, IX0 - 6, y, y + 100, BO.zf + 36, BO.zf, 'url(#tileS)') + coverAt(81 + i, BO.x0 + 9, y + 98, BO.zf + 18, 74, (i - 1)*1.5, { lit:true, disc:['#D86A2C','#6FB3C9','#EDB33A'][i] }));
+  s += `<g transform="${plane(BO.zf - 1)}"><rect x="${IX1 + 6}" y="298" width="80" height="420" fill="#B07A44"/>${[0,1,2,3].map(j => { const cy = 350 + j*104, cx = IX1 + 46;
+    return `<rect x="${cx - 34}" y="${cy - 46}" width="68" height="92" fill="#EFE6D2"/><circle cx="${cx}" cy="${cy}" r="29" fill="#141414"/><circle cx="${cx}" cy="${cy}" r="22" fill="none" stroke="rgba(255,255,255,.1)"/><circle cx="${cx}" cy="${cy}" r="10" fill="${['#EDB33A','#E86A9A','#6FB3C9','#D86A2C'][j]}"/><rect x="${cx + 16}" y="${cy - 46}" width="18" height="92" fill="rgba(24,30,70,.12)"/>`; }).join('')}
+    ${[0, 1].map(i => `<rect x="${(i ? IX1 : BO.x0) + 46}" y="740" width="8" height="150" fill="rgba(0,0,0,.25)"/>`).join('')}</g>`;
+  // the sign, lit from behind
+  s += `<g transform="${plane(BO.zf)}"><rect x="${BO.x0 + 14}" y="${BO.y0 + 12}" width="${BO.x1 - BO.x0 - 28}" height="${BO.hy - BO.y0 - 24}" fill="#2a1408"/>
+    <text x="${BX}" y="${BO.y0 + 70}" text-anchor="middle" font-family="Yellowtail,cursive" font-size="58" fill="#FFB547" filter="url(#signGlow)" opacity=".9">Pressing Booth</text>
+    <text x="${BX}" y="${BO.y0 + 70}" text-anchor="middle" font-family="Yellowtail,cursive" font-size="58" fill="#FFE2A0">Pressing Booth</text>
+    <text x="${BX}" y="${BO.y0 + 94}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="10" letter-spacing="4" fill="${IN.cream}" opacity=".85">MAKE A RECORD FOR SOMEONE</text></g>`;
+  // a stool waiting in front of the desk
+  { const x = DK.x0 + 46, z = -250, y = 726; s += disc(x + 40, FLOOR, z + 30, 40, IN.shade);
+    [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a, b]) => { const p = PJ(x + a*20, y, z + b*20), q = PJ(x + a*28, FLOOR, z + b*28); s += `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="#2a2a2a" stroke-width="4"/>`; });
+    s += disc(x, 830, z, 24, 'none', ' stroke="#2a2a2a" stroke-width="3"') + disc(x, y + 8, z, 30, '#8f3a1c') + disc(x, y, z, 30, '#C4572B') + disc(x - 6, y - .5, z - 6, 18, 'rgba(255,220,170,.25)'); }
+  { const a = PJ(BO.x0, BO.y0, BO.zf), b2 = PJ(BO.x1, FLOOR, BO.zf); s += `<rect class="bring" x="${a[0]}" y="${a[1]}" width="${b2[0] - a[0]}" height="${b2[1] - a[1]}" fill="rgba(255,214,140,.08)" stroke="#FFD27A" stroke-width="4" opacity="0"/>`; }
   s += `</g>`;
 
   // a striped rug, crates of new arrivals and bargains, a plant between the wall and the booth, paper lanterns
   { const rx0 = 540, rx1 = 1560, rz0 = -250, rz1 = -620; s += poly([PJ(rx0,FLOOR,rz0), PJ(rx1,FLOOR,rz0), PJ(rx1,FLOOR,rz1), PJ(rx0,FLOOR,rz1)], '#ECE4D0');
     for (let z = rz0 - 18; z > rz1 + 10; z -= 56) s += poly([PJ(rx0,FLOOR,z), PJ(rx1,FLOOR,z), PJ(rx1,FLOOR,z - 28), PJ(rx0,FLOOR,z - 28)], '#1d1a17'); }
   s += crate(250, -330, 120, 'NEW ARRIVALS') + crate(392, -380, 121, 'BARGAINS');
-  s += monstera(1150, -150, .95);
-  [[230,-200,4,30],[480,-320,10,24],[640,-150,6,36],[860,-260,12,28],[1060,-190,4,32],[1500,-420,0,22]].forEach(([x,z,drop,r]) => s += lantern(x, z, drop, r));
-  s += `<rect width="1920" height="1080" fill="url(#grainS)" opacity=".1" style="mix-blend-mode:multiply"/><rect width="1920" height="1080" fill="url(#vigS)"/>
-    <defs><radialGradient id="vigS" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient></defs></svg>`;
+  s += monstera(1140, -190, .95);
+  [[230,-200,40,30],[480,-320,70,24],[660,-150,20,36],[860,-260,60,28],[1060,-190,30,32]].forEach(([x,z,drop,r]) => s += lantern(x, z, drop, r));
+  s += `<rect x="-2000" y="-1500" width="5920" height="4080" fill="url(#grainS)" opacity=".1" style="mix-blend-mode:multiply"/><rect x="-2000" y="-1500" width="5920" height="4080" fill="url(#vigS)"/>
+    <defs><radialGradient id="vigS" gradientUnits="userSpaceOnUse" cx="960" cy="540" r="1300"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient></defs></svg>`;
   st.innerHTML = s; paintSlots(st);
   const booth = $('booth'); booth.addEventListener('click', enterBooth); booth.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); enterBooth(); } });
   st.querySelectorAll('image.tagme').forEach(el => { el.addEventListener('pointerenter', () => showTag(slotAlbum(+el.dataset.slot), el)); el.addEventListener('pointerleave', hideTag); });
@@ -1776,11 +1783,16 @@ function fillDoorway(){
   host.appendChild(view);
   const shade = document.createElementNS(NS, 'rect'); Object.entries({ x:DOOR.x, y:DOOR.y, width:DOOR.w, height:DOOR.h, fill:'rgba(30,14,4,.18)' }).forEach(([k, v]) => shade.setAttribute(k, v)); host.appendChild(shade);
 }
-function fitShop(){ const w = $('shopWrap'), vw = w.clientWidth, vh = w.clientHeight; let s = Math.min(vw/1920, vh/1080); if (s < .55) s = vh/1080;
-  $('shopStage').style.transform = `scale(${s})`; $('shopSizer').style.width = 1920*s + 'px'; $('shopSizer').style.height = 1080*s + 'px'; if (1920*s > vw) w.scrollLeft = 1920*s - vw; }
+// the room is drawn for 1920 by 1080; on screens of another shape the view widens or deepens to fill it (walls, floor and ceiling carry on), and phones scroll across it
+let shopView = { x:0, y:0 };
+function fitShop(){ const w = $('shopWrap'), vw = w.clientWidth, vh = w.clientHeight, svg = $('shopSvg'); let s = Math.min(vw/1920, vh/1080); const phone = s < .55; if (phone) s = vh/1080;
+  const W = phone ? 1920 : Math.max(1920, vw/s), H = phone ? 1080 : Math.max(1080, vh/s); shopView = { x:960 - W/2, y:540 - H/2 };
+  if (svg){ svg.setAttribute('viewBox', `${shopView.x} ${shopView.y} ${W} ${H}`); svg.setAttribute('width', W); svg.setAttribute('height', H); }
+  const st = $('shopStage'); st.style.width = W + 'px'; st.style.height = H + 'px'; st.style.transform = `scale(${s})`;
+  $('shopSizer').style.width = W*s + 'px'; $('shopSizer').style.height = H*s + 'px'; if (W*s > vw) w.scrollLeft = Math.min(W*s - vw, Math.max(0, (1540 - shopView.x)*s - vw/2)); }
 addEventListener('resize', () => { if (current === 'shop') fitShop(); if (window.fitFacade) window.fitFacade(); });
 function enterBooth(){ sfx.slide(); const st = $('shopStage'), sc = parseFloat(st.style.transform.slice(6)) || 1;
-  st.style.transformOrigin = '1505px 560px'; st.style.transform = `scale(${sc*2.4})`;
+  st.style.transformOrigin = `${1540 - shopView.x}px ${560 - shopView.y}px`; st.style.transform = `scale(${sc*2.4})`;
   setTimeout(() => { go('studio'); setTimeout(() => { st.style.transition = 'none'; st.style.transformOrigin = '0 0'; st.style.transform = `scale(${sc})`; void st.offsetWidth; st.style.transition = ''; }, 900); }, reduceMotion ? 0 : 700); }
 const tag = $('tag');
 function showTag(a, el){ const b = el.getBoundingClientRect(); tag.querySelector('b').textContent = a.title; tag.querySelector('span').textContent = a.sub;
