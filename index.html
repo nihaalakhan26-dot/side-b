@@ -770,11 +770,42 @@ async function loadShelf(){
    ============================================================ */
 const asset = p => (/^https?:$/.test(location.protocol) ? '/' : '') + p;
 const DOOR = { x:696, y:484, w:164, h:376, hinge:860 };
+// Wide screens show more street than the picture has, so the brick (left) and stone (right) carry on,
+// drawn to the picture's own rhythm and colours: brick courses 38.3px with 93px bricks, stone rows 81.4px,
+// the same sun shadows, and the pavement, kerb and road stretched out from the picture's edge.
+function streetSides(src){
+  const R = mulberry32(12), BR = ['#c44f38','#c74b35','#ca513a','#cb5439','#cc5239','#ce5a3d','#ca5039','#c84c36'], GROUND = 905, M = 180, RX = 1536;
+  let bricks = '';
+  for (let k=-1; 8 + k*38.3 < GROUND; k++){ const y = 8 + k*38.3 + 3, off = k % 2 === 0 ? 0 : 46.5;
+    for (let x = 55 + off - 93*20; x < -M + 93; x += 93) bricks += `<rect x="${(x + 1.5).toFixed(1)}" y="${y.toFixed(1)}" width="90" height="35.3" fill="${BR[Math.floor(R()*BR.length)]}"/>`; }
+  let stone = '';
+  // the stone rows sit where the picture's own rows meet its right edge (they're hand drawn, so not evenly spaced)
+  [-24, 57, 134, 210, 296, 382, 466, 546, 622, 702, 788, 868].forEach((y, k) => { const off = k % 2 ? 150 : 0;
+    stone += `<rect x="${RX}" y="${y.toFixed(1)}" width="1700" height="4.5" fill="#7f6a52"/><rect x="${RX}" y="${(y + 4.5).toFixed(1)}" width="1700" height="1.6" fill="#f2d8ae"/>`;
+    for (let x = RX + 230 + off; x < 3300; x += 300) stone += `<rect x="${x}" y="${(y + 6).toFixed(1)}" width="2.5" height="75.4" fill="#cfae84"/>`; });
+  // the stone's diagonal shadow, carried on at the same slope until it meets the pavement
+  const sh = [[RX, 369], [RX + (GROUND - 369)/1.2, GROUND], [RX + (GROUND - 529)/1.2, GROUND], [RX, 529]].map(q => q.join(',')).join(' ');
+  const leaves = Array.from({length:26}, (_,i) => `<ellipse cx="${(-M - 10 - (i*53)%260).toFixed(0)}" cy="${300 + (i*97)%560}" rx="${8 + (i%4)*4}" ry="${4 + (i%3)*2}" fill="#c8533b" transform="rotate(${-40 + (i*29)%80} ${(-M - 10 - (i*53)%260).toFixed(0)} ${300 + (i*97)%560})"/>`).join('');
+  return `<defs><clipPath id="edgeL"><rect x="0" y="0" width="${M}" height="1024"/></clipPath><clipPath id="brickArea"><rect x="-1700" y="0" width="${1700 - M}" height="${GROUND}"/></clipPath>
+      <linearGradient id="fadeL" x1="1" x2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="seamL"><rect x="${-M - 40}" y="0" width="40" height="${GROUND}" fill="url(#fadeL)"/></mask>
+      <linearGradient id="fadeR" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="seamR"><rect x="${RX}" y="0" width="40" height="${GROUND}" fill="url(#fadeR)"/></mask></defs>
+    <rect x="-1700" y="0" width="${1700 - M}" height="${GROUND}" fill="#7b2617"/>
+    <g clip-path="url(#brickArea)">${bricks}<polygon points="-1700,300 ${-M},270 ${-M},${GROUND} -1700,${GROUND}" fill="#a0baf0" style="mix-blend-mode:multiply"/><g style="mix-blend-mode:normal" opacity=".35">${leaves}</g></g>
+    <g transform="scale(-1 1)"><image href="${src}" width="1536" height="1024" clip-path="url(#edgeL)"/></g>
+    <svg x="-1700" y="${GROUND}" width="${1700 - M}" height="${1024 - GROUND}" viewBox="240 ${GROUND} 2 ${1024 - GROUND}" preserveAspectRatio="none"><image href="${src}" width="1536" height="1024"/></svg>
+    <g transform="translate(${-M} 0) scale(-1 1) translate(${M} 0)" mask="url(#seamL)"><svg x="${M}" y="0" width="40" height="${GROUND}" viewBox="${M - 2} 0 2 ${GROUND}" preserveAspectRatio="none"><image href="${src}" width="1536" height="1024"/></svg></g>
+    <rect x="${RX}" y="0" width="1700" height="${GROUND}" fill="#e9caa0"/>${stone}<polygon points="${sh}" fill="#9699b0" style="mix-blend-mode:multiply"/>
+    <svg x="${RX}" y="${GROUND}" width="1700" height="${1024 - GROUND}" viewBox="1530 ${GROUND} 2 ${1024 - GROUND}" preserveAspectRatio="none"><image href="${src}" width="1536" height="1024"/></svg>
+    <g mask="url(#seamR)"><svg x="${RX}" y="0" width="40" height="${GROUND}" viewBox="1533 0 2 ${GROUND}" preserveAspectRatio="none"><image href="${src}" width="1536" height="1024"/></svg></g>
+    ${Array.from({length:18}, (_,i) => `<rect x="${-1700 + i*95}" y="${GROUND}" width="2" height="44" fill="rgba(0,0,0,.12)"/><rect x="${RX + 40 + i*95}" y="${GROUND}" width="2" height="44" fill="rgba(0,0,0,.12)"/>`).join('')}
+    <rect x="-1700" y="0" width="${1700 - M}" height="1024" fill="url(#grainP)" opacity=".3" style="mix-blend-mode:multiply"/><rect x="${RX}" y="0" width="1700" height="1024" fill="url(#grainP)" opacity=".3" style="mix-blend-mode:multiply"/>`;
+}
 function facadeSVG(){
   const RED = '#AE1C22', YEL = '#F9B83A', src = asset('img/storefront.webp');
-  return `<svg id="facade" viewBox="-70 -50 1676 1124" preserveAspectRatio="xMidYMid meet" xmlns="${NS}">
+  return `<svg id="facade" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid meet" xmlns="${NS}">
   <defs><clipPath id="doorClip"><rect x="${DOOR.x}" y="${DOOR.y}" width="${DOOR.w}" height="${DOOR.h}"/></clipPath>
     <pattern id="grainP" width="256" height="256" patternUnits="userSpaceOnUse"><image href="${noiseCanvas.toDataURL()}" width="256" height="256"/></pattern></defs>
+  ${streetSides(src)}
   <image href="${src}" width="1536" height="1024"/>
   <!-- the sign, repainted with the same words and layout as the earlier drawn sign -->
   <rect x="318" y="106" width="144" height="254" fill="${RED}"/><rect x="464" y="106" width="652" height="254" fill="${YEL}"/><rect x="1118" y="106" width="126" height="254" fill="${RED}"/>
@@ -1820,7 +1851,7 @@ function buildDeck(){
   <text x="${P.x+36}" y="${P.y+236}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="8" fill="#5b554b">CUE</text>
   <rect x="${P.x-14}" y="${P.y+262}" width="28" height="16" rx="5" fill="#1b1b1b"/>
   <g id="armShadow" filter="url(#armSh)"><use href="#armShape"/></g>
-  <g id="arm" tabindex="0" role="button" aria-label="Tonearm. Press Enter to lift or lower it. While lifted, use the left and right arrow keys to move it."><use href="#armShape"/><line x1="${P.x}" y1="${P.y-70}" x2="${P.x+10}" y2="${P.y+L+14}" stroke="transparent" stroke-width="56" pointer-events="stroke"/></g>
+  <g id="arm" tabindex="0" role="button" aria-label="Tonearm. Press Enter to lift or lower it. While lifted, use the left and right arrow keys to move it."><use href="#armShape"/><line x1="${P.x}" y1="${P.y-70}" x2="${P.x+10}" y2="${P.y+L+14}" stroke="transparent" stroke-width="56" pointer-events="visibleStroke"/></g>
   <g id="dcover" style="cursor:pointer" tabindex="0" role="button" aria-label="Dust cover">
     <rect id="dcRect" x="4" y="4" width="592" height="462" rx="14" fill="url(#coverG)" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
     <rect id="dcHandle" x="270" y="456" width="60" height="10" rx="3" fill="rgba(255,255,255,.4)"/>
