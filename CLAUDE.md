@@ -11,7 +11,7 @@ It started as a record store simulator, then went through a few ideas: a shareab
 Ideas that were tried and dropped, and why:
 - Hiding a YouTube player to play full songs: YouTube's rules require the player to stay visible, and ads can't be turned off. Use 30-second previews plus "listen to the full song" links instead.
 - Deezer for search: not available in India. Apple's iTunes catalogue is used instead.
-- Photorealism: hand-coded scenes can't fully reach it. A flat 2D editorial illustration style was tried next and dropped for feeling fake and boring. The scenes are now drawn ambient and lifelike, after reference photos (see Style below).
+- Photorealism: hand-coded scenes can't reach it. A flat 2D editorial style with ink outlines felt fake and boring, and a soft night-time "lifelike" pass still looked 2D. The chosen look is a rich, sunlit illustration (see Style below), based on an illustration of the Ultima Thule record shop the owner supplied.
 
 ## Files
 
@@ -24,8 +24,8 @@ Ideas that were tried and dropped, and why:
 ## The experience, in order
 
 1. **Intro screen**: the name, one line ("Make a record for someone.") and one button, "Walk up to the shop". Keep it this short. The example gift is still reachable from code as `window.__example()`.
-2. **Outside**: a shop front at night in the rain, after the Ultima Thule record shop: yellow sign with red script and red side panels, black frames, lit windows full of real album covers, a recessed wooden door, granite, double yellow lines. Tap the door, it opens and the view zooms in.
-3. **Shop interior**: a 1920 by 1080 stage scaled to fit. A wall of cubbies lit from the top, each holding a real album, paper lanterns, a long counter with turntables, an orange lamp and speakers, floor crates, a striped rug, and the **Pressing Booth**: a lit wooden display unit with ledges of covers, a turntable over an amp with blue meters, crates and speakers, under a glowing script sign. Clicking the booth zooms in and opens the builder.
+2. **Outside**: a sunny afternoon, after the Ultima Thule illustration: navy shop front with three dome lamps, yellow sign with red script and red side panels, warm orange windows with a paper lantern, real album covers, plants and crates, a red door in a tiled lobby, red brick with a copper downpipe and a potted tree on the left, cream stone with a hanging record sign and a bollard on the right. Tap the door, it opens and the view zooms in.
+3. **Shop interior**: one 1920 by 1080 SVG, scaled to fit, drawn to scale (2.4px to the centimetre against the back wall, a little more for things nearer the viewer: a cover is 31cm, a turntable 45cm, an LP spine about 3mm). Orange walls, a wall of cubbies with a real album in each, paper lanterns, a counter with turntables, bookshelf speakers, an orange lamp and cubbies of LP spines, crates on the floor, a striped rug, a monstera, and the **Pressing Booth**: a wooden listening unit with three ledges of covers, crates, a turntable on an amp with blue meters, speakers and LPs, under a hanging navy sign. Clicking the booth zooms in and opens the builder. Keep everything to scale when adding objects.
 4. **Builder (the "studio")**: fits in one screen. The record preview stays on the left on a work mat; the controls are in a right-hand panel with five steps as folder tabs:
    - **01 Songs**: search songs, add to side A or B, reorder, move between sides, remove. Minimum 6 songs to press. 6 to 10 songs makes a 10-inch, 11 or more makes a 12-inch LP, up to 12 per side.
    - **02 Sleeve**: your own photo (full bleed, framed, duotone, circle), 14 colourways, 15 artwork patterns, 7 title styles, and extras (obi strip, hype sticker, worn edges). Options show as live thumbnails of the actual sleeve.
@@ -45,22 +45,26 @@ Playback: each song is a 30-second preview. Real songs play the Apple preview th
 
 - There is no database. The whole record (songs, design, words, notes) is JSON, compressed with `CompressionStream('deflate-raw')`, base64url encoded and stored in the URL after `#r=`. A typical link is a few hundred characters.
 - A sleeve photo is squeezed into the link too, which makes it very long. A future version should store photos separately (for example Vercel Blob) and keep only a reference in the link.
-- The draft being built is saved in the browser's `localStorage` under `sideb-press`.
+- New share links put the record after `?r=`, because some apps and link redirects drop the part after `#`. A record with a photo is too long for that and goes after `#r=`. Old `#r=` links still open. On load, `?r=` is moved into `#r=` and handled the same way.
+- Links are unpacked with `DecompressionStream` where the browser has it, and with a small built-in inflater (`inflateRaw`) where it doesn't (iPhones before iOS 16.4, some in-app browsers).
+- Links pressed on a Vercel branch preview point at that preview, which other people may not be able to open. The share dialog says so.
+- The draft being built is saved in the browser's `localStorage` under `sideb-press`. Every visit starts a new record. If the last one had songs or a name, the booth shows "Carry on with your last record". After pressing, "Make another record" starts fresh. Someone who receives a record gets "Make one back", which starts a new record addressed to the sender.
+- Sound: one button mutes everything, and the choice is remembered (`sideb-muted`). The outside ambience is a quiet low room tone, silent in the builder and the listening room. Keep it gentle.
 - When the site isn't on a real web host (for example a local file or the Claude preview), search falls back to a practice catalogue of made-up albums and songs generated in code.
 
 ## Style
 
-The look is **ambient and lifelike**, like a real record shop photographed at night: warm light from lanterns, shelf lights and lamps, soft shadows and glow, real materials (wood grain, granite, plaster, brushed metal), depth and falloff into darkness, and real album covers on every shelf. The reference photos were the Ultima Thule shop front, a backlit record wall with paper lanterns, a wooden listening unit with JBL-style speakers and a striped rug, and a silver turntable on a wooden credenza.
+The look is a **rich, sunlit illustration**, taken from the Ultima Thule shop illustration the owner supplied: flat shapes with no outlines, strong afternoon sunlight from the upper left, hard-edged cool shadows (`rgba(24,30,70,.3)`) that fall down and to the right, light shafts through windows, a fine grain over everything, lots of small real-world detail (plants, lamps, crates, posters, tiles), and real album covers wherever covers appear. Objects show their top and side faces so they read as solid, not flat.
 
-Everything is still drawn in code (CSS, SVG and canvas textures), so it won't be photographic. Get closer with lighting, texture and shading, not outlines.
+Scale matters: draw things at their real sizes relative to each other (see the shop interior notes above).
 
-Palette: warm walnut and oak browns, cream, faded black, the shop sign's yellow `#F1BD2B` and red `#B8232A`, burgundy `#7B2A2E` and mustard `#D9A33A` for the interface, warm light around `#FFD49A`.
+Palette: navy `#1F3A63` (lighter `#2E5488`, darker `#152A4A`), sign yellow `#EDB33A`, red `#B3252B`, orange walls `#D86A2C`, terracotta `#C4572B`, brick `#B9533A`, cream stone `#E8DCC1`, woods `#C98A4E` `#9A5A2C` `#6B3A1A`, plant greens `#2F6238` `#3E7A45`, burgundy `#7B2A2E` for interface buttons.
 
 Type: Archivo (grotesk), Archivo Narrow, IBM Plex Mono (labels and archival details), Caveat (handwriting), Yellowtail (sign-painter script), DM Serif Display.
 
 UI language for the builder: paper texture, thin borders and double rules, folder tabs, small boxed archival labels, square buttons.
 
-Avoid: thick black ink outlines, flat colour fills, hard offset shadows, halftone screens, made-up album covers where real ones fit, childish cartoon styling.
+Avoid: black ink outlines, soft glossy gradients standing in for lighting, objects at the wrong size for each other, made-up album covers where real ones fit, childish cartoon styling.
 
 ## Writing rules for anything on the site
 
