@@ -29,3 +29,12 @@ Follow the prompts, then run `npx vercel --prod` to publish.
 - Song search, cover art and 30-second previews come from Apple. There's no database.
 - Records are stored inside the link itself, so nothing needs saving on a server.
 - Photos on the sleeve make links very long. A later version could store photos with Vercel Blob so links stay short.
+
+## Short links for records (optional, recommended)
+Without this, a record is packed into the link itself, which makes long links. With it, links look like `yoursite/r/k3x9q2Ab`, show a preview card in WhatsApp and iMessage, and last 30 days.
+1. In Vercel, open the `side-b` project and go to the **Storage** tab.
+2. Choose **Create Database** (or **Browse Marketplace**), pick **Upstash**, then **Upstash for Redis**.
+3. Pick the **Free** plan and a region near your visitors (for India, Mumbai if offered), give it a name, and create it.
+4. When asked, connect it to the `side-b` project for all environments. This adds `KV_REST_API_URL` and `KV_REST_API_TOKEN` to the project.
+5. Redeploy (Deployments, the latest one, Redeploy). Press a record to check you get a `/r/` link.
+

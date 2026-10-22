@@ -457,7 +457,7 @@ button{cursor:pointer}
 <div id="share" role="dialog" aria-modal="true" aria-labelledby="shareH">
   <div class="sharecard">
     <h2 id="shareH">Pressed and wrapped.</h2>
-    <p>Send this link to them. The whole record lives inside it, so there's nothing to sign up for.</p>
+    <p id="shareNote">Send this link to them.</p>
     <div class="linkrow"><input id="shareLink" readonly aria-label="Your link"><button class="btn" id="copyBtn">Copy</button></div>
     <p class="warn" id="previewWarn" hidden>This is a test copy of the site, so other people may not be able to open this link. Press your record on the main site to share it.</p>
     <p class="warn" id="shareWarn" hidden>Your photo is packed into the link, which makes it very long. On the real site, photos would be stored separately so links stay short.</p>
@@ -1282,9 +1282,18 @@ async function decodeRec(str){ const bytes = unb64url(str.slice(1)); let out = b
   return JSON.parse(new TextDecoder().decode(out)); }
 // The record goes in the address after ?r=, which apps and link redirects keep. A record with a photo is too long
 // for that, so it goes after #r= instead. Both open the same way.
-async function shareLink(r){ const code = await encodeRec(r); return location.origin + location.pathname + (code.length < 6000 ? '?r=' : '#r=') + code; }
+// Pressing saves the record for 30 days and gives a short /r/ link with a preview card.
+// If storage isn't set up or doesn't answer, the record is packed into the link itself instead.
+async function shareLink(r){ const code = await encodeRec(r);
+  try { const t = drawSleeve(r, 300).toDataURL('image/jpeg', .62), ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+    const res = await fetch('/api/record', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ c:code, t, name:r.name, by:r.by, to:r.to }), signal:ctl.signal }); clearTimeout(to);
+    const data = await res.json(); if (res.ok && /^[A-Za-z0-9]{8}$/.test(data.id)) return { url: location.origin + '/r/' + data.id, short:true }; } catch(e){}
+  return { url: location.origin + (location.pathname.startsWith('/r/') ? '/' : location.pathname) + (code.length < 6000 ? '?r=' : '#r=') + code, short:false }; }
 let fromMaker = false;
-$('pressBtn').addEventListener('click', async () => { $('shareLink').value = await shareLink(draft); $('shareWarn').hidden = !draft.photo; $('previewWarn').hidden = !/-git-/.test(location.hostname); $('copyBtn').textContent = 'Copy'; $('share').classList.add('on'); });
+$('pressBtn').addEventListener('click', async () => { const btn = $('pressBtn'), label = btn.textContent; btn.disabled = true; btn.textContent = 'Pressing...';
+  const link = await shareLink(draft); btn.textContent = label; updateFoot(); $('shareLink').value = link.url;
+  $('shareNote').textContent = link.short ? 'Send this link to them. It lasts 30 days, so tell them not to leave it too long.' : "Send this link to them. The whole record lives inside it, so there's nothing to sign up for.";
+  $('shareWarn').hidden = link.short || !draft.photo; $('previewWarn').hidden = !/-git-/.test(location.hostname); $('copyBtn').textContent = 'Copy'; $('share').classList.add('on'); });
 $('copyBtn').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('shareLink').value); } catch(e){ $('shareLink').select(); } $('copyBtn').textContent = 'Copied'; });
 $('keepEditing').addEventListener('click', () => $('share').classList.remove('on'));
 $('newRecord').addEventListener('click', () => { $('share').classList.remove('on'); lastDraft = cleanRec(null); loadDraft(cleanRec(null)); saveDraft(); });
@@ -1900,6 +1909,11 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Walk up to the shop';
   sb.addEventListener('click', () => { ensureAudio(); $('soundBtn').hidden = false; go('outside'); });
   window.__example = async () => { location.hash = 'r=' + await encodeRec(EXAMPLE); };
+  const short = location.pathname.match(/^\/r\/([A-Za-z0-9]{8})\/?$/);
+  if (short){ try { const res = await fetch(`/api/record?id=${short[1]}&json`), data = await res.json();
+      if (res.ok && data.c) history.replaceState(null, '', location.pathname + '#r=' + data.c);
+      else setHintT(res.status === 404 ? 'This record has come off the shelf. Records last 30 days, so ask whoever sent it to press it again.' : "This record couldn't be fetched just now. Try again in a moment.", 12000); }
+    catch(e){ setHintT("This record couldn't be fetched just now. Try again in a moment.", 12000); } }
   const fromQuery = new URLSearchParams(location.search).get('r');
   if (fromQuery && !location.hash.startsWith('#r=')) history.replaceState(null, '', location.pathname + '#r=' + fromQuery);
   if (location.hash.startsWith('#r=')) route();

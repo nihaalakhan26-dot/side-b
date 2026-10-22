@@ -18,6 +18,8 @@ Ideas that were tried and dropped, and why:
 - `index.html` is the entire site: HTML, CSS and JavaScript in one file.
 - `api/search.js` is a Vercel function. The site calls `/api/search?q=...` and it asks Apple's iTunes Search API (country `IN`, songs only) and returns track name, artist, album, artwork, preview URL and an Apple Music link. Apple blocks direct browser calls, which is why this function exists.
 - `api/albums.js` is a Vercel function. It holds the list of real albums on the shop's shelves (Ariana Grande, Tame Impala, The Beatles, Mac Miller, Sade and many more), looks up their cover art on iTunes and returns it. The answer is cached for a week. To change what's on the shelves, edit the list at the top of that file.
+- `api/record.js` is a Vercel function for short links. Pressing a record saves it in Upstash Redis for 30 days and gives a link like `/r/k3x9q2Ab`. The function also serves that page with a link preview (who it's from, the record's name, a picture of the sleeve). It allows 20 records per person per hour.
+- `vercel.json` sends `/r/...` addresses to that function and bundles `index.html` with it.
 - `package.json` only declares Node 18 or newer. There's no build step.
 - `README.md` has deployment steps.
 
@@ -43,8 +45,9 @@ Playback: each song is a 30-second preview. Real songs play the Apple preview th
 
 ## Data and sharing
 
-- There is no database. The whole record (songs, design, words, notes) is JSON, compressed with `CompressionStream('deflate-raw')`, base64url encoded and stored in the URL after `#r=`. A typical link is a few hundred characters.
-- A sleeve photo is squeezed into the link too, which makes it very long. A future version should store photos separately (for example Vercel Blob) and keep only a reference in the link.
+- The record (songs, design, words, notes, photo) is JSON, compressed with `CompressionStream('deflate-raw')` and base64url encoded. That packed record is what gets stored or put in a link.
+- Short links: when Upstash is connected (Vercel sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`), pressing stores the packed record plus a small sleeve picture under `rec:<id>` with a 30-day expiry and shares `/r/<id>`. Each record is about 14 KB (more with a photo), so the free tier (256 MB) holds about 18,000 at a time. After 30 days the link shows "This record has come off the shelf".
+- If storage isn't set up or doesn't answer, pressing falls back to packing the record into the link itself (below), so sharing never breaks.
 - New share links put the record after `?r=`, because some apps and link redirects drop the part after `#`. A record with a photo is too long for that and goes after `#r=`. Old `#r=` links still open. On load, `?r=` is moved into `#r=` and handled the same way.
 - Links are unpacked with `DecompressionStream` where the browser has it, and with a small built-in inflater (`inflateRaw`) where it doesn't (iPhones before iOS 16.4, some in-app browsers).
 - Links pressed on a Vercel branch preview point at that preview, which other people may not be able to open. The share dialog says so.
@@ -73,7 +76,7 @@ Avoid: black ink outlines, soft glossy gradients standing in for lighting, objec
 
 ## Known limits and ideas for later
 
-- Photos in links (see above).
+- Records expire after 30 days. The free Upstash database is archived if nothing touches it for 14 days (restorable from the Upstash console).
 - The shelves show practice covers until `/api/albums` answers, and for good where there's no search function (a local file, the Claude preview).
 - A person browsing the record wall was in the reference images but left out until it can be drawn well.
 - Performance: the turntable redraws only when something changes. Keep it that way.
