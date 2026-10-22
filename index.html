@@ -248,7 +248,7 @@ button{cursor:pointer}
 
 /* ---------- listening room ---------- */
 #gift{overflow:auto;background:#d8ccb2;color:var(--ink)}
-.lroom{min-height:100%;display:grid;grid-template-rows:auto 1fr auto}
+.lroom{min-height:100%;display:grid;grid-template-rows:1fr}
 .lwall{position:relative;height:32vh;min-height:220px;background:linear-gradient(transparent 82%,rgba(40,24,10,.35)),radial-gradient(ellipse 30% 90% at 22% 0%,rgba(255,214,150,.45),transparent 70%),radial-gradient(ellipse 30% 90% at 78% 0%,rgba(255,214,150,.4),transparent 70%),linear-gradient(rgba(0,0,0,.1),transparent 40%,rgba(0,0,0,.18)),var(--plaster) 0 0/512px,#d4c6a8;overflow:hidden}
 .lwall::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.3;pointer-events:none}
 .print{position:absolute;left:25%;top:9%;height:74%;aspect-ratio:.8;transform:translateX(-50%);background:linear-gradient(#f6f1e6,#e9e1d0);box-shadow:0 0 0 5px #1c1916,0 0 0 6px #3a332c,4px 18px 26px rgba(0,0,0,.4)}
@@ -371,6 +371,17 @@ button{cursor:pointer}
 .ampface{background:#E4DCCB!important;box-shadow:inset 0 3px 0 #fff,inset 0 -3px 0 #c9c0ad!important}
 .knob i{background:radial-gradient(circle at 38% 34%,#fbfbf9 0 30%,#d8d4cb 31%)!important;box-shadow:5px 6px 0 rgba(24,30,70,.25)!important}
 .mug{box-shadow:10px 10px 0 rgba(24,30,70,.26)!important}
+/* the listening room is one view, straight down onto the table; sun from the upper left, shadows down and to the right */
+.ltop{min-height:100vh;align-content:center;overflow:hidden}
+.deco{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.deco .shaft{position:absolute;left:-10%;top:-30%;width:26%;height:160%;transform:rotate(28deg);background:rgba(255,236,200,.13)}
+.deco .shaft.s2{left:28%;width:10%;background:rgba(255,236,200,.09)}
+.stack{position:absolute;left:-40px;top:-60px;width:300px;height:300px;transform:rotate(-14deg)}
+.stack .cover{position:absolute;left:0;top:0;width:250px;height:250px;box-shadow:14px 16px 0 rgba(24,30,70,.28)}
+.stack .cover:first-child{left:46px;top:30px;transform:rotate(9deg)}
+.stack .lvinyl{position:absolute;left:96px;top:-6px;width:236px;box-shadow:12px 12px 0 rgba(24,30,70,.25)}
+.plantTop{position:absolute;right:-70px;top:-70px;width:300px;height:300px;filter:drop-shadow(18px 20px 0 rgba(24,30,70,.28))}
+@media (max-width:900px){.stack{transform:rotate(-14deg) scale(.6);transform-origin:0 0}.plantTop{width:190px;height:190px;right:-50px;top:-40px}}
 </style>
 </head>
 <body>
@@ -518,9 +529,8 @@ button{cursor:pointer}
 
 <section id="gift" class="scene" aria-label="Your record">
   <div class="lroom">
-    <div class="lwall"><span class="sun"></span><span class="sconce" style="left:9%"></span><div class="print"><i class="cover" data-slot="141"></i></div>
-      <div class="radio" aria-hidden="true"><i></i><b></b></div><div class="leaner" aria-hidden="true"><b class="lvinyl"></b><i class="cover" data-slot="140"></i></div><svg class="leaves" id="leaves" viewBox="0 0 150 300"></svg></div>
     <div class="ltop">
+      <div class="deco" aria-hidden="true"><div class="stack"><i class="cover" data-slot="141"></i><b class="lvinyl"></b><i class="cover" data-slot="140"></i></div><svg class="plantTop" id="plantTop" viewBox="-110 -110 220 220"></svg><span class="shaft"></span><span class="shaft s2"></span></div>
       <div class="lleft"><button class="grec" id="gRec" aria-label="Your record"></button><div class="dcard"><div class="to" id="gTo"></div><div class="msg">I made you a record.</div><div class="from" id="gFrom"></div></div></div>
       <div class="lmid"><svg id="deckSvg" viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg" aria-label="Turntable"></svg><div class="nowtag" id="nowTag"></div></div>
       <span class="mug" aria-hidden="true"></span>
@@ -537,7 +547,6 @@ button{cursor:pointer}
         </div>
       </div>
     </div>
-    <div class="lfront"></div>
   </div>
   <div id="bag" role="button" tabindex="0" aria-label="Open your record">
     <div class="bagbody"><div class="peek" id="bagPeek"></div><div class="fold"></div>
@@ -1709,8 +1718,11 @@ function buildGift(r){
 $('gRec').addEventListener('click', () => openFocus(recv, $('gRec')));
 function openBag(){ if ($('bag').classList.contains('open')) return; ensureAudio(); sfx.slide(); $('bag').classList.add('open'); setTimeout(() => setHintT('Pick up the record.'), 1200); }
 $('bag').addEventListener('click', openBag); $('bag').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openBag(); } });
-function leavesSVG(){ const R = mulberry32(5); let s = ''; for (let i=0;i<14;i++){ const x = 40 + R()*80, y = 40 + R()*220, a = -60 + R()*120, l = 30 + R()*26;
-  s += `<g transform="translate(${x} ${y}) rotate(${a.toFixed(0)})"><ellipse cx="0" cy="-${l/2}" rx="${l*.3}" ry="${l/2}" fill="${['#2a5230','#356b3a','#1f3d24'][i%3]}"/></g>`; } return s + `<path d="M80 300 C 78 200, 90 120, 70 40" stroke="#3b2a18" stroke-width="3" fill="none"/>`; }
+// a plant in a pot, seen from straight above, for the corner of the table
+function plantTopSVG(){ const R = mulberry32(5); let s = `<circle r="46" fill="#C4572B"/><circle r="40" fill="#6B3A1A"/><circle r="40" fill="url(#soilG)" opacity=".4"/>`;
+  for (let i=0;i<11;i++){ const a = i/11*Math.PI*2 + R()*.3, len = 62 + R()*36, w = 22 + R()*10, x = Math.cos(a)*len*.55, y = Math.sin(a)*len*.55, deg = a*180/Math.PI + 90;
+    s += `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${deg.toFixed(0)})"><ellipse rx="${w*.55}" ry="${len*.5}" fill="${i % 2 ? '#3E7A45' : '#2F6238'}"/><path d="M${-w*.55} 0 A${w*.55} ${len*.5} 0 0 1 0 ${-len*.5} L0 0 Z" fill="#5E9A52" opacity=".55"/><path d="M0 ${-len*.48} L0 ${len*.48}" stroke="rgba(255,255,255,.25)" stroke-width="1.6"/></g>`; }
+  return `<defs><radialGradient id="soilG"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient></defs>` + s; }
 
 /* focus */
 const focus = { open:false, freed:false, flipped:false, rec:null, origin:null, S:0, rot:0, vx:0, vState:'in', left:0, top:0, closing:false };
@@ -2023,7 +2035,7 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   $('doorHit').setAttribute('tabindex','0'); $('doorHit').setAttribute('role','button'); $('doorHit').setAttribute('aria-label','Go inside');
   $('doorHit').addEventListener('click', enterShop); $('doorHit').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); enterShop(); } });
   buildShop(); fillDoorway(); buildDeck(); syncDeckUI(); setPitch(0);
-  $('leaves').innerHTML = leavesSVG(); paintSlots($('gift'));
+  $('plantTop').innerHTML = plantTopSVG(); paintSlots($('gift'));
   fillFields(); syncControls(); renderSides(); refreshPreview();
   if (LIVE_HOST){ $('results').innerHTML = '<li><span class="tx"><span>Search for any song to start your record.</span></span></li>'; $('srcNote').textContent = 'Searches the Apple Music catalogue.'; }
   else { renderResults(SONGS.filter((_,i) => i % 7 === 0).slice(0, 24)); $('srcNote').textContent = 'Browse, or search for something specific.'; }
