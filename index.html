@@ -42,7 +42,8 @@ button{cursor:pointer}
 #intro h1{margin:0;font-family:'Yellowtail',cursive;font-weight:400;font-size:clamp(4rem,12vw,8rem);color:var(--mustard);line-height:1}
 #intro .sub{margin:.3rem 0 0;font:600 .9rem/1 var(--mono);letter-spacing:.3em;color:#e98a5a}
 #intro p{color:#cdb794;margin:1.4rem auto 1.8rem;max-width:36ch;line-height:1.5}
-#outside{background:#2A4D7E;overflow:hidden}
+#outside{background:#1F3A63;overflow:hidden}
+#outsideBg{position:absolute;inset:-40px;background:center/cover no-repeat;filter:blur(22px) brightness(.75)}
 #outsideInner{position:absolute;inset:0;transition:transform 1s cubic-bezier(.6,0,.8,.4)}
 #outsideInner.zoom{transform:scale(3.4)}
 #facade{position:absolute;inset:0;width:100%;height:100%}
@@ -123,7 +124,38 @@ button{cursor:pointer}
 .sback li{display:grid;grid-template-columns:2.1em 1fr;margin-bottom:.35em;line-height:1.2}
 .sback li em{font:600 .78em/1.4 var(--mono);font-style:normal;color:#8a735f}
 .sback li span{display:block;color:#8a735f;font-size:.85em}
+.sback .fine{display:flex;align-items:flex-end;gap:.8em;margin-top:.6em}
+.sback .fine p{flex:1;margin:0;font:400 .52em/1.35 var(--mono);color:#7d6a59}
+.sback .hsm{flex:none;display:grid;place-items:center;width:3.6em;height:3.6em;border-radius:50%;border:1.5px solid #2A1E17;font:600 .42em/1.05 var(--mono);text-align:center;letter-spacing:.04em}
+.sback .hsm b{display:block;font-weight:900;font-size:1.1em}
+.sback .barcode{flex:none;width:6.4em;height:auto;display:block}
 .sback .credits{margin-top:auto;padding-top:.8em;border-top:1px solid rgba(42,30,23,.25);font:500 .74em/1.5 var(--mono);color:#6b5646;display:flex;justify-content:space-between;gap:1em}
+/* sleeve tools */
+.hintline{margin:0 0 8px;font:500 .72rem/1.4 var(--mono);color:var(--ink2)}
+.textlist{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.textlist button{border:0;background:#efe9dc;border-radius:3px;padding:.35rem .6rem;font:600 .72rem/1 var(--mono);box-shadow:0 0 0 1px var(--line);max-width:14em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.textlist button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.textpad{display:grid;gap:10px;margin-top:10px;padding:12px;background:#fffdf7;box-shadow:0 0 0 1px var(--line)}
+.textpad textarea,.hypepad input{width:100%;border:0;padding:.55rem .7rem;background:#fff;box-shadow:0 0 0 1.5px var(--line);border-radius:3px;font:500 .9rem/1.3 'Archivo',sans-serif;resize:vertical}
+.fonts{display:flex;gap:6px;flex-wrap:wrap}
+.fonts button{border:0;background:#efe9dc;border-radius:3px;padding:.35rem .6rem;font-size:1rem;box-shadow:0 0 0 1px var(--line)}
+.fonts button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+.slide{display:flex;align-items:center;gap:10px;font:600 .72rem/1 var(--mono);letter-spacing:.08em}
+.slide input{flex:1}
+.hypepad{display:grid;gap:8px;margin-top:12px}
+#drawer{position:fixed;inset:0;z-index:85;display:none;place-items:center;background:rgba(10,6,3,.78);padding:16px}
+#drawer.on{display:grid}
+.drawcard{background:var(--paper);padding:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);display:grid;gap:12px;max-width:100%}
+.drawhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:600 .8rem/1.3 var(--mono)}
+.drawhead b{font:700 1.4rem/1 'Caveat',cursive}
+.drawstage{position:relative;width:min(84vw,62vh,600px);aspect-ratio:1;margin:0 auto;box-shadow:0 0 0 1px var(--line)}
+.drawstage img,.drawstage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.drawstage canvas{touch-action:none;cursor:crosshair}
+.drawtools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sizes{display:flex;gap:6px}
+.sizes button{width:34px;height:34px;border:0;border-radius:3px;background:#efe9dc;box-shadow:0 0 0 1px var(--line);display:grid;place-items:center}
+.sizes button i{display:block;border-radius:50%;background:var(--ink)}
+.sizes button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
 /* deck panel */
 .deck{position:relative;display:flex;flex-direction:column;min-height:0;background:var(--paper);border-left:1px solid var(--faded)}
 .deck::before{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.22;pointer-events:none}
@@ -355,7 +387,7 @@ button{cursor:pointer}
 </section>
 
 <section id="outside" class="scene" aria-label="Outside the shop">
-  <div id="outsideInner"></div>
+  <div id="outsideBg"></div><div id="outsideInner"></div>
   <p class="caption">The door's open. Tap it to go in.</p>
 </section>
 
@@ -404,15 +436,30 @@ button{cursor:pointer}
         <!-- SLEEVE -->
         <section class="step" id="st-sleeve">
           <p class="kicker">02 / SLEEVE</p><h2>Design the sleeve</h2>
-          <p class="lede">Start from a photo of your own, or build it from colour, pattern and type. <button class="btn ghost sm" id="surprise">Surprise me</button></p>
-          <div class="sec"><h3>Your photo</h3>
-            <label class="drop" id="drop"><span class="ph" id="photoPh"></span><span><b id="photoTitle">Add a photo for the cover</b><span id="photoSub">Square works best. It stays on your device until you press the record.</span></span><input type="file" id="photoIn" accept="image/*"></label>
+          <p class="lede">Start from any picture, give it a filter, draw on it, and add your own words and the small print of a real record. <button class="btn ghost sm" id="surprise">Surprise me</button></p>
+          <div class="sec"><h3>Picture</h3>
+            <label class="drop" id="drop"><span class="ph" id="photoPh"></span><span><b id="photoTitle">Add a picture for the cover</b><span id="photoSub">A photo, a drawing, a scan, any art. Square works best.</span></span><input type="file" id="photoIn" accept="image/*"></label>
             <div class="pad" id="photoModes" style="margin-top:10px;display:none"></div>
           </div>
-          <div class="sec"><h3>Colourway</h3><div class="chipsw" id="swWay"></div></div>
-          <div class="sec"><h3>Artwork</h3><div class="tiles" id="tPat"></div></div>
+          <div class="sec" id="filtSec"><h3>Filter</h3><div class="tiles" id="tFilt"></div></div>
+          <div class="sec"><h3>Background colour</h3><div class="chipsw" id="swWay"></div></div>
+          <div class="sec"><h3>Draw</h3><p class="hintline">Draw on the empty sleeve or over your picture.</p>
+            <div class="pad"><button class="btn sm" id="drawBtn">Draw on the sleeve</button><button class="btn ghost sm" id="drawWipe">Clear the drawing</button></div></div>
+          <div class="sec"><h3>Words on the cover</h3>
+            <div class="pad"><button class="btn sm" id="addText">Add text</button><span class="hintline" id="textHint"></span></div>
+            <div class="textlist" id="textList"></div>
+            <div class="textpad" id="textPad" style="display:none">
+              <textarea id="textIn" rows="2" maxlength="80" placeholder="Type something for the cover."></textarea>
+              <div class="fonts" id="textFonts"></div>
+              <div class="dots" id="textInks"></div>
+              <label class="slide">Size <input type="range" id="textSize" min="2" max="30" step=".5"></label>
+              <label class="slide">Tilt <input type="range" id="textRot" min="-30" max="30" step="1"></label>
+              <button class="btn ghost sm" id="delText">Remove this text</button>
+            </div></div>
           <div class="sec"><h3>Title style</h3><div class="tiles" id="tType"></div></div>
-          <div class="sec"><h3>Finishing touches</h3><div class="toggles" id="extras"></div></div>
+          <div class="sec"><h3>Finishing touches</h3><div class="toggles" id="extras"></div>
+            <div class="hypepad" id="hypePad" style="display:none"><p class="hintline">What the hype sticker says:</p>
+              <input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
         </section>
         <!-- VINYL -->
         <section class="step" id="st-vinyl">
@@ -503,6 +550,15 @@ button{cursor:pointer}
   <div id="fo">
     <div id="fVinyl" class="vinyl" tabindex="0" role="button" aria-label="Pull the record out of the sleeve"></div>
     <div id="fSleeve" tabindex="0" role="button" aria-label="Turn the sleeve over"><div class="sf front"><div class="notes" id="fnFront"></div></div><div class="sf back sback"></div></div>
+  </div>
+</div>
+<div id="drawer" role="dialog" aria-modal="true" aria-label="Draw on the sleeve">
+  <div class="drawcard">
+    <div class="drawhead"><b>Draw on the sleeve</b><span id="drawTip">Use your finger or the mouse.</span></div>
+    <div class="drawstage"><img id="drawBase" alt=""><canvas id="drawCv"></canvas></div>
+    <div class="drawtools"><div class="dots" id="drawInks"></div><div class="sizes" id="drawSizes"></div>
+      <button class="tog" id="drawErase" aria-pressed="false"><i></i>Eraser</button><span style="flex:1"></span>
+      <button class="btn ghost sm" id="drawUndo">Undo</button><button class="btn ghost sm" id="drawClear">Clear</button><button class="btn or" id="drawDone">Done</button></div>
   </div>
 </div>
 <button id="putTag">Put it on the turntable</button>
@@ -708,122 +764,36 @@ async function loadShelf(){
 }
 
 /* ============================================================
-   OUTSIDE: the shop front on a sunny afternoon, after the Ultima Thule illustration.
-   Flat shapes, light from the upper left, hard cool shadows, a grain over everything.
-   Scale: 1.5px to the centimetre (the door is 85cm wide, a record cover 31cm).
+   OUTSIDE: the owner's illustration of the shop front (img/storefront.webp),
+   with the sign repainted to say Side B and the door cut out so it can swing open.
+   Coordinates are the picture's own pixels (1536 by 1024).
    ============================================================ */
-const SHADE = 'rgba(24,30,70,.30)';
+const asset = p => (/^https?:$/.test(location.protocol) ? '/' : '') + p;
+const DOOR = { x:696, y:484, w:164, h:376, hinge:860 };
 function facadeSVG(){
-  const cover = (k, x, y, w, rot=0) => `<g transform="rotate(${rot} ${x+w/2} ${y+w})"><rect x="${x+2}" y="${y+2}" width="${w}" height="${w}" fill="rgba(60,20,0,.35)"/><image data-slot="${k}" x="${x}" y="${y}" width="${w}" height="${w}" preserveAspectRatio="xMidYMid slice"/><rect x="${x}" y="${y}" width="${w}" height="${w*.45}" fill="rgba(255,240,210,.12)"/></g>`;
-  const disc = (cx, cy, r, label='#E2622B') => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#17171c"/><circle cx="${cx}" cy="${cy}" r="${r*.78}" fill="none" stroke="#2c2c34" stroke-width="${r*.05}"/><circle cx="${cx}" cy="${cy}" r="${r*.55}" fill="none" stroke="#2c2c34" stroke-width="${r*.04}"/><circle cx="${cx}" cy="${cy}" r="${r*.3}" fill="${label}"/><circle cx="${cx}" cy="${cy}" r="${r*.05}" fill="#f3e6cc"/><path d="M${cx-r*.7} ${cy-r*.45} A${r*.82} ${r*.82} 0 0 1 ${cx-r*.2} ${cy-r*.8}" stroke="rgba(255,255,255,.22)" stroke-width="${r*.08}" fill="none"/>`;
-  const plant = (x, y, s, flip=1) => { let p = `<g transform="translate(${x} ${y}) scale(${s*flip} ${s})"><path d="M-14 0 L14 0 L11 24 L-11 24 Z" fill="#C4572B"/><path d="M-14 0 L14 0 L14 4 L-14 4 Z" fill="#A9461F"/>`;
-    [[-20,-30,-40],[0,-44,0],[18,-28,40],[-8,-58,-15],[12,-54,20],[-26,-12,-70],[26,-12,70]].forEach(([lx,ly,a],i) => p += `<path d="M0 0 Q${lx*.4} ${ly*.5} ${lx} ${ly}" stroke="#2F5A35" stroke-width="2" fill="none"/><ellipse cx="${lx}" cy="${ly}" rx="9" ry="16" transform="rotate(${a} ${lx} ${ly})" fill="${i % 2 ? '#3E7A45' : '#2F6238'}"/><path d="M${lx} ${ly-12} L${lx} ${ly+12}" transform="rotate(${a} ${lx} ${ly})" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>`);
-    return p + `</g>`; };
-  // the left window: orange room, paper lantern, framed record, a grid of covers, a plant, a bin of records at the front
-  const winL = (x, y, w, h) => `<clipPath id="cwL"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath><g clip-path="url(#cwL)">
-    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#D86A2C"/><rect x="${x}" y="${y}" width="${w*.34}" height="${h}" fill="#C25822"/><rect x="${x}" y="${y+h*.72}" width="${w}" height="${h*.28}" fill="#9C4219"/>
-    <rect x="${x+12}" y="${y+56}" width="46" height="58" fill="#F1E3C4"/>${disc(x+35, y+85, 18)}
-    <line x1="${x+92}" y1="${y}" x2="${x+92}" y2="${y+20}" stroke="#3a2a1a" stroke-width="1.2"/><circle cx="${x+92}" cy="${y+40}" r="21" fill="#F6ECD6"/>${[-14,-7,0,7,14].map(d => `<path d="M${x+92-Math.sqrt(441-d*d)} ${y+40+d} H${x+92+Math.sqrt(441-d*d)}" stroke="#E2CFA8" stroke-width="1"/>`).join('')}<circle cx="${x+92}" cy="${y+40}" r="21" fill="none" stroke="#fffaf0" stroke-width="2" opacity=".6"/>
-    ${[0,1,2].map(c => [0,1].map(r => cover(r*3+c, x+68+c*48, y+74+r*48, 45)).join('')).join('')}
-    ${plant(x+30, y+h-60, 1.1)}
-    <rect x="${x+40}" y="${y+h-40}" width="${w-48}" height="40" fill="#7A3414"/>
-    ${[0,1,2,3].map(k => cover(6+k, x+46+k*40, y+h-82, 44, -6+k*3)).join('')}
-    <rect x="${x+40}" y="${y+h-44}" width="${w-48}" height="44" fill="#B44E1D"/><rect x="${x+40}" y="${y+h-44}" width="${w-48}" height="4" fill="#E08A4E"/>
-    <polygon points="${x},${y} ${x+w*.38},${y} ${x+w*.06},${y+h} ${x},${y+h}" fill="rgba(255,255,255,.10)"/><polygon points="${x+w*.5},${y} ${x+w*.62},${y} ${x+w*.3},${y+h} ${x+w*.18},${y+h}" fill="rgba(255,255,255,.07)"/>
-    <polygon points="${x+w*.55},${y} ${x+w},${y} ${x+w},${y+h*.55}" fill="${SHADE}"/></g>`;
-  // the right window: shelves of records, a framed print, a speaker, a plant, covers on a ledge
-  const winR = (x, y, w, h) => `<clipPath id="cwR"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath><g clip-path="url(#cwR)">
-    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#E07A35"/><rect x="${x+w*.62}" y="${y}" width="${w*.38}" height="${h}" fill="#C7612A"/><rect x="${x}" y="${y+h*.72}" width="${w}" height="${h*.28}" fill="#9C4219"/>
-    <rect x="${x+w-62}" y="${y}" width="62" height="${h*.72}" fill="#8A4A22"/>${[0,1,2,3].map(r => `<rect x="${x+w-60}" y="${y+18+r*44}" width="58" height="4" fill="#5E3014"/>${Array.from({length:22}, (_,i) => `<rect x="${x+w-58+i*2.5}" y="${y+22+r*44-(36+(i*7)%5)}" width="2" height="${36+(i*7)%5}" fill="${['#1F3A63','#E9DCC0','#B3252B','#EDB33A','#2a2a2a','#6E8B5A'][(i*5+r)%6]}"/>`).join('')}`).join('')}
-    <rect x="${x+14}" y="${y+28}" width="58" height="70" fill="#F4EAD6"/><rect x="${x+20}" y="${y+34}" width="46" height="46" fill="#3F6FA6"/>${disc(x+43, y+57, 15, '#EDB33A')}
-    ${cover(12, x+84, y+28, 46)}${cover(13, x+84, y+80, 46)}
-    <rect x="${x+20}" y="${y+108}" width="36" height="48" fill="#5A341A"/><circle cx="${x+38}" cy="${y+122}" r="7" fill="#22201e"/><circle cx="${x+38}" cy="${y+122}" r="2.5" fill="#d8cdb6"/><circle cx="${x+38}" cy="${y+142}" r="11" fill="#22201e"/><circle cx="${x+38}" cy="${y+142}" r="7" fill="#E9DCC0"/><circle cx="${x+38}" cy="${y+142}" r="2" fill="#22201e"/>
-    ${plant(x+w-80, y+h-70, 1, -1)}
-    <rect x="${x+8}" y="${y+h-40}" width="${w-16}" height="40" fill="#7A3414"/>
-    ${[0,1,2,3].map(k => cover(14+k, x+12+k*40, y+h-82, 44, -5+k*3)).join('')}
-    <rect x="${x+8}" y="${y+h-44}" width="${w-16}" height="44" fill="#B44E1D"/><rect x="${x+8}" y="${y+h-44}" width="${w-16}" height="4" fill="#E08A4E"/>
-    <polygon points="${x},${y} ${x+w*.3},${y} ${x+w*.02},${y+h} ${x},${y+h}" fill="rgba(255,255,255,.10)"/><polygon points="${x+w*.42},${y} ${x+w*.52},${y} ${x+w*.24},${y+h} ${x+w*.14},${y+h}" fill="rgba(255,255,255,.07)"/>
-    <polygon points="${x+w*.5},${y} ${x+w},${y} ${x+w},${y+h*.7}" fill="${SHADE}"/></g>`;
-  const bricks = (() => { let b = ''; for (let r=0;r<70;r++){ const y = -1400 + r*30; b += `<rect x="-1300" y="${y+28}" width="1505" height="2" fill="#93402C"/>`;
-    for (let c=0;c<30;c++){ const x = -1300 + c*60 + (r%2 ? 30 : 0); b += `<rect x="${x}" y="${y}" width="2" height="28" fill="#93402C"/>`; if ((r*7 + c*3) % 11 === 0) b += `<rect x="${x+3}" y="${y+2}" width="54" height="24" fill="#C76246"/>`; } } return b; })();
-  const stone = (() => { let b = ''; for (let r=0;r<50;r++){ const y = -1400 + r*44; b += `<rect x="815" y="${y+40}" width="1500" height="4" fill="#CDBF9F"/><rect x="815" y="${y+44}" width="1500" height="1.5" fill="#F4EBD6"/>`;
-    for (let c=0;c<14;c++){ const x = 815 + c*110 + (r%2 ? 55 : 0); b += `<rect x="${x}" y="${y}" width="2.5" height="40" fill="#D3C6A8"/>`; } } return b; })();
-  let s = `<svg id="facade" viewBox="0 0 1000 720" preserveAspectRatio="xMidYMax meet" xmlns="${NS}">
-  <defs><pattern id="grainP" width="256" height="256" patternUnits="userSpaceOnUse"><image href="${noiseCanvas.toDataURL()}" width="256" height="256"/></pattern></defs>
-  <!-- left: red brick, a copper downpipe and a potted tree -->
-  <rect x="-1300" y="-1400" width="1505" height="2060" fill="#B9533A"/>${bricks}
-  <rect x="-1300" y="-1400" width="1505" height="2060" fill="url(#grainP)" opacity=".18" style="mix-blend-mode:multiply"/>
-  <rect x="150" y="-1400" width="10" height="2050" fill="#C8683A"/><rect x="157" y="-1400" width="3" height="2050" fill="#9E4A26"/><rect x="152" y="-1400" width="2" height="2050" fill="#E89463"/>
-  ${[-1100,-700,-300,100,500].map(y => `<rect x="146" y="${y}" width="18" height="7" fill="#9E4A26"/>`).join('')}<path d="M150 640 q0 14 -14 14 h-8" stroke="#C8683A" stroke-width="10" fill="none"/>
-  <!-- right: cream stone, lit by the sun -->
-  <rect x="815" y="-1400" width="1500" height="2060" fill="#E8DCC1"/>${stone}
-  <rect x="815" y="-1400" width="1500" height="2060" fill="url(#grainP)" opacity=".14" style="mix-blend-mode:multiply"/>
-  <!-- above the shop: the building's upper floor -->
-  <rect x="190" y="-1400" width="625" height="1420" fill="#2A4D7E"/><rect x="190" y="-1400" width="625" height="1420" fill="url(#grainP)" opacity=".18" style="mix-blend-mode:multiply"/>
-  ${[260,580].map(x => [-420,-160].map(y => `<rect x="${x-10}" y="${y-10}" width="170" height="210" fill="#E8DCC1"/><rect x="${x}" y="${y}" width="150" height="190" fill="#14243F"/><rect x="${x}" y="${y+92}" width="150" height="6" fill="#E8DCC1"/><rect x="${x+72}" y="${y}" width="6" height="190" fill="#E8DCC1"/><polygon points="${x},${y+120} ${x+70},${y} ${x+100},${y} ${x},${y+170}" fill="rgba(255,255,255,.08)"/><rect x="${x-18}" y="${y+198}" width="186" height="10" fill="#D3C6A8"/>`).join('')).join('')}
-  <!-- shop front: navy, with a cornice and three lamps -->
-  <rect x="172" y="10" width="656" height="50" fill="#1F3A63"/><rect x="172" y="10" width="656" height="8" fill="#2E5488"/><rect x="172" y="54" width="656" height="6" fill="#152A4A"/>
-  <rect x="182" y="60" width="636" height="590" fill="#1F3A63"/><rect x="182" y="60" width="28" height="590" fill="#2A4D7E"/><rect x="790" y="60" width="28" height="590" fill="#2A4D7E"/><rect x="814" y="60" width="4" height="590" fill="#152A4A"/>
-  <rect x="204" y="78" width="592" height="164" fill="#152A4A"/>
-  <rect x="208" y="82" width="104" height="156" fill="#B3252B"/><rect x="688" y="82" width="104" height="156" fill="#B3252B"/><rect x="314" y="82" width="372" height="156" fill="#EDB33A"/>
-  <g font-family="Archivo,sans-serif" font-weight="900" fill="#EDB33A" font-size="16" letter-spacing=".2">
-    ${['NEW &amp;','SECOND','HAND','LPs','TAPES','ETC.'].map((t,i) => `<text x="218" y="${106+i*21}">${t}</text>`).join('')}
-    ${['HOME','OF THE','PRESSING','BOOTH','&amp;','RECORDS','BY POST'].map((t,i) => `<text x="782" y="${104+i*19}" text-anchor="end">${t}</text>`).join('')}
+  const RED = '#AE1C22', YEL = '#F9B83A', src = asset('img/storefront.webp');
+  return `<svg id="facade" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" xmlns="${NS}">
+  <defs><clipPath id="doorClip"><rect x="${DOOR.x}" y="${DOOR.y}" width="${DOOR.w}" height="${DOOR.h}"/></clipPath>
+    <pattern id="grainP" width="256" height="256" patternUnits="userSpaceOnUse"><image href="${noiseCanvas.toDataURL()}" width="256" height="256"/></pattern></defs>
+  <image href="${src}" width="1536" height="1024"/>
+  <!-- the sign, repainted: centre, right panel and the phone number corner -->
+  <rect x="464" y="106" width="652" height="254" fill="${YEL}"/>
+  <text x="484" y="156" font-family="Archivo,sans-serif" font-weight="900" font-size="44" fill="${RED}">THE</text>
+  <text x="770" y="306" text-anchor="middle" font-family="Yellowtail,cursive" font-size="210" fill="${RED}" transform="rotate(-8 770 260)">Side B</text>
+  <text x="1104" y="316" text-anchor="end" font-family="Archivo,sans-serif" font-weight="900" font-size="42" fill="${RED}">RECORD</text>
+  <text x="1104" y="354" text-anchor="end" font-family="Archivo,sans-serif" font-weight="900" font-size="42" fill="${RED}">SHOP</text>
+  <rect x="1118" y="106" width="126" height="254" fill="${RED}"/>
+  <g font-family="Archivo,sans-serif" font-weight="900" font-size="23" fill="${YEL}" text-anchor="middle">
+    ${[['HOME',140],['OF THE',166],['PRESSING',192],['BOOTH',218],['&amp;',256],['RECORDS',282],['BY POST',308]].map(([t,y]) => `<text x="1181" y="${y}"${t.length > 6 ? ' textLength="112" lengthAdjust="spacingAndGlyphs"' : ''}>${t}</text>`).join('')}
   </g>
-  <text x="326" y="122" font-family="Archivo,sans-serif" font-weight="900" font-size="30" fill="#B3252B">THE</text>
-  <text x="500" y="200" text-anchor="middle" font-family="Yellowtail,cursive" font-size="118" fill="#B3252B" transform="rotate(-7 500 180)">Side B</text>
-  <text x="676" y="206" text-anchor="end" font-family="Archivo,sans-serif" font-weight="900" font-size="26" fill="#B3252B">RECORD</text><text x="676" y="232" text-anchor="end" font-family="Archivo,sans-serif" font-weight="900" font-size="26" fill="#B3252B">SHOP</text>
-  <rect x="204" y="78" width="592" height="164" fill="url(#grainP)" opacity=".22" style="mix-blend-mode:multiply"/>
-  <polygon points="204,78 796,78 796,84 204,100" fill="${SHADE}"/>
-  ${[300,500,700].map(x => `<rect x="${x-2}" y="18" width="4" height="22" fill="#14161c"/><path d="M${x-24} 62 Q${x-24} 38 ${x} 38 Q${x+24} 38 ${x+24} 62 Z" fill="#232a3a"/><path d="M${x-22} 60 Q${x-22} 42 ${x-6} 40" stroke="#4a5470" stroke-width="3" fill="none"/><ellipse cx="${x}" cy="62" rx="24" ry="4" fill="#F7E8C0"/>`).join('')}
-  <rect x="204" y="242" width="592" height="14" fill="#152A4A"/>
-  <!-- windows -->
-  <rect x="210" y="256" width="226" height="306" fill="#152A4A"/><rect x="564" y="256" width="226" height="306" fill="#152A4A"/>
-  ${winL(218, 264, 210, 290)}${winR(572, 264, 210, 290)}
-  <rect x="318" y="264" width="6" height="290" fill="#1F3A63"/><rect x="676" y="264" width="6" height="290" fill="#1F3A63"/>
-  <rect x="204" y="556" width="238" height="10" fill="#2E5488"/><rect x="558" y="556" width="238" height="10" fill="#2E5488"/>
-  ${[[210,566],[564,566]].map(([x,y]) => `<rect x="${x}" y="${y}" width="226" height="56" fill="#233F69"/>${Array.from({length:12}, (_,i) => `<rect x="${x+i*19}" y="${y}" width="1.5" height="56" fill="#183052"/>`).join('')}${[0,1,2].map(r => `<rect x="${x}" y="${y+r*19}" width="226" height="1.5" fill="#183052"/>`).join('')}<rect x="${x}" y="${y}" width="226" height="56" fill="url(#grainP)" opacity=".2" style="mix-blend-mode:multiply"/>`).join('')}
-  <!-- the door, set back in a little tiled lobby -->
-  <rect x="436" y="256" width="128" height="366" fill="#132744"/>
-  <polygon points="436,256 452,270 452,612 436,622" fill="#0f203a"/><polygon points="564,256 548,270 548,612 564,622" fill="#1a3358"/>
-  <rect x="452" y="262" width="96" height="20" fill="#1F3A63"/><path d="M486 282 q14 -14 28 0 z" fill="#C4402A"/><ellipse cx="500" cy="282" rx="14" ry="3" fill="#FFE2A6"/>
-  <g id="doorPanel">
-    <rect x="456" y="290" width="88" height="322" fill="#D2512C"/><rect x="456" y="290" width="6" height="322" fill="#E66C40"/><rect x="538" y="290" width="6" height="322" fill="#A93C1E"/>
-    <rect x="468" y="302" width="64" height="168" fill="#A93C1E"/><rect x="471" y="305" width="58" height="162" fill="#17253c"/><rect x="471" y="305" width="58" height="60" fill="#22344f"/>
-    <polygon points="471,410 506,305 520,305 485,467 471,467" fill="rgba(255,255,255,.08)"/>
-    <line x1="490" y1="365" x2="500" y2="352" stroke="#c9b48a" stroke-width="1"/><line x1="510" y1="365" x2="500" y2="352" stroke="#c9b48a" stroke-width="1"/>
-    <rect x="478" y="365" width="44" height="26" fill="#F4EEE0"/><text x="500" y="383" text-anchor="middle" font-family="Caveat,cursive" font-weight="700" font-size="16" fill="#1d1d1d">Open</text>
-    <rect x="468" y="486" width="64" height="106" fill="#C2482A"/><rect x="474" y="492" width="52" height="94" fill="none" stroke="#A93C1E" stroke-width="2"/>
-    <rect x="480" y="530" width="40" height="11" fill="#D9A33A"/><rect x="483" y="533" width="34" height="4" fill="#5a3a12"/>
-    <rect x="533" y="420" width="5" height="24" rx="2" fill="#D9A33A"/>
-  </g>
-  <polygon points="440,622 560,622 572,634 428,634" fill="#EDE6D6"/>${Array.from({length:12}, (_,i) => `<rect x="${432+i*12}" y="${i%2 ? 624 : 629}" width="6" height="5" fill="#1F3A63"/>`).join('')}
-  <!-- pavement, kerb, road -->
-  <rect x="-1300" y="634" width="3600" height="62" fill="#D8D1C1"/>${Array.from({length:40}, (_,i) => `<rect x="${-1300+i*95}" y="634" width="2" height="62" fill="#BDB5A3"/>`).join('')}<rect x="-1300" y="664" width="3600" height="1.5" fill="#BDB5A3"/>
-  <rect x="-1300" y="696" width="3600" height="10" fill="#C2BBAB"/><rect x="-1300" y="696" width="3600" height="2" fill="#EAE4D6"/>
-  <rect x="-1300" y="706" width="3600" height="200" fill="#34363c"/><rect x="-1300" y="710" width="3600" height="3" fill="#E2B23A"/><rect x="-1300" y="716" width="3600" height="3" fill="#E2B23A"/>
-  <rect x="-1300" y="634" width="3600" height="90" fill="url(#grainP)" opacity=".25" style="mix-blend-mode:multiply"/>
-  <!-- potted tree on the left -->
-  <g transform="translate(70 0)">
-    <path d="M-40 560 L40 560 L32 650 L-32 650 Z" fill="#C4572B"/><path d="M-44 556 L44 556 L44 568 L-44 568 Z" fill="#A9461F"/><path d="M10 568 L32 568 L28 650 L14 650 Z" fill="${SHADE}"/>
-    <path d="M0 560 C2 500 -6 460 4 400" stroke="#5A3A22" stroke-width="7" fill="none"/><path d="M2 470 C20 450 30 440 40 420" stroke="#5A3A22" stroke-width="4" fill="none"/>
-    ${[[-30,380,30],[10,350,34],[40,390,28],[-10,420,26],[30,430,24],[-40,440,22],[0,300,28],[-28,330,22],[38,330,24]].map(([x,y,r],i) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${i % 3 ? '#356E3E' : '#2A5A33'}"/><path d="M${x-r*.85} ${y-r*.1} A${r} ${r} 0 0 1 ${x+r*.3} ${y-r*.92} A${r*.9} ${r*.9} 0 0 0 ${x-r*.85} ${y-r*.1} Z" fill="#5E9A52"/><circle cx="${x-r*.25}" cy="${y-r*.3}" r="${r*.55}" fill="#4C8A48" opacity=".7"/>`).join('')}
-  </g>
-  <clipPath id="brickOnly"><rect x="-1300" y="-1400" width="1482" height="2034"/></clipPath><g clip-path="url(#brickOnly)" opacity=".8">${Array.from({length:16}, (_,i) => `<ellipse cx="${118 + (i*37)%60}" cy="${360 + (i*53)%200}" rx="${6+(i%3)*3}" ry="${3+(i%2)*2}" fill="${SHADE}" transform="rotate(${-30+(i*17)%60} ${118 + (i*37)%60} ${360 + (i*53)%200})"/>`).join('')}</g>
-  <!-- hanging sign on the right -->
-  <rect x="820" y="118" width="70" height="5" fill="#1b1d24"/><path d="M820 140 L870 121" stroke="#1b1d24" stroke-width="3"/><rect x="842" y="124" width="2" height="12" fill="#1b1d24"/><rect x="878" y="124" width="2" height="12" fill="#1b1d24"/>
-  <rect x="832" y="136" width="62" height="70" fill="#1F3A63"/><rect x="832" y="136" width="62" height="5" fill="#2E5488"/>${disc(863, 172, 22)}
-  <!-- bollard -->
-  <rect x="922" y="600" width="16" height="84" fill="#1b1d24"/><rect x="918" y="604" width="24" height="8" fill="#1b1d24"/><ellipse cx="930" cy="600" rx="9" ry="6" fill="#1b1d24"/><rect x="924" y="606" width="3" height="76" fill="#3a3e4a"/>
-  <!-- the sun: hard cool shadows falling down and to the right -->
-  <polygon points="828,10 846,10 1030,250 1030,634 818,634 818,60" fill="${SHADE}"/>
-  <polygon points="436,256 564,256 564,330 436,290" fill="${SHADE}"/>
-  <polygon points="790,634 1100,634 1180,696 820,696" fill="${SHADE}"/><polygon points="938,684 1010,684 1060,700 945,700" fill="${SHADE}"/>
-  <polygon points="80,650 200,650 300,696 120,696" fill="${SHADE}"/>
-  <rect x="-1300" y="-1400" width="3600" height="2400" fill="url(#grainP)" opacity=".08" style="mix-blend-mode:multiply" pointer-events="none"/>
-  <rect id="doorHit" x="436" y="256" width="128" height="370" fill="transparent"/>
+  <rect x="322" y="282" width="136" height="76" fill="${RED}"/>
+  <text x="334" y="312" font-family="Archivo,sans-serif" font-weight="900" font-size="24" fill="${YEL}" textLength="114" lengthAdjust="spacingAndGlyphs">OPEN LATE</text><text x="334" y="342" font-family="Archivo,sans-serif" font-weight="900" font-size="24" fill="${YEL}">7 DAYS</text>
+  <rect x="316" y="104" width="930" height="258" fill="url(#grainP)" opacity=".3" style="mix-blend-mode:multiply"/>
+  <!-- the door: a warm room behind it, and the painted door on top, so it can swing open -->
+  <rect x="${DOOR.x}" y="${DOOR.y}" width="${DOOR.w}" height="${DOOR.h}" fill="#4a2410"/><rect x="${DOOR.x}" y="${DOOR.y}" width="${DOOR.w}" height="${DOOR.h}" fill="#F2B060" opacity=".35"/>
+  <g id="doorPanel"><g clip-path="url(#doorClip)"><image href="${src}" width="1536" height="1024"/></g></g>
+  <rect id="doorHit" x="${DOOR.x - 10}" y="${DOOR.y - 10}" width="${DOOR.w + 20}" height="${DOOR.h + 20}" fill="transparent"/>
   </svg>`;
-  return s;
 }
 
 /* ============================================================
@@ -837,16 +807,19 @@ const WAYS = [
   {n:'Braun orange',bg:'#E2643A',ink:'#FFF3DE',acc:'#1F2F4F'},{n:'Walnut',bg:'#5B3A22',ink:'#F3E2C4',acc:'#E3A64B'}];
 const VCOLS = ['#141414','#B3262E','#E89AB5','#6B3FA0','#2E5DA8','#2F7D4F','#F2C230','#E8742A','#C9A24A','#6B4426','#8A8D91','#EDEAE2','#6E2328','#2F6B66'];
 const VCOLNAMES = ['Black','Red','Pink','Purple','Blue','Green','Yellow','Orange','Gold','Brown','Grey','White','Oxblood','Teal'];
-const PATS = [['plain','Plain'],['sunburst','Sunburst'],['bands','Bands'],['pinstripe','Pinstripe'],['waves','Waves'],['swiss','Swiss grid'],['bauhaus','Bauhaus'],
-  ['opart','Op-art'],['halftone','Halftone'],['checker','Checker'],['arches','Arches'],['riso','Riso'],['citypop','City pop'],['collage','Collage'],['bluenote','Blocks']];
-const TYPES = [['grotesk','Grotesk'],['condensed','Condensed'],['serif','Serif'],['script','Script'],['hand','Handwritten'],['mono','Mono'],['minimal','Minimal']];
+// filters for the cover picture, done with blend modes so they work in every browser
+const FILTERS = [['none','Original'],['bw','Black and white'],['sepia','Sepia'],['faded','Faded 70s'],['duotone','Duotone'],['riso','Riso print'],['halftone','Halftone'],['cyan','Cyanotype'],['leak','Light leak'],['grain','Film grain']];
+const TYPES = [['grotesk','Grotesk'],['condensed','Condensed'],['serif','Serif'],['script','Script'],['hand','Handwritten'],['mono','Mono'],['minimal','Minimal'],['none','No title']];
+const TEXT_FONTS = [['900 X Archivo, sans-serif','Bold'],['700 X "Archivo Narrow", sans-serif','Narrow'],['400 X "DM Serif Display", serif','Serif'],['400 X Yellowtail, cursive','Script'],['700 X Caveat, cursive','Hand'],['500 X "IBM Plex Mono", monospace','Mono']];
+const INKS = ['#1b1714','#F7F1E3','#B3252B','#EDB33A','#1F3A63','#2F6238','#D86A2C','#E89AB5','#6B3FA0','#3FA0E6','#8A8D91','#ffffff'];
+const EXTRAS = [['obi','Obi strip'],['sticker','Hype sticker'],['stereo','Stereo banner'],['g180','180 gram badge'],['half','Half-speed mastered, back'],['barcode','Barcode, back'],['legal','Legal small print, back'],['worn','Worn edges']];
 const VINYLS = [['black','Black',0],['solid','Solid colour',1],['translucent','Transparent',1],['clear','Ultra clear',0],['metallic','Metallic',1],['iridescent','Iridescent',0],
   ['marble','Marbled',2],['splatter','Splatter',2],['swirl','Swirl',2],['clouds','Cloudy',2],['split','Half and half',2],['stripe','Striped',2],['inner','Colour in colour',2],
   ['smoke','Smoke',2],['eco','Eco-mix',0],['picture','Picture disc',0]];
 const SHAPES = [['round','Round'],['heart','Heart'],['star','Star'],['hex','Hexagon'],['oct','Octagon']];
 const PLAY = { round:.97, heart:.6, star:.56, hex:.84, oct:.88 };
 const LABELS = [['solid','Solid'],['split','Two-tone'],['ring','Ring'],['art','Cover art'],['minimal','Minimal']];
-const PHOTOMODES = [['full','Full bleed'],['framed','Framed'],['duotone','Duotone'],['circle','Circle']];
+const PHOTOMODES = [['full','Full bleed'],['framed','Framed'],['circle','Circle']];
 const NOTECOLS = ['#F6D48A','#F4B6A6','#BFE0C6','#B9D3EA','#F2A65A'];
 const photoImgs = new Map();
 function photoImage(src){ if (!src) return null; if (photoImgs.has(src)) return photoImgs.get(src); const im = new Image(); im.src = src; photoImgs.set(src, im); im.onload = () => { imgCache.clear(); refreshAll(); }; return im; }
@@ -854,25 +827,29 @@ function drawPhoto(g, im, x, y, w, h){ if (!im || !im.complete || !im.naturalWid
   g.drawImage(im, x + (w-iw)/2, y + (h-ih)/2, iw, ih); return true; }
 
 function drawSleeve(r, size){
-  const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d'), d = r.d, W = WAYS[d.way], R = mulberry32(17 + d.way*31 + d.pat.length*7);
+  const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d'), d = r.d, W = WAYS[d.way];
   g.scale(size/100, size/100); g.fillStyle = W.bg; g.fillRect(0,0,100,100);
-  const im = r.photo ? photoImage(r.photo) : null, pm = d.pm || 'full', photoCovers = im && (pm === 'full' || pm === 'duotone');
-  if (!photoCovers) drawPattern(g, d.pat, W, R);
+  const im = r.photo ? photoImage(r.photo) : null, pm = d.pm || 'full';
   if (im){
-    if (pm === 'full') drawPhoto(g, im, 0, 0, 100, 100);
-    else if (pm === 'duotone'){ g.save(); g.filter = 'grayscale(1) contrast(1.25)'; drawPhoto(g, im, 0, 0, 100, 100); g.restore();
-      g.globalCompositeOperation = 'multiply'; g.fillStyle = W.bg; g.fillRect(0,0,100,100); g.globalCompositeOperation = 'screen'; g.globalAlpha = .25; g.fillStyle = W.acc; g.fillRect(0,0,100,100); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; }
-    else if (pm === 'framed'){ g.fillStyle = W.ink; g.fillRect(13, 11, 74, 60); g.save(); g.beginPath(); g.rect(15, 13, 70, 56); g.clip(); drawPhoto(g, im, 15, 13, 70, 56); g.restore(); }
-    else { g.save(); g.beginPath(); g.arc(50, 42, 27, 0, 7); g.clip(); drawPhoto(g, im, 23, 15, 54, 54); g.restore(); g.strokeStyle = W.ink; g.lineWidth = 1.2; g.beginPath(); g.arc(50, 42, 27, 0, 7); g.stroke(); }
+    if (pm === 'full') photoFiltered(g, im, 0, 0, 100, 100, d.filt, W);
+    else if (pm === 'framed'){ g.fillStyle = W.ink; g.fillRect(13, 11, 74, 60); photoFiltered(g, im, 15, 13, 70, 56, d.filt, W); }
+    else { g.save(); g.beginPath(); g.arc(50, 42, 27, 0, 7); g.clip(); photoFiltered(g, im, 23, 15, 54, 54, d.filt, W); g.restore(); g.strokeStyle = W.ink; g.lineWidth = 1.2; g.beginPath(); g.arc(50, 42, 27, 0, 7); g.stroke(); }
   }
+  if (r.draw && r.draw.length){ const layer = document.createElement('canvas'); layer.width = layer.height = size; paintStrokes(layer.getContext('2d'), r.draw, size); g.save(); g.setTransform(1,0,0,1,0,0); g.drawImage(layer, 0, 0); g.restore(); }
   const x0 = d.obi ? 13 : 0;
-  drawTitle(g, r, W, x0, im && pm === 'full');
+  if (d.type !== 'none') drawTitle(g, r, W, x0, im && pm === 'full');
+  drawTexts(g, r.texts || []);
+  if (d.stereo){ g.fillStyle = '#F7F1E3'; g.fillRect(74, 2.5, 22, 6); g.fillStyle = '#1b1714'; g.fillRect(74.6, 3.1, 20.8, 4.8); g.fillStyle = '#F7F1E3'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 3.4px Archivo, sans-serif'; g.fillText('S T E R E O', 85, 5.6); g.textBaseline = 'alphabetic'; g.textAlign = 'left'; }
+  if (d.g180){ g.save(); g.translate(x0 + 11, 88); g.rotate(-.12); g.fillStyle = '#C9A24A'; g.beginPath(); g.arc(0,0,8,0,7); g.fill(); g.strokeStyle = '#8a6a26'; g.lineWidth = .35; g.beginPath(); g.arc(0,0,7,0,7); g.stroke();
+    g.fillStyle = '#231A14'; g.textAlign = 'center'; g.font = '900 4.6px Archivo, sans-serif'; g.fillText('180', 0, .6); g.font = '600 1.7px "IBM Plex Mono", monospace'; g.fillText('GRAM VINYL', 0, 3.6); g.fillText('AUDIOPHILE', 0, -3.6); g.restore(); }
   if (d.obi){ g.fillStyle = W.acc; g.fillRect(0,0,11,100); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(9.6,0,1.4,100);
     g.save(); g.translate(6.8, 96); g.rotate(-Math.PI/2); g.fillStyle = W.acc === W.bg ? W.ink : (lum(W.acc) > .55 ? '#231A14' : '#F6EBD6');
     g.font = '900 5px Archivo, sans-serif'; g.fillText((r.name || 'Untitled').toUpperCase().slice(0,30), 0, 0); g.font = '500 2.6px "IBM Plex Mono", monospace'; g.fillText(`SIDE B RECORDS  ${r.cat || ''}`, 0, -5.6); g.restore(); }
-  if (d.sticker){ g.save(); g.translate(78, 20); g.rotate(-.2); g.fillStyle = '#F7EEDB'; g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 1.2; g.beginPath(); g.arc(0,0,11.5,0,7); g.fill(); g.shadowBlur = 0;
-    g.strokeStyle = '#B8452B'; g.lineWidth = .5; g.beginPath(); g.arc(0,0,10,0,7); g.stroke(); g.fillStyle = '#B8452B'; g.textAlign = 'center'; g.font = '600 2.4px "IBM Plex Mono", monospace'; g.fillText('PRESSED FOR', 0, -3.2);
-    g.fillStyle = '#231A14'; g.font = '700 5.4px Caveat, cursive'; g.fillText((r.to || 'you').slice(0,12), 0, 2.4); g.font = '600 2.2px "IBM Plex Mono", monospace'; g.fillStyle = '#B8452B'; g.fillText('ONE OF ONE', 0, 6.2); g.restore(); }
+  if (d.sticker){ const h = r.hype || {}; g.save(); g.translate(78, 20); g.rotate(-.2); g.fillStyle = '#F7EEDB'; g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 1.2; g.beginPath(); g.arc(0,0,12,0,7); g.fill(); g.shadowBlur = 0;
+    g.strokeStyle = '#B8452B'; g.lineWidth = .5; g.beginPath(); g.arc(0,0,10.6,0,7); g.stroke(); g.textAlign = 'center';
+    g.fillStyle = '#B8452B'; fitFont(g, h.a || '', 700, 'Archivo, sans-serif', 3, 17); g.fillText(h.a || '', 0, -4.2);
+    g.fillStyle = '#231A14'; fitFont(g, h.b || '', 700, 'Caveat, cursive', 5.4, 19); g.fillText(h.b || '', 0, 1.6);
+    g.fillStyle = '#B8452B'; fitFont(g, (h.c || '').toUpperCase(), 600, '"IBM Plex Mono", monospace', 2.3, 16); g.fillText((h.c || '').toUpperCase(), 0, 6.2); g.restore(); }
   g.setTransform(1,0,0,1,0,0);
   g.globalCompositeOperation = 'overlay'; g.globalAlpha = .24; g.drawImage(noiseCanvas, 0, 0, size, size); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
   const v = g.createRadialGradient(size/2,size/2,size*.3,size/2,size/2,size*.75); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.06)'); g.fillStyle = v; g.fillRect(0,0,size,size);
@@ -880,35 +857,48 @@ function drawSleeve(r, size){
   const sh = g.createLinearGradient(0,0,size,size); sh.addColorStop(.26,'rgba(255,255,255,0)'); sh.addColorStop(.26,'rgba(255,255,255,.12)'); sh.addColorStop(.34,'rgba(255,255,255,.12)'); sh.addColorStop(.34,'rgba(255,255,255,0)'); g.fillStyle = sh; g.fillRect(0,0,size,size);
   return c;
 }
-function lum(hex){ const n = parseInt(hex.slice(1),16); return ((n>>16)*.299 + ((n>>8)&255)*.587 + (n&255)*.114)/255; }
-function drawPattern(g, pat, W, R){
-  g.fillStyle = W.acc; g.strokeStyle = W.acc;
-  switch (pat){
-    case 'sunburst': g.save(); g.translate(50, 64); for (let k=0;k<28;k+=2){ g.beginPath(); g.moveTo(0,0); g.arc(0,0,120,k/28*Math.PI*2,(k+1)/28*Math.PI*2); g.closePath(); g.globalAlpha = .28; g.fill(); } g.restore(); g.globalAlpha = 1; g.beginPath(); g.arc(50,64,14,0,7); g.fill(); break;
-    case 'bands': [W.acc, W.ink, W.acc, W.ink].forEach((c,i) => { g.fillStyle = c; g.globalAlpha = i % 2 ? .85 : 1; g.fillRect(0, 58 + i*9, 100, 6); }); g.globalAlpha = 1; break;
-    case 'pinstripe': g.fillStyle = W.ink; g.globalAlpha = .16; for (let x=1.5;x<100;x+=3) g.fillRect(x, 0, .5, 100); g.globalAlpha = 1; break;
-    case 'waves': g.lineWidth = 2.2; for (let k=0;k<8;k++){ const y = 34 + k*8; g.strokeStyle = k % 2 ? W.ink : W.acc; g.globalAlpha = .85; g.beginPath(); g.moveTo(0,y); for (let x=0;x<=100;x+=2) g.lineTo(x, y + Math.sin(x/8 + k)*3); g.stroke(); } g.globalAlpha = 1; break;
-    case 'swiss': for (let y=0;y<4;y++) for (let x=0;x<4;x++){ const on = R() < .3; g.fillStyle = on ? (R() < .5 ? W.acc : W.ink) : W.ink; g.globalAlpha = on ? 1 : .1; g.fillRect(36 + x*15.5, 36 + y*15.5, 13, 13); } g.globalAlpha = 1; break;
-    case 'bauhaus': g.fillStyle = W.acc; g.beginPath(); g.arc(68, 62, 24, 0, 7); g.fill(); g.fillStyle = W.ink; g.beginPath(); g.arc(30, 78, 20, Math.PI, 0); g.fill(); g.fillRect(10, 78, 40, 4); g.globalAlpha = .8; g.beginPath(); g.moveTo(52,92); g.lineTo(92,92); g.lineTo(72,58); g.closePath(); g.fill(); g.globalAlpha = 1; break;
-    case 'opart': for (let k=16;k>0;k--){ g.fillStyle = k % 2 ? W.ink : W.bg; g.beginPath(); g.arc(58 + k*.8, 56, k*3.6, 0, 7); g.fill(); } break;
-    case 'halftone': for (let y=0;y<12;y++) for (let x=0;x<12;x++){ const dd = Math.hypot(x-9, y-9)/12; g.beginPath(); g.arc(4 + x*8.4, 4 + y*8.4, Math.max(.2, 3.6 - dd*4.2), 0, 7); g.fill(); } break;
-    case 'checker': g.fillStyle = W.ink; for (let y=0;y<4;y++) for (let x=0;x<10;x++) if ((x+y)%2) g.fillRect(x*10, 60 + y*10, 10, 10); break;
-    case 'arches': [W.acc, W.ink, W.bg === '#EFE6D2' ? '#D9A33A' : '#EFE6D2', W.acc].forEach((c,i) => { g.fillStyle = c; g.beginPath(); g.arc(50, 104, 52 - i*11, Math.PI, 0); g.fill(); }); break;
-    case 'riso': g.globalCompositeOperation = 'multiply'; g.fillStyle = W.acc; g.beginPath(); g.arc(42, 56, 26, 0, 7); g.fill(); g.fillStyle = W.ink; g.globalAlpha = .55; g.beginPath(); g.arc(60, 64, 24, 0, 7); g.fill(); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
-      g.fillStyle = 'rgba(0,0,0,.12)'; for (let i=0;i<500;i++) g.fillRect(R()*100, R()*100, .4, .4); break;
-    case 'citypop': { const sky = g.createLinearGradient(0,0,0,62); sky.addColorStop(0, W.bg); sky.addColorStop(1, W.acc); g.fillStyle = sky; g.fillRect(0,0,100,62);
-      g.fillStyle = '#F7E3B5'; g.beginPath(); g.arc(50, 58, 19, Math.PI, 0); g.fill(); g.fillStyle = W.acc; for (let i=0;i<4;i++) g.fillRect(30, 46 + i*3.4, 40, .9 + i*.35);
-      g.fillStyle = W.ink; g.fillRect(0, 62, 100, 38); g.strokeStyle = W.acc; g.lineWidth = .5; g.globalAlpha = .8;
-      for (let i=0;i<7;i++){ const y = 62 + Math.pow(i/6, 1.8)*38; g.beginPath(); g.moveTo(0,y); g.lineTo(100,y); g.stroke(); }
-      for (let i=-6;i<=6;i++){ g.beginPath(); g.moveTo(50 + i*3, 62); g.lineTo(50 + i*22, 100); g.stroke(); } g.globalAlpha = 1; break; }
-    case 'collage': [['#EFE6D2',-.18,10,14,46,50],[W.acc,.14,40,34,46,40],[W.ink,-.06,18,58,38,28]].forEach(([c,a,x,y,w,h]) => { g.save(); g.translate(x+w/2, y+h/2); g.rotate(a); g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 2; g.fillStyle = c; g.fillRect(-w/2,-h/2,w,h); g.restore(); }); break;
-    case 'bluenote': g.fillStyle = W.acc; g.fillRect(0, 0, 62, 56); g.fillStyle = W.ink; g.fillRect(62, 0, 38, 8); g.fillRect(66, 14, 30, 2); g.fillRect(66, 19, 22, 2); g.fillRect(66, 24, 26, 2); break;
+// the picture with one of the filters, clipped to its box
+function photoFiltered(g, im, x, y, w, h, filt, W){
+  if (!im || !im.complete || !im.naturalWidth) return;
+  g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+  const op = (mode, fill, alpha=1) => { g.globalCompositeOperation = mode; g.globalAlpha = alpha; g.fillStyle = fill; g.fillRect(x, y, w, h); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; };
+  const grey = () => op('saturation', '#808080');
+  if (filt === 'halftone'){
+    const N = 44, t = document.createElement('canvas'); t.width = t.height = N; const tg = t.getContext('2d'); drawPhoto(tg, im, 0, 0, N, N); const px = tg.getImageData(0, 0, N, N).data;
+    g.fillStyle = W.bg; g.fillRect(x, y, w, h); g.fillStyle = W.ink; const cw = w/N, ch = h/N;
+    for (let j=0;j<N;j++) for (let i=0;i<N;i++){ const k = (j*N + i)*4, l = (px[k]*.3 + px[k+1]*.59 + px[k+2]*.11)/255, rad = (1 - l)*Math.min(cw, ch)*.62; if (rad > .05){ g.beginPath(); g.arc(x + (i+.5)*cw, y + (j+.5)*ch, rad, 0, 7); g.fill(); } }
+  } else {
+    drawPhoto(g, im, x, y, w, h);
+    if (filt === 'bw'){ grey(); op('soft-light', '#000', .25); }
+    else if (filt === 'sepia'){ grey(); op('color', '#A0703F', .85); op('multiply', '#F2DFC2', .5); }
+    else if (filt === 'faded'){ op('saturation', '#808080', .4); op('screen', '#FFD6A8', .22); op('lighten', '#3C2C24', .9); }
+    else if (filt === 'duotone'){ grey(); op('multiply', W.bg); op('screen', W.acc, .25); }
+    else if (filt === 'riso'){ grey(); op('multiply', W.acc); g.globalCompositeOperation = 'multiply'; g.globalAlpha = .35; drawPhoto(g, im, x + w*.012, y + h*.008, w, h); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; op('saturation', '#808080', .2);
+      const R = mulberry32(31); g.fillStyle = 'rgba(255,255,255,.25)'; for (let i=0;i<220;i++) g.fillRect(x + R()*w, y + R()*h, .3, .3); }
+    else if (filt === 'cyan'){ grey(); op('color', '#2B5C9E', .9); op('screen', '#C9DEFF', .15); }
+    else if (filt === 'leak'){ g.globalCompositeOperation = 'screen'; for (const [cx, cy, col] of [[x + w*.95, y + h*.05, 'rgba(255,120,40,.75)'], [x + w*.05, y + h*.95, 'rgba(255,60,90,.45)']]){ const gr = g.createRadialGradient(cx, cy, 0, cx, cy, w*.7); gr.addColorStop(0, col); gr.addColorStop(1, 'rgba(255,120,40,0)'); g.fillStyle = gr; g.fillRect(x, y, w, h); } g.globalCompositeOperation = 'source-over'; }
+    else if (filt === 'grain'){ g.globalCompositeOperation = 'overlay'; g.globalAlpha = .6; g.drawImage(noiseCanvas, x, y, w, h); g.drawImage(noiseCanvas, x + w*.3, y + h*.2, w, h); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; op('multiply', '#E8DCC8', .35); }
   }
+  g.restore();
 }
+// pen strokes are stored as points from 0 to 1000 across the sleeve, so they stay sharp at any size
+function paintStrokes(g, strokes, size){
+  const k = size/1000; g.lineCap = 'round'; g.lineJoin = 'round';
+  for (const st of strokes){ const p = st.p; if (!p || p.length < 2) continue;
+    g.globalCompositeOperation = st.e ? 'destination-out' : 'source-over'; g.strokeStyle = g.fillStyle = st.e ? '#000' : st.c; g.lineWidth = st.w*k;
+    if (p.length === 2){ g.beginPath(); g.arc(p[0]*k, p[1]*k, st.w*k/2, 0, 7); g.fill(); continue; }
+    g.beginPath(); g.moveTo(p[0]*k, p[1]*k);
+    for (let i=2;i<p.length-2;i+=2) g.quadraticCurveTo(p[i]*k, p[i+1]*k, (p[i] + p[i+2])/2*k, (p[i+1] + p[i+3])/2*k);
+    g.lineTo(p[p.length-2]*k, p[p.length-1]*k); g.stroke(); }
+  g.globalCompositeOperation = 'source-over'; }
+function drawTexts(g, texts){
+  texts.forEach(t => { if (!t.t) return; g.save(); g.translate(t.x, t.y); g.rotate(t.r*Math.PI/180); g.fillStyle = t.c; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = TEXT_FONTS[t.f][0].replace('X', t.s + 'px'); const lines = t.t.split('\n'); lines.forEach((l, i) => g.fillText(l, 0, (i - (lines.length - 1)/2)*t.s*1.08)); g.restore(); }); }
+function lum(hex){ const n = parseInt(hex.slice(1),16); return ((n>>16)*.299 + ((n>>8)&255)*.587 + (n&255)*.114)/255; }
 function fitFont(g, txt, weight, fam, max, maxW, style=''){ let s = max; g.font = `${style} ${weight} ${s}px ${fam}`; while (g.measureText(txt).width > maxW && s > 3){ s -= .5; g.font = `${style} ${weight} ${s}px ${fam}`; } return s; }
 function drawTitle(g, r, W, x0, onPhoto){
   const name = (r.name || 'Untitled').trim(), line = (r.line || '').trim(), by = r.by ? `${r.by}` : '', w = 88 - x0, X = 6 + x0, t = r.d.type;
-  const ink = onPhoto ? '#ffffff' : W.ink, lowInk = r.d.pat === 'citypop' && !onPhoto ? '#F7E3B5' : ink;
+  const ink = onPhoto ? '#ffffff' : W.ink, lowInk = ink;
   if (onPhoto){ g.save(); const sg = g.createLinearGradient(0,55,0,100); sg.addColorStop(0,'rgba(0,0,0,0)'); sg.addColorStop(1,'rgba(0,0,0,.55)'); g.fillStyle = sg; g.fillRect(0,55,100,45); g.restore(); }
   g.fillStyle = ink; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
   const mono = (txt, x, y, s=3.4, al='left') => { const prev = g.fillStyle; if (y > 62) g.fillStyle = lowInk; g.textAlign = al; g.font = `500 ${s}px "IBM Plex Mono", monospace`; g.fillText(txt, x, y); g.textAlign = 'left'; g.fillStyle = prev; };
@@ -1022,7 +1012,8 @@ function drawVinyl(r, size, side){
 const imgCache = new Map(), IMG_CACHE_MAX = 120;
 function cached(k, make){ let v = imgCache.get(k); if (v !== undefined){ imgCache.delete(k); imgCache.set(k, v); return v; }
   v = make(); imgCache.set(k, v); while (imgCache.size > IMG_CACHE_MAX) imgCache.delete(imgCache.keys().next().value); return v; }
-const designKey = r => JSON.stringify([r.d, r.name, r.line, r.by, r.to, r.cat, r.photo ? r.photo.length + r.photo.slice(-24) : '']);
+const hashStr = str => { let h = 5381; for (let i=0;i<str.length;i++) h = (h*33 ^ str.charCodeAt(i)) >>> 0; return h.toString(36); };
+const designKey = r => JSON.stringify([r.d, r.name, r.line, r.by, r.to, r.cat, r.photo ? r.photo.length + r.photo.slice(-24) : '', hashStr(JSON.stringify([r.draw, r.texts, r.hype]))]);
 function sleeveURL(r, size){ return cached('s' + size + designKey(r), () => drawSleeve(r, size).toDataURL('image/jpeg', .9)); }
 function vinylURL(r, size, side){ return cached('v' + size + side + designKey(r), () => drawVinyl(r, size, side).toDataURL('image/png')); }
 const recSize = r => (r.A.length + r.B.length) > 10 ? 12 : 10;
@@ -1031,8 +1022,19 @@ function backHTML(r, A, B){
   return `<div class="hd"><div><h4>${esc(r.name || 'Untitled')}</h4>${r.line ? `<p class="sub">${esc(r.line)}</p>` : ''}</div><div class="cat">${esc(r.cat || '')}<br>${recSize(r)}-INCH, 33 1/3</div></div>
     <div class="cols"><div><b>SIDE A</b><ol>${li(A,'A')}</ol></div><div><b>SIDE B</b><ol>${li(B,'B')}</ol></div></div>
     <div class="credits"><span>${r.by ? 'PRESSED BY ' + esc(r.by).toUpperCase() : 'PRESSED AT SIDE B'}${r.to ? '<br>FOR ' + esc(r.to).toUpperCase() : ''}</span><span>&copy; ${esc(r.year || '')} SIDE B RECORDS<br>ONE OF ONE</span></div>
+    ${r.d.legal || r.d.barcode || r.d.half ? `<div class="fine">${r.d.legal ? `<p>&#8471; &amp; &copy; ${esc(r.year || '')} ${esc(r.by || 'Side B Records')}. All rights of the producer and of the owner of the recorded work reserved. Unauthorised copying, hiring, lending, public performance and broadcasting of this record prohibited. Pressed one of one at Side B.</p>` : '<p></p>'}
+      ${r.d.half ? `<span class="hsm"><b>HALF-SPEED</b>MASTERED</span>` : ''}${r.d.barcode ? barcodeSVG(r) : ''}</div>` : ''}
     <div class="notes" data-face="B"></div>`;
 }
+// a real EAN-13 barcode, using the 20-29 prefix that shops keep for their own use, made from the catalogue number
+function barcodeSVG(r){
+  let n = parseInt(hashStr((r.cat || '') + (r.name || '')), 36) || 7, digits = [2, 0]; while (digits.length < 12){ digits.push(n % 10); n = Math.floor(n / 10) || 977 + digits.length*31; }
+  const sum = digits.reduce((t, v, i) => t + v*(i % 2 ? 3 : 1), 0); digits.push((10 - sum % 10) % 10);
+  const L = ['0001101','0011001','0010011','0111101','0100011','0110001','0101111','0111011','0110111','0001011'], R = L.map(c => c.replace(/./g, b => b === '1' ? '0' : '1')), G = R.map(c => [...c].reverse().join(''));
+  const par = ['LLLLLL','LLGLGG','LLGGLG','LLGGGL','LGLLGG','LGGLLG','LGGGLL','LGLGLG','LGLGGL','LGGLGL'][digits[0]];
+  let bits = '101'; for (let i=1;i<7;i++) bits += (par[i-1] === 'L' ? L : G)[digits[i]]; bits += '01010'; for (let i=7;i<13;i++) bits += R[digits[i]]; bits += '101';
+  let bars = ''; [...bits].forEach((b, i) => { if (b === '1'){ const guard = i < 3 || (i >= 45 && i < 50) || i >= 92; bars += `<rect x="${9 + i}" y="2" width="1" height="${guard ? 44 : 40}"/>`; } });
+  return `<svg class="barcode" viewBox="0 0 113 52" aria-label="Barcode"><rect width="113" height="52" fill="#fff"/><g fill="#111">${bars}</g><g font-family="IBM Plex Mono,monospace" font-size="7" fill="#111" text-anchor="middle"><text x="5" y="50">${digits[0]}</text><text x="31" y="50">${digits.slice(1,7).join('')}</text><text x="78" y="50">${digits.slice(7).join('')}</text></g></svg>`; }
 function renderNotes(container, r, face, editable){
   container.innerHTML = (r.notes || []).map((n,i) => n.f !== face ? '' : `<div class="snote ${editable && i === selNote ? 'sel' : ''}" data-i="${i}" style="left:${n.x}%;top:${n.y}%;background:${NOTECOLS[n.c]};transform:rotate(${n.r}deg)">${esc(n.t || '')}</div>`).join('');
 }
@@ -1042,7 +1044,8 @@ function renderNotes(container, r, face, editable){
    ============================================================ */
 const MINS = 6, MAXSIDE = 12;
 const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'',
-  d:{ way:1, pat:'sunburst', type:'script', obi:false, sticker:false, worn:false, pm:'full', vinyl:'marble', v1:8, v2:11, shape:'round', label:'solid', lab:4 }, A:[], B:[], notes:[] });
+  d:{ way:1, filt:'none', type:'script', obi:false, sticker:false, worn:false, stereo:false, g180:false, half:false, barcode:true, legal:true, pm:'full', vinyl:'marble', v1:8, v2:11, shape:'round', label:'solid', lab:4 },
+  hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[], A:[], B:[], notes:[] });
 // a record can come from anyone's link, so check every field before it is drawn or played
 const MEDIA_HOSTS = /(^|\.)(apple\.com|mzstatic\.com)$/;
 function safeURL(v){ try { const u = new URL(String(v)); return u.protocol === 'https:' && MEDIA_HOSTS.test(u.hostname) && !/["'()\s\\<>]/.test(u.href) ? u.href : ''; } catch(e){ return ''; } }
@@ -1058,11 +1061,20 @@ function cleanRec(r){
     return null; };
   const side = v => (Array.isArray(v) ? v : []).map(song).filter(Boolean).slice(0, MAXSIDE);
   const photo = typeof r.photo === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(r.photo) ? r.photo : '';
+  const hex = (v, def) => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v : def;
+  let budget = 8000; const draw = (Array.isArray(r.draw) ? r.draw : []).slice(0, 300).map(st => { if (!st || !Array.isArray(st.p)) return null;
+    const p = st.p.slice(0, Math.min(2000, budget)).map(v => Math.round(clamp(+v || 0, 0, 1000))); if (p.length % 2) p.pop(); budget -= p.length;
+    return p.length >= 2 ? { c:hex(st.c, '#1b1714'), w:Math.round(num(st.w, 1, 80, 14)), e:st.e ? 1 : 0, p } : null; }).filter(Boolean);
+  const texts = (Array.isArray(r.texts) ? r.texts : []).filter(t => t && typeof t === 'object').slice(0, 8).map(t => ({ t:str(t.t, 80), f:idx(t.f, TEXT_FONTS, 0), c:hex(t.c, '#1b1714'),
+    s:num(t.s, 2, 40, 9), x:num(t.x, -10, 110, 50), y:num(t.y, -10, 110, 50), r:num(t.r, -45, 45, 0) }));
+  const hy = r.hype && typeof r.hype === 'object' ? r.hype : b.hype, hype = { a:str(hy.a, 24), b:str(hy.b, 40), c:str(hy.c, 30) };
+  const filt = d.pm === 'duotone' ? 'duotone' : d.filt, pm = d.pm === 'duotone' ? 'full' : d.pm;
   return { name:str(r.name, 80), line:str(r.line, 120), by:str(r.by, 60), to:str(r.to, 60), year:str(r.year, 10, b.year), cat:str(r.cat, 20, b.cat), photo,
-    d:{ way:idx(d.way, WAYS, b.d.way), pat:pick(d.pat, PATS, b.d.pat), type:pick(d.type, TYPES, b.d.type), obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
-      pm:pick(d.pm, PHOTOMODES, b.d.pm), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:idx(d.v1, VCOLS, b.d.v1), v2:idx(d.v2, VCOLS, b.d.v2),
+    d:{ way:idx(d.way, WAYS, b.d.way), filt:pick(filt, FILTERS, b.d.filt), type:pick(d.type, TYPES, b.d.type), obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
+      stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:d.legal !== false,
+      pm:pick(pm, PHOTOMODES, b.d.pm), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:idx(d.v1, VCOLS, b.d.v1), v2:idx(d.v2, VCOLS, b.d.v2),
       shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:idx(d.lab, WAYS, b.d.lab) },
-    A:side(r.A), B:side(r.B),
+    hype, draw, texts, A:side(r.A), B:side(r.B),
     notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:idx(n.c, NOTECOLS, 0),
       x:num(n.x, -6, 70, 30), y:num(n.y, -6, 82, 30), r:num(n.r, -15, 15, 0), f:n.f === 'B' ? 'B' : 'F' })) };
 }
@@ -1136,7 +1148,7 @@ function variant(patch){ return { ...draft, d:{ ...draft.d, ...patch } }; }
 let tileTimer;
 function refreshTiles(){ clearTimeout(tileTimer); tileTimer = setTimeout(() => {
   if (step === 'sleeve'){
-    tilesFill('tPat', PATS, v => sleeveURL(variant({ pat:v, pm:draft.photo ? 'framed' : draft.d.pm }), 140), 'pat');
+    if (draft.photo) tilesFill('tFilt', FILTERS, v => sleeveURL(variant({ filt:v }), 140), 'filt');
     tilesFill('tType', TYPES, v => sleeveURL(variant({ type:v }), 140), 'type');
   } else if (step === 'vinyl'){
     tilesFill('tVinyl', VINYLS, v => vinylURL(variant({ vinyl:v }), 140, 'A'), 'vinyl', true);
@@ -1146,7 +1158,7 @@ function refreshTiles(){ clearTimeout(tileTimer); tileTimer = setTimeout(() => {
 function tilesFill(id, opts, src, key, round){
   const el = $(id);
   if (!el.children.length){ el.innerHTML = opts.map(([v,l]) => `<button class="tile ${round ? 'round' : ''}" data-v="${v}" aria-pressed="false"><img alt=""><span>${l}</span></button>`).join('');
-    el.querySelectorAll('.tile').forEach(b => b.addEventListener('click', () => { draft.d[key] = b.dataset.v; if (key === 'pat' && draft.photo && (draft.d.pm === 'full' || draft.d.pm === 'duotone')) draft.d.pm = 'framed'; syncControls(); changed(); })); }
+    el.querySelectorAll('.tile').forEach(b => b.addEventListener('click', () => { draft.d[key] = b.dataset.v; syncControls(); changed(); })); }
   el.querySelectorAll('.tile').forEach(b => { b.setAttribute('aria-pressed', b.dataset.v === draft.d[key]); const im = b.querySelector('img'), s = src(b.dataset.v); if (im.src !== s) im.src = s; });
 }
 function dotsFill(id, colors, key){ const el = $(id);
@@ -1161,15 +1173,18 @@ function syncControls(){
   dotsFill('dV1', VCOLS, 'v1'); dotsFill('dV2', VCOLS, 'v2'); document.querySelectorAll('#dV1 button, #dV2 button').forEach(b => { b.title = VCOLNAMES[+b.dataset.v]; b.setAttribute('aria-label', VCOLNAMES[+b.dataset.v]); }); dotsFill('dLab', WAYS.map(w => w.bg), 'lab');
   const need = (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2]; $('v1sec').style.display = need >= 1 ? '' : 'none'; $('v2sec').style.display = need >= 2 ? '' : 'none';
   const ex = $('extras');
-  if (!ex.children.length){ ex.innerHTML = [['obi','Obi strip'],['sticker','Hype sticker'],['worn','Worn edges']].map(([k,l]) => `<button class="tog" data-k="${k}"><i></i>${l}</button>`).join('');
+  if (!ex.children.length){ ex.innerHTML = EXTRAS.map(([k,l]) => `<button class="tog" data-k="${k}"><i></i>${l}</button>`).join('');
     ex.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => { draft.d[b.dataset.k] = !draft.d[b.dataset.k]; syncControls(); changed(); })); }
   ex.querySelectorAll('.tog').forEach(b => b.setAttribute('aria-pressed', !!draft.d[b.dataset.k]));
+  $('hypePad').style.display = draft.d.sticker ? '' : 'none'; $('filtSec').style.display = draft.photo ? '' : 'none';
+  ['a','b','c'].forEach(k => { const el = $('hype' + k.toUpperCase()); if (document.activeElement !== el) el.value = draft.hype[k]; });
+  renderTextUI();
   const pmEl = $('photoModes'); pmEl.style.display = draft.photo ? 'flex' : 'none';
-  if (!pmEl.children.length){ pmEl.innerHTML = PHOTOMODES.map(([v,l]) => `<button class="tog" data-v="${v}"><i></i>${l}</button>`).join('') + '<button class="btn ghost sm" id="rmPhoto">Remove photo</button>';
+  if (!pmEl.children.length){ pmEl.innerHTML = PHOTOMODES.map(([v,l]) => `<button class="tog" data-v="${v}"><i></i>${l}</button>`).join('') + '<button class="btn ghost sm" id="rmPhoto">Remove the picture</button>';
     pmEl.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => { draft.d.pm = b.dataset.v; syncControls(); changed(); }));
     $('rmPhoto').addEventListener('click', e => { e.preventDefault(); draft.photo = ''; syncControls(); changed(); }); }
   pmEl.querySelectorAll('.tog').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === draft.d.pm));
-  $('photoPh').style.backgroundImage = draft.photo ? `url(${draft.photo})` : ''; $('photoTitle').textContent = draft.photo ? 'Change the photo' : 'Add a photo for the cover';
+  $('photoPh').style.backgroundImage = draft.photo ? `url(${draft.photo})` : ''; $('photoTitle').textContent = draft.photo ? 'Change the picture' : 'Add a picture for the cover';
 }
 $('photoIn').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   rd.onload = () => { const im = new Image(); im.onload = () => { const S = 640, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
@@ -1177,7 +1192,67 @@ $('photoIn').addEventListener('change', e => { const f = e.target.files[0]; if (
       draft.photo = c.toDataURL('image/jpeg', .8); if (draft.d.pm === 'framed' || !draft.d.pm) draft.d.pm = 'full'; syncControls(); changed(); }; im.src = rd.result; };
   rd.readAsDataURL(f); e.target.value = ''; });
 $('surprise').addEventListener('click', () => { const R = Math.random, pick = a => a[Math.floor(R()*a.length)];
-  Object.assign(draft.d, { way:Math.floor(R()*WAYS.length), pat:pick(PATS)[0], type:pick(TYPES)[0], obi:R() < .3, sticker:R() < .3 }); syncControls(); changed(); });
+  Object.assign(draft.d, { way:Math.floor(R()*WAYS.length), type:pick(TYPES.slice(0, -1))[0], obi:R() < .3, sticker:R() < .3, stereo:R() < .3, g180:R() < .3 }); if (draft.photo) draft.d.filt = pick(FILTERS)[0]; syncControls(); changed(); });
+['a','b','c'].forEach(k => $('hype' + k.toUpperCase()).addEventListener('input', e => { draft.hype[k] = e.target.value; saveDraft(); refreshPreview(); }));
+
+// words on the cover: pick one in the list, edit it, drag on the cover to place it
+let selText = -1;
+function renderTextUI(){
+  const list = $('textList'); list.innerHTML = draft.texts.map((t, i) => `<button data-i="${i}" aria-pressed="${i === selText}">${esc(t.t || 'Empty text')}</button>`).join('');
+  list.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { selText = +b.dataset.i; if (face !== 'F') setFace('F'); renderTextUI(); }));
+  const t = draft.texts[selText]; $('textPad').style.display = t ? '' : 'none'; $('addText').disabled = draft.texts.length >= 8;
+  $('textHint').textContent = t ? 'Drag on the cover to move it.' : draft.texts.length ? '' : 'Up to 8 pieces of text.';
+  if (!t) return;
+  if (document.activeElement !== $('textIn')) $('textIn').value = t.t;
+  const fonts = $('textFonts'); if (!fonts.children.length){ fonts.innerHTML = TEXT_FONTS.map(([f, l], i) => `<button data-i="${i}" style="font:${f.replace('X', '1rem')}">${l}</button>`).join('');
+    fonts.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { draft.texts[selText].f = +b.dataset.i; renderTextUI(); changed(); })); }
+  fonts.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === t.f));
+  const inks = $('textInks'); if (!inks.children.length){ inks.innerHTML = INKS.map(c => `<button data-c="${c}" style="background:${c}" aria-label="Colour ${c}"></button>`).join('');
+    inks.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { draft.texts[selText].c = b.dataset.c; renderTextUI(); changed(); })); }
+  inks.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.c === t.c));
+  $('textSize').value = t.s; $('textRot').value = t.r; }
+$('addText').addEventListener('click', () => { if (draft.texts.length >= 8) return; const W = WAYS[draft.d.way];
+  draft.texts.push({ t:'Your words here', f:0, c:W.ink, s:8, x:50, y:62 + (draft.texts.length % 3)*8, r:0 }); selText = draft.texts.length - 1; if (face !== 'F') setFace('F'); renderTextUI(); $('textIn').select(); changed(); });
+$('textIn').addEventListener('input', () => { const t = draft.texts[selText]; if (!t) return; t.t = $('textIn').value; saveDraft(); refreshPreview(); renderTextUI(); });
+$('textSize').addEventListener('input', () => { const t = draft.texts[selText]; if (t){ t.s = +$('textSize').value; saveDraft(); refreshPreview(); } });
+$('textRot').addEventListener('input', () => { const t = draft.texts[selText]; if (t){ t.r = +$('textRot').value; saveDraft(); refreshPreview(); } });
+$('delText').addEventListener('click', () => { draft.texts.splice(selText, 1); selText = -1; renderTextUI(); changed(); });
+let tdrag = false;
+const placeText = e => { const t = draft.texts[selText], b = $('pFront').getBoundingClientRect(); if (!t) return;
+  t.x = clamp((e.clientX - b.left)/b.width*100, 0, 100); t.y = clamp((e.clientY - b.top)/b.height*100, 0, 100); refreshPreview(); };
+$('recwrap').addEventListener('pointerdown', e => { if (step !== 'sleeve' || face !== 'F' || selText < 0 || !e.target.closest('.pslv')) return; e.preventDefault(); tdrag = true; $('recwrap').setPointerCapture(e.pointerId); placeText(e); });
+$('recwrap').addEventListener('pointermove', e => { if (tdrag) placeText(e); });
+$('recwrap').addEventListener('pointerup', () => { if (tdrag){ tdrag = false; saveDraft(); } });
+
+// the drawing pad: strokes go into draft.draw as points from 0 to 1000
+const DRAW_SIZES = [5, 12, 26, 52], MAX_POINTS = 8000;
+const pen = { ink:INKS[0], w:12, erase:false, cur:null };
+const pointsUsed = () => draft.draw.reduce((t, st) => t + st.p.length, 0);
+function drawLive(){ const cv = $('drawCv'), g = cv.getContext('2d'); g.clearRect(0, 0, cv.width, cv.height); paintStrokes(g, pen.cur ? [...draft.draw, pen.cur] : draft.draw, cv.width); }
+function syncPen(){ $('drawInks').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', !pen.erase && b.dataset.c === pen.ink));
+  $('drawSizes').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.w === pen.w)); $('drawErase').setAttribute('aria-pressed', pen.erase); }
+function openDrawer(){
+  if (!$('drawInks').children.length){ $('drawInks').innerHTML = INKS.map(c => `<button data-c="${c}" style="background:${c}" aria-label="Ink ${c}"></button>`).join('');
+    $('drawInks').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { pen.ink = b.dataset.c; pen.erase = false; syncPen(); }));
+    $('drawSizes').innerHTML = DRAW_SIZES.map((w, i) => `<button data-w="${w}" aria-label="Brush size ${i+1}"><i style="width:${4 + i*5}px;height:${4 + i*5}px"></i></button>`).join('');
+    $('drawSizes').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { pen.w = +b.dataset.w; syncPen(); })); }
+  $('drawBase').src = sleeveURL({ ...draft, draw:[] }, 720); $('drawer').classList.add('on'); $('drawTip').textContent = 'Use your finger or the mouse.';
+  const cv = $('drawCv'), r = cv.getBoundingClientRect(), px = Math.round(r.width*(devicePixelRatio || 1)); cv.width = cv.height = px; syncPen(); drawLive(); }
+function closeDrawer(){ $('drawer').classList.remove('on'); pen.cur = null; changed(); }
+$('drawBtn').addEventListener('click', openDrawer);
+$('drawWipe').addEventListener('click', () => { draft.draw = []; changed(); });
+$('drawErase').addEventListener('click', () => { pen.erase = !pen.erase; syncPen(); });
+$('drawUndo').addEventListener('click', () => { draft.draw.pop(); drawLive(); });
+$('drawClear').addEventListener('click', () => { draft.draw = []; drawLive(); });
+$('drawDone').addEventListener('click', closeDrawer);
+let drawRaf = 0;
+const penAt = e => { const b = $('drawCv').getBoundingClientRect(); return [Math.round(clamp((e.clientX - b.left)/b.width*1000, 0, 1000)), Math.round(clamp((e.clientY - b.top)/b.height*1000, 0, 1000))]; };
+$('drawCv').addEventListener('pointerdown', e => { e.preventDefault(); if (pointsUsed() >= MAX_POINTS || draft.draw.length >= 300){ $('drawTip').textContent = "That's as much drawing as one sleeve can hold."; return; }
+  $('drawCv').setPointerCapture(e.pointerId); pen.cur = { c:pen.erase ? '#000000' : pen.ink, w:pen.w, e:pen.erase ? 1 : 0, p:penAt(e) }; drawLive(); });
+$('drawCv').addEventListener('pointermove', e => { if (!pen.cur) return; const [x, y] = penAt(e), p = pen.cur.p;
+  if (Math.hypot(x - p[p.length-2], y - p[p.length-1]) < 4 || pointsUsed() + p.length >= MAX_POINTS) return; p.push(x, y);
+  if (!drawRaf) drawRaf = requestAnimationFrame(() => { drawRaf = 0; drawLive(); }); });
+['pointerup','pointercancel'].forEach(ev => $('drawCv').addEventListener(ev, () => { if (!pen.cur) return; draft.draw.push(pen.cur); pen.cur = null; drawLive(); saveDraft(); }));
 [['fName','name'],['fLine','line'],['fBy','by'],['fTo','to'],['fYear','year'],['fCat','cat']].forEach(([id,k]) => $(id).addEventListener('input', () => { draft[k] = $(id).value; saveDraft(); refreshPreview(); updateFoot(); }));
 function fillFields(){ $('fName').value = draft.name; $('fLine').value = draft.line; $('fBy').value = draft.by; $('fTo').value = draft.to; $('fYear').value = draft.year; $('fCat').value = draft.cat; }
 
@@ -1217,7 +1292,7 @@ function goStep(s){
 document.querySelectorAll('#steps button').forEach(b => b.addEventListener('click', () => goStep(b.dataset.step)));
 $('prevStep').addEventListener('click', () => { const i = STEPS.indexOf(step); if (i > 0) goStep(STEPS[i-1]); });
 $('nextStep').addEventListener('click', () => { const i = STEPS.indexOf(step); if (i < STEPS.length - 1) goStep(STEPS[i+1]); });
-function loadDraft(r){ draft = r; selNote = -1; face = 'F'; fillFields(); syncControls(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); goStep('songs'); }
+function loadDraft(r){ draft = r; selNote = -1; selText = -1; face = 'F'; fillFields(); syncControls(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); goStep('songs'); }
 $('resumeBtn').addEventListener('click', () => { lastDraft = cleanRec(null); loadDraft(cleanRec(store.get('sideb-press'))); });
 function updateFoot(){
   $('resumeBtn').hidden = !(hasWork(lastDraft) && !hasWork(draft));
@@ -1242,7 +1317,7 @@ function b64url(bytes){ let s = ''; for (let i=0;i<bytes.length;i++) s += String
 function unb64url(str){ const s = atob(str.replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(s, c => c.charCodeAt(0)); }
 async function shrinkPhoto(src){ if (!src) return ''; return new Promise(res => { const im = new Image(); im.onload = () => { const S = 360, c = document.createElement('canvas'); c.width = c.height = S; c.getContext('2d').drawImage(im, 0, 0, S, S); res(c.toDataURL('image/jpeg', .72)); }; im.onerror = () => res(''); im.src = src; }); }
 async function encodeRec(r){
-  const json = new TextEncoder().encode(JSON.stringify({ v:3, name:r.name, line:r.line, by:r.by, to:r.to, year:r.year, cat:r.cat, d:r.d, A:r.A, B:r.B, notes:r.notes, photo: await shrinkPhoto(r.photo) }));
+  const json = new TextEncoder().encode(JSON.stringify({ v:4, name:r.name, line:r.line, by:r.by, to:r.to, year:r.year, cat:r.cat, d:r.d, hype:r.hype, draw:r.draw, texts:r.texts, A:r.A, B:r.B, notes:r.notes, photo: await shrinkPhoto(r.photo) }));
   if (window.CompressionStream){ const cs = new Blob([json]).stream().pipeThrough(new CompressionStream('deflate-raw')); return 'z' + b64url(new Uint8Array(await new Response(cs).arrayBuffer())); }
   return 'p' + b64url(json);
 }
@@ -1419,7 +1494,7 @@ function go(name){ document.querySelectorAll('.scene').forEach(s => s.classList.
 function enterShop(){
   ensureAudio(); sfx.bell(); const door = $('doorPanel'), inner = $('outsideInner'), hit = $('doorHit').getBoundingClientRect(), box = inner.getBoundingClientRect();
   inner.style.transformOrigin = `${hit.left - box.left + hit.width/2}px ${hit.top - box.top + hit.height*.45}px`; const t0 = performance.now();
-  const stepA = now => { const k = Math.min(1, (now - t0)/480), e = 1 - Math.pow(1-k, 3); door.setAttribute('transform', `translate(456 0) scale(${1 - e*.82} 1) translate(-456 0)`);
+  const stepA = now => { const k = Math.min(1, (now - t0)/480), e = 1 - Math.pow(1-k, 3); door.setAttribute('transform', `translate(${DOOR.hinge} 0) scale(${1 - e*.82} 1) translate(${-DOOR.hinge} 0)`);
     if (k < 1) requestAnimationFrame(stepA); else { inner.classList.add('zoom'); setTimeout(() => { go('shop'); setTimeout(() => setHintT('Step into the pressing booth at the back.'), 900); }, reduceMotion ? 0 : 650);
       setTimeout(() => { inner.style.transition = 'none'; inner.classList.remove('zoom'); door.removeAttribute('transform'); void inner.offsetWidth; inner.style.transition = ''; }, 1500); } };
   requestAnimationFrame(stepA);
@@ -1884,7 +1959,7 @@ async function route(){
 }
 addEventListener('hashchange', route);
 const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihala', to:'Amy', year:'2026', cat:'SB-0412',
-  d:{ way:1, pat:'sunburst', type:'script', obi:true, sticker:true, worn:false, pm:'full', vinyl:'marble', v1:2, v2:10, label:'solid', lab:4 },
+  d:{ way:1, type:'script', obi:true, sticker:true, stereo:true, g180:true, worn:false, pm:'full', vinyl:'marble', v1:2, v2:10, label:'solid', lab:4 },
   A:[{s:'d',al:3,ti:1},{s:'d',al:8,ti:0},{s:'d',al:14,ti:2},{s:'d',al:21,ti:3}], B:[{s:'d',al:27,ti:0},{s:'d',al:5,ti:2},{s:'d',al:11,ti:1}],
   notes:[{t:'Side A is for the way there.',c:0,x:52,y:56,r:-4,f:'F'},{t:'B3 is the one I kept replaying after you left.',c:1,x:54,y:58,r:3,f:'B'}] };
 
@@ -1895,7 +1970,9 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
     .forEach(([k,v]) => document.documentElement.style.setProperty(k, `url(${v})`));
   loadShelf();
   $('outsideInner').innerHTML = facadeSVG(); paintSlots($('outsideInner'));
-  window.fitFacade = () => $('facade') && $('facade').setAttribute('viewBox', innerWidth/innerHeight < .9 ? '140 0 720 720' : '0 0 1000 720'); fitFacade();
+  // wide screens fill with the picture; tall phones show all of it over a soft blurred copy
+  window.fitFacade = () => $('facade') && $('facade').setAttribute('preserveAspectRatio', innerWidth/innerHeight < 1.2 ? 'xMidYMid meet' : 'xMidYMid slice'); fitFacade();
+  $('outsideBg').style.backgroundImage = `url(${asset('img/storefront.webp')})`;
   $('doorHit').setAttribute('tabindex','0'); $('doorHit').setAttribute('role','button'); $('doorHit').setAttribute('aria-label','Go inside');
   $('doorHit').addEventListener('click', enterShop); $('doorHit').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); enterShop(); } });
   buildShop(); buildDeck(); syncDeckUI(); setPitch(0);
