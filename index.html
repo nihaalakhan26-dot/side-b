@@ -83,9 +83,9 @@ button{cursor:pointer}
 .steps button[aria-selected="true"]{background:var(--paper);color:var(--ink);padding-bottom:.75rem}
 .steps button[aria-selected="true"]::before{background:var(--mustard);border-color:var(--mustard)}
 .steps button.done::before{background:var(--burg);border-color:var(--burg)}
-@media (max-width:760px){.steps{margin-bottom:-11px}.steps button{padding:.45rem .55rem .45rem 1.1rem;font-size:.68rem;white-space:nowrap}.shead .model,.shead .spacer{display:none}.shead{flex-wrap:wrap;gap:8px}.steps{order:3;width:100%;overflow-x:auto}.shead .logo{font-size:1.5rem;margin-right:auto}}
+@media (max-width:760px){.steps{margin-bottom:-11px}.steps button{flex:1 1 0;min-width:0;padding:.5rem .2rem .5rem;font-size:.64rem;white-space:nowrap;letter-spacing:.02em;text-align:center}.steps button::before{display:none}.steps button b{display:none}.steps button[aria-selected="true"]{padding-bottom:.7rem}.shead .model,.shead .spacer{display:none}.shead{flex-wrap:wrap;gap:8px}.steps{order:3;width:100%;overflow-x:auto}.shead .logo{font-size:1.5rem;margin-right:auto}}
 .sbody{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr);min-height:0}
-@media (max-width:900px){.sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:42vh minmax(0,1fr)}}
+@media (max-width:900px){.sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:36vh minmax(0,1fr)}}
 .bench{position:relative;min-height:0;overflow:hidden;display:grid;place-items:center;
   background:radial-gradient(ellipse 70% 60% at 45% 40%,rgba(255,214,150,.25),transparent 70%),linear-gradient(rgba(0,0,0,.2),transparent 15%,transparent 85%,rgba(0,0,0,.25)),var(--walnutH) 0 0/512px,#6b4121}
 .mat{position:absolute;inset:7% 8% 10%;background:#ECE1C8;box-shadow:0 2px 2px rgba(0,0,0,.25),6px 22px 40px rgba(0,0,0,.4)!important;border-radius:2px;box-shadow:0 18px 40px rgba(0,0,0,.35),inset 0 0 0 1px rgba(0,0,0,.1);
@@ -96,7 +96,7 @@ button{cursor:pointer}
 .pencil{left:9%;bottom:6%;width:150px;height:9px;transform:rotate(-12deg);background:linear-gradient(90deg,#2a2622 0 6%,#e6c08a 6% 14%,#d9a33a 14% 90%,#c76a4a 90%);border-radius:2px;box-shadow:0 3px 5px rgba(0,0,0,.3)}
 .rule{left:6%;top:5%;width:220px;height:22px;transform:rotate(-3deg);background:repeating-linear-gradient(90deg,rgba(0,0,0,.5) 0 1px,transparent 1px 8px) 0 0/100% 8px no-repeat,#e2dccd;box-shadow:0 3px 6px rgba(0,0,0,.25)}
 .recwrap{position:relative;width:min(56vh,46vw,560px);aspect-ratio:1.5}
-@media (max-width:900px){.recwrap{width:min(38vh*1.5,86vw)}}
+@media (max-width:900px){.recwrap{width:min(31vh*1.5,86vw)}}
 .pvin{position:absolute;top:2%;left:24%;width:62%;aspect-ratio:1;background:center/contain no-repeat;filter:drop-shadow(0 12px 16px rgba(0,0,0,.4));transition:transform .7s cubic-bezier(.3,.7,.3,1),opacity .4s}
 .recwrap[data-mode="vinyl"] .pvin{transform:translateX(52%) rotate(60deg)}
 .recwrap[data-mode="front"] .pvin{transform:translateX(18%) rotate(10deg)}
@@ -120,19 +120,21 @@ button{cursor:pointer}
 .sback .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:1em}
 .sback h4{margin:0;font-weight:900;font-size:1.45em;line-height:1.02;letter-spacing:-.01em}
 .sback .sub{margin:.2em 0 0;font-family:'DM Serif Display',serif;font-style:italic;font-size:1.05em;color:#5a4636}
-.sback .cat{font:600 .72em/1.3 var(--mono);color:#8a735f;text-align:right;letter-spacing:.06em}
+.sback .cat{flex:none;white-space:nowrap;font:600 .72em/1.3 var(--mono);color:#8a735f;text-align:right;letter-spacing:.06em}
 .sback .cols{display:grid;grid-template-columns:1fr 1fr;gap:1.2em;margin-top:1.1em;flex:0 1 auto;min-height:0;overflow:hidden}
 .sback .cols b{display:block;font:600 .74em/1 var(--mono);letter-spacing:.18em;color:#8a735f;margin-bottom:.6em;padding-bottom:.4em;border-bottom:1px solid rgba(42,30,23,.25)}
 .sback ol{margin:0;padding:0;list-style:none}
 .sback li{display:grid;grid-template-columns:2.1em 1fr;margin-bottom:.35em;line-height:1.2}
 .sback li em{font:600 .78em/1.4 var(--mono);font-style:normal;color:#8a735f}
 .sback li span{display:block;color:#8a735f;font-size:.85em}
-.sback .fine{display:flex;align-items:flex-end;gap:.8em;margin-top:.6em}
+.sback .bfoot{margin-top:auto}
+.sback .fine{display:grid;grid-template-columns:minmax(0,1fr) 3.6em 6.4em;align-items:end;gap:.8em;margin-top:.6em}
+.sback .fine .slot{display:block;min-height:1px}
 .sback .fine p{flex:1;margin:0;font:400 .52em/1.35 var(--mono);color:#7d6a59}
 .sback .hsm{flex:none;display:grid;place-items:center;width:3.6em;height:3.6em;border-radius:50%;border:1.5px solid #2A1E17;font:600 .42em/1.05 var(--mono);text-align:center;letter-spacing:.04em}
 .sback .hsm b{display:block;font-weight:900;font-size:1.1em}
-.sback .barcode{flex:none;width:6.4em;height:auto;display:block}
-.sback .credits{margin-top:auto;padding-top:.8em;border-top:1px solid rgba(42,30,23,.25);font:500 .74em/1.5 var(--mono);color:#6b5646;display:flex;justify-content:space-between;gap:1em}
+.sback .barcode{width:6.4em;height:auto;display:block}
+.sback .credits{padding-top:.8em;border-top:1px solid rgba(42,30,23,.25);font:500 .74em/1.5 var(--mono);color:#6b5646;display:flex;justify-content:space-between;gap:1em}
 /* sleeve tools */
 .hintline{margin:0 0 8px;font:500 .72rem/1.4 var(--mono);color:var(--ink2)}
 .textlist{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
@@ -216,6 +218,21 @@ button{cursor:pointer}
 .pick.on{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
 .pick.on::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--c);box-shadow:0 0 0 1.5px #fff;pointer-events:none}
 .toggles{display:flex;gap:8px;flex-wrap:wrap}
+.dots.small{gap:5px}.dots.small button,.dots.small .pick{width:24px;height:24px}
+.cfields{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.cfield{background:#fffdf7;box-shadow:0 0 0 1px var(--line);border-radius:3px}
+.cf-head{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:.55rem .7rem;text-align:left;font:600 .8rem/1.2 var(--mono);color:var(--ink);cursor:pointer}
+.cf-head .chip{flex:none;width:26px;height:26px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.25),inset 0 -3px 0 rgba(0,0,0,.12)}
+.cf-head .cf-l{flex:1;min-width:0}
+.cf-head code{font:500 .7rem/1 var(--mono);color:var(--ink2)}
+.cf-head .cf-c{font:600 .66rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--burg);border-bottom:1px solid currentColor}
+.cf-tray{padding:4px .7rem .8rem;border-top:1px dashed var(--line)}
+.cf-tray .dots{gap:6px;padding-top:8px}.cf-tray .dots button,.cf-tray .pick{width:26px;height:26px}
+.faces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.faces button{border:0;background:#fffdf7;border-radius:3px;padding:.8rem .4rem;font-size:1.15rem;line-height:1.1;color:var(--ink);box-shadow:0 0 0 1px var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.faces button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.tiles.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.slide.wide{display:flex;align-items:center;gap:10px;font:500 .74rem/1 var(--mono);color:var(--ink2)}.slide.wide input{flex:1}
 .tog{display:flex;align-items:center;gap:8px;border:0;background:#efe9dc;border-radius:999px;padding:.4rem .8rem .4rem .45rem;font:600 .78rem/1 var(--mono);box-shadow:0 0 0 1px var(--line)}
 .tog i{width:30px;height:18px;border-radius:9px;background:#cfc6b4;position:relative;transition:background .2s}
 .tog i::after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .2s}
@@ -239,9 +256,9 @@ button{cursor:pointer}
 .notelist button{border:0;width:46px;height:40px;font:700 .9rem/1 'Caveat',cursive;box-shadow:0 2px 5px rgba(0,0,0,.2);transform:rotate(-2deg)}
 .notelist button[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
 /* share */
-#share{position:fixed;inset:0;z-index:80;background:rgba(26,18,12,.55);display:none;place-items:center;padding:20px}
+#share{position:fixed;inset:0;z-index:80;background:rgba(26,18,12,.55);display:none;place-items:center;grid-template-columns:minmax(0,520px);justify-content:center;padding:20px;overflow:auto}
 #share.on{display:grid}
-.sharecard{background:var(--paper);border-radius:10px;padding:26px;max-width:520px;width:100%;box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.sharecard{background:var(--paper);border-radius:10px;padding:clamp(18px,5vw,26px);width:100%;min-width:0;box-shadow:0 30px 60px rgba(0,0,0,.35)}
 .sharecard h2{margin:0 0 6px;font-size:1.5rem;font-weight:900}
 .sharecard p{margin:0 0 16px;color:var(--ink2);line-height:1.5}
 .linkrow{display:flex;gap:8px}
@@ -273,7 +290,7 @@ button{cursor:pointer}
   background:radial-gradient(ellipse 90% 80% at 50% 40%,transparent 50%,rgba(15,8,3,.45)),radial-gradient(ellipse 50% 60% at 50% 0%,rgba(255,210,150,.25),transparent 70%),linear-gradient(rgba(0,0,0,.25),transparent 12%,transparent 88%,rgba(0,0,0,.2)),var(--walnutH) 0 0/512px,#6b4121;
   box-shadow:inset 0 14px 20px rgba(0,0,0,.25)}
 .ltop::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(115deg,transparent 25%,rgba(255,226,170,.18) 32%,transparent 45%,transparent 55%,rgba(255,226,170,.14) 60%,transparent 70%)}
-@media (max-width:900px){.ltop{grid-template-columns:minmax(0,1fr);gap:28px;padding:30px 6%}}
+@media (max-width:900px){.ltop{grid-template-columns:minmax(0,1fr);gap:28px;padding:30px 6% 96px}#hint{font-size:1.15rem;background:rgba(26,18,12,.82);padding:6px 14px 7px;border-radius:999px;text-shadow:none}#hint:empty{display:none}}
 @media (max-width:600px){.print{left:20%;height:60%;top:12%}.leaner{left:56%;height:58%}.leaves{width:80px;right:0}.radio{display:none}.sconce{display:none}}
 .lfront{height:74px;background:repeating-linear-gradient(90deg,rgba(255,225,180,.12) 0 2px,rgba(0,0,0,0) 2px 8px,rgba(0,0,0,.5) 8px 10px,rgba(0,0,0,.15) 10px 12px),var(--walnut) 0 0/512px;box-shadow:inset 0 6px 0 #a6723f,inset 0 8px 0 #4e2f18,inset 0 -14px 18px rgba(0,0,0,.45)}
 .lleft{display:flex;flex-direction:column;align-items:center;gap:22px}
@@ -413,11 +430,11 @@ button{cursor:pointer}
   <header class="shead">
     <span class="logo">Side B</span><span class="model">PRESSING BOOTH, MODEL SB-1</span><span class="spacer"></span>
     <nav class="steps" role="tablist" aria-label="Steps" id="steps">
-      <button role="tab" data-step="songs" aria-selected="true">01 SONGS</button>
-      <button role="tab" data-step="sleeve" aria-selected="false">02 SLEEVE</button>
-      <button role="tab" data-step="vinyl" aria-selected="false">03 VINYL</button>
-      <button role="tab" data-step="words" aria-selected="false">04 WORDS</button>
-      <button role="tab" data-step="notes" aria-selected="false">05 NOTES</button>
+      <button role="tab" data-step="songs" aria-selected="true"><b>01</b> SONGS</button>
+      <button role="tab" data-step="words" aria-selected="false"><b>02</b> WORDS</button>
+      <button role="tab" data-step="sleeve" aria-selected="false"><b>03</b> SLEEVE</button>
+      <button role="tab" data-step="vinyl" aria-selected="false"><b>04</b> VINYL</button>
+      <button role="tab" data-step="notes" aria-selected="false"><b>05</b> NOTES</button>
     </nav>
     <span class="spacer"></span>
     <button class="btn ghost sm" id="resumeBtn" hidden>Carry on with your last record</button>
@@ -446,61 +463,60 @@ button{cursor:pointer}
             <div class="meter"><span id="meterTxt"></span><span class="bar"><i id="meterBar"></i></span></div>
           </div>
         </section>
+        <!-- WORDS -->
+        <section class="step" id="st-words">
+          <p class="kicker">02 / WORDS</p><h2>Words and layout</h2>
+          <p class="lede">Name your record, then choose where the words sit on the cover and how they look.</p>
+          <div class="card credit">
+            <label for="fName">TITLE</label><input id="fName" class="big" maxlength="40" placeholder="Songs for the Drive Home">
+            <label for="fLine">LINE UNDER THE TITLE</label><input id="fLine" maxlength="40" placeholder="Summer 2026">
+            <div class="row"><div><label for="fBy">PRESSED BY</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
+            <div class="row"><div><label for="fYear">YEAR</label><input id="fYear" maxlength="4" inputmode="numeric"></div><div><label for="fCat">CATALOGUE NO.</label><input id="fCat" maxlength="10"></div></div>
+          </div>
+          <div class="sec"><h3>Layout</h3><div class="tiles three" id="tLay"></div></div>
+          <div class="sec"><h3>Typeface</h3><div class="faces" id="tFont"></div></div>
+          <div class="sec"><h3>Title size</h3><label class="slide wide"><span>Smaller</span><input type="range" id="tSize" min=".6" max="1.5" step=".05" aria-label="Title size"><span>Bigger</span></label>
+            <p class="hintline">Long titles shrink to fit, up to three lines.</p></div>
+          <div class="sec"><h3>On the cover</h3><div class="toggles" id="showTogs"></div></div>
+        </section>
         <!-- SLEEVE -->
         <section class="step" id="st-sleeve">
-          <p class="kicker">02 / SLEEVE</p><h2>Design the sleeve</h2>
-          <p class="lede">Start from any picture, give it a filter, draw on it, and add your own words and the small print of a real record. <button class="btn ghost sm" id="surprise">Surprise me</button></p>
+          <p class="kicker">03 / SLEEVE</p><h2>Design the sleeve</h2>
+          <p class="lede">Add a picture and pick your colours, then choose what goes on the front and the back. <button class="btn ghost sm" id="surprise">Surprise me</button></p>
           <div class="sec"><h3>Picture</h3>
             <label class="drop" id="drop"><span class="ph" id="photoPh"></span><span><b id="photoTitle">Add a picture for the cover</b><span id="photoSub">A photo, a drawing, a scan, any art. Square works best.</span></span><input type="file" id="photoIn" accept="image/*"></label>
             <div class="pad" id="photoModes" style="margin-top:10px;display:none"></div>
           </div>
           <div class="sec" id="filtSec"><h3>Filter</h3><div class="tiles" id="tFilt"></div></div>
-          <div class="sec"><h3>Colours</h3>
-            <p class="hintline">Background</p><div class="dots" id="cBg"></div>
-            <p class="hintline" style="margin-top:12px">Title</p><div class="dots" id="cInk"></div>
-            <p class="hintline" style="margin-top:12px">Accent (obi strip, filters, record label)</p><div class="dots" id="cAcc"></div></div>
-          <div class="sec"><h3>Draw</h3><p class="hintline" id="drawTip">Draw straight onto the sleeve on the left, over your picture or on its own.</p>
+          <div class="sec"><h3>Colours</h3><div class="cfields"><div id="cBg"></div><div id="cInk"></div><div id="cAcc"></div></div><p class="hintline" style="margin-top:8px">The accent colours the obi strip, the record label and some filters.</p></div>
+          <div class="sec"><h3>On the front</h3><p class="hintline">Each one has its own spot, and the title makes room for it.</p><div class="toggles" id="extrasF"></div>
+            <div class="hypepad" id="hypePad" style="display:none"><p class="hintline">What the hype sticker says:</p>
+              <input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
+          <div class="sec"><h3>On the back</h3><p class="hintline">The tracklist is always there. Pick what goes around it.</p><div class="toggles" id="extrasB"></div></div>
+          <div class="sec"><h3>Draw</h3><p class="hintline" id="drawTip">Draw straight onto the sleeve, over your picture or on its own.</p>
             <div class="pad"><button class="btn sm" id="drawBtn" aria-pressed="false">Start drawing</button><button class="btn ghost sm" id="drawWipe">Clear the drawing</button></div>
-            <div class="drawtools" id="drawTools" style="display:none"><div class="dots" id="drawInks"></div><div class="sizes" id="drawSizes"></div>
+            <div class="drawtools" id="drawTools" style="display:none"><div class="dots small" id="drawInks"></div><div class="sizes" id="drawSizes"></div>
               <button class="tog" id="drawErase" aria-pressed="false"><i></i>Eraser</button><button class="btn ghost sm" id="drawUndo">Undo</button></div></div>
-          <div class="sec"><h3>Words on the cover</h3>
+          <div class="sec"><h3>More words</h3><p class="hintline">Extra text you can place anywhere on the front.</p>
             <div class="pad"><button class="btn sm" id="addText">Add text</button><span class="hintline" id="textHint"></span></div>
             <div class="textlist" id="textList"></div>
             <div class="textpad" id="textPad" style="display:none">
               <textarea id="textIn" rows="2" maxlength="80" placeholder="Type something for the cover."></textarea>
               <div class="fonts" id="textFonts"></div>
-              <div class="dots" id="textInks"></div>
+              <div id="textInks"></div>
               <label class="slide">Size <input type="range" id="textSize" min="2" max="30" step=".5"></label>
               <label class="slide">Tilt <input type="range" id="textRot" min="-30" max="30" step="1"></label>
               <button class="btn ghost sm" id="delText">Remove this text</button>
             </div></div>
-          <div class="sec"><h3>Title style</h3><div class="tiles" id="tType"></div></div>
-          <div class="sec"><h3>Finishing touches</h3><div class="toggles" id="extras"></div>
-            <div class="hypepad" id="hypePad" style="display:none"><p class="hintline">What the hype sticker says:</p>
-              <input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
         </section>
         <!-- VINYL -->
         <section class="step" id="st-vinyl">
-          <p class="kicker">03 / VINYL</p><h2>Choose the vinyl</h2>
-          <p class="lede">Pick a pressing, then its colours. The label is the paper circle in the middle.</p>
+          <p class="kicker">04 / VINYL</p><h2>Choose the vinyl</h2>
+          <p class="lede">Pick a pressing and a shape, then its colours. The label is the paper circle in the middle.</p>
           <div class="sec"><h3>Pressing</h3><div class="tiles" id="tVinyl"></div></div>
           <div class="sec"><h3>Shape</h3><div class="tiles" id="tShape"></div></div>
-          <div class="sec" id="v1sec"><h3>Main colour</h3><div class="dots" id="dV1"></div></div>
-          <div class="sec" id="v2sec"><h3>Second colour</h3><div class="dots" id="dV2"></div></div>
           <div class="sec"><h3>Label</h3><div class="tiles" id="tLabel"></div></div>
-          <div class="sec"><h3>Label colour</h3><div class="dots" id="dLab"></div></div>
-        </section>
-        <!-- WORDS -->
-        <section class="step" id="st-words">
-          <p class="kicker">04 / WORDS</p><h2>Credits</h2>
-          <p class="lede">The title and line go on the cover. Everything else is printed on the back, like a real pressing.</p>
-          <div class="card credit">
-            <label for="fName">TITLE</label><input id="fName" class="big" maxlength="40" placeholder="Songs for the Drive Home">
-            <label for="fLine">LINE ON THE COVER</label><input id="fLine" maxlength="40" placeholder="Summer 2026">
-            <div class="row"><div><label for="fBy">PRESSED BY</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
-            <div class="row"><div><label for="fYear">YEAR</label><input id="fYear" maxlength="4" inputmode="numeric"></div><div><label for="fCat">CATALOGUE NO.</label><input id="fCat" maxlength="10"></div></div>
-            <p class="help">Tip: a short title looks best on most title styles.</p>
-          </div>
+          <div class="sec"><h3>Colours</h3><div class="cfields"><div id="dV1"></div><div id="dV2"></div><div id="dLab"></div></div></div>
         </section>
         <!-- NOTES -->
         <section class="step" id="st-notes">
@@ -848,17 +864,22 @@ const pal = d => ({ bg:d.bg, ink:d.ink, acc:d.acc });
 const VCOLNAMES = ['Black','Red','Pink','Purple','Blue','Green','Yellow','Orange','Gold','Brown','Grey','White','Oxblood','Teal'];
 // filters for the cover picture, done with blend modes so they work in every browser
 const FILTERS = [['none','Original'],['bw','Black and white'],['sepia','Sepia'],['faded','Faded 70s'],['duotone','Duotone'],['riso','Riso print'],['halftone','Halftone'],['cyan','Cyanotype'],['leak','Light leak'],['grain','Film grain']];
-const TYPES = [['grotesk','Grotesk'],['condensed','Condensed'],['serif','Serif'],['script','Script'],['hand','Handwritten'],['mono','Mono'],['minimal','Minimal'],['none','No title']];
+// the words on the cover sit in one of three layouts, in one of six typefaces: [key, name, weight, family, capitals, line height, starting size]
+const LAYOUTS = [['top','Top'],['centre','Centre'],['bottom','Bottom']];
+const TITLE_FONTS = [['grotesk','Grotesk','900','Archivo, sans-serif',1,.88,17],['narrow','Narrow','700','"Archivo Narrow", sans-serif',1,.92,22],['serif','Serif','400','"DM Serif Display", serif',0,1.02,17],
+  ['script','Script','400','Yellowtail, cursive',0,1.08,21],['hand','Handwritten','700','Caveat, cursive',0,.98,19],['mono','Typewriter','600','"IBM Plex Mono", monospace',1,1.15,9]];
+const SHOWS = [['showTitle','Title'],['showLine','Line under the title'],['showCredit','Pressed by and for']];
 const TEXT_FONTS = [['900 X Archivo, sans-serif','Bold'],['700 X "Archivo Narrow", sans-serif','Narrow'],['400 X "DM Serif Display", serif','Serif'],['400 X Yellowtail, cursive','Script'],['700 X Caveat, cursive','Hand'],['500 X "IBM Plex Mono", monospace','Mono']];
 const INKS = ['#1b1714','#F7F1E3','#B3252B','#EDB33A','#1F3A63','#2F6238','#D86A2C','#E89AB5','#6B3FA0','#3FA0E6','#8A8D91','#ffffff'];
-const EXTRAS = [['obi','Obi strip'],['sticker','Hype sticker'],['stereo','Stereo banner'],['g180','180 gram badge'],['half','Half-speed mastered, back'],['barcode','Barcode, back'],['legal','Legal small print, back'],['worn','Worn edges']];
+const FRONT_EXTRAS = [['obi','Obi strip'],['stereo','Stereo banner'],['sticker','Hype sticker'],['g180','180 gram badge'],['worn','Worn edges']];
+const BACK_EXTRAS = [['credits','Credits'],['legal','Legal small print'],['half','Half-speed mastered'],['barcode','Barcode']];
 const VINYLS = [['black','Black',0],['solid','Solid colour',1],['translucent','Transparent',1],['clear','Ultra clear',0],['metallic','Metallic',1],['iridescent','Iridescent',0],
   ['marble','Marbled',2],['splatter','Splatter',2],['swirl','Swirl',2],['clouds','Cloudy',2],['split','Half and half',2],['stripe','Striped',2],['inner','Colour in colour',2],
   ['smoke','Smoke',2],['eco','Eco-mix',0],['picture','Picture disc',0]];
 const SHAPES = [['round','Round'],['heart','Heart'],['star','Star'],['hex','Hexagon'],['oct','Octagon']];
 const PLAY = { round:.97, heart:.6, star:.56, hex:.84, oct:.88 };
 const LABELS = [['solid','Solid'],['split','Two-tone'],['ring','Ring'],['art','Cover art'],['minimal','Minimal']];
-const PHOTOMODES = [['full','Full bleed'],['framed','Framed'],['circle','Circle']];
+const PHOTOMODES = [['full','Full bleed'],['framed','Framed']];
 const NOTECOLS = ['#F6D48A','#F4B6A6','#BFE0C6','#B9D3EA','#F2A65A'];
 const photoImgs = new Map();
 function photoImage(src){ if (!src) return null; if (photoImgs.has(src)) return photoImgs.get(src); const im = new Image(); im.src = src; photoImgs.set(src, im); im.onload = () => { imgCache.clear(); refreshAll(); }; return im; }
@@ -868,23 +889,23 @@ function drawPhoto(g, im, x, y, w, h){ if (!im || !im.complete || !im.naturalWid
 function drawSleeve(r, size){
   const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d'), d = r.d, W = pal(d);
   g.scale(size/100, size/100); g.fillStyle = W.bg; g.fillRect(0,0,100,100);
-  const im = r.photo ? photoImage(r.photo) : null, pm = d.pm || 'full';
+  const im = r.photo ? photoImage(r.photo) : null, full = !!im && d.pm !== 'framed', L = coverLayout(g, r, !!im && !full);
   if (im){
-    if (pm === 'full') photoFiltered(g, im, 0, 0, 100, 100, d.filt, W);
-    else if (pm === 'framed'){ g.fillStyle = W.ink; g.fillRect(13, 11, 74, 60); photoFiltered(g, im, 15, 13, 70, 56, d.filt, W); }
-    else { g.save(); g.beginPath(); g.arc(50, 42, 27, 0, 7); g.clip(); photoFiltered(g, im, 23, 15, 54, 54, d.filt, W); g.restore(); g.strokeStyle = W.ink; g.lineWidth = 1.2; g.beginPath(); g.arc(50, 42, 27, 0, 7); g.stroke(); }
+    if (full) photoFiltered(g, im, 0, 0, 100, 100, d.filt, W);
+    else { const [x, y, s] = L.frame; g.fillStyle = W.ink; g.fillRect(x - 1.4, y - 1.4, s + 2.8, s + 2.8); photoFiltered(g, im, x, y, s, s, d.filt, W); }
   }
   if (r.draw && r.draw.length){ const layer = document.createElement('canvas'); layer.width = layer.height = size; paintStrokes(layer.getContext('2d'), r.draw, size); g.save(); g.setTransform(1,0,0,1,0,0); g.drawImage(layer, 0, 0); g.restore(); }
-  const x0 = d.obi ? 13 : 0;
-  if (d.type !== 'none') drawTitle(g, r, W, x0, im && pm === 'full');
+  drawCoverText(g, L, full ? '#ffffff' : W.ink, full);
   drawTexts(g, r.texts || []);
-  if (d.stereo){ g.fillStyle = '#F7F1E3'; g.fillRect(74, 2.5, 22, 6); g.fillStyle = '#1b1714'; g.fillRect(74.6, 3.1, 20.8, 4.8); g.fillStyle = '#F7F1E3'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 3.4px Archivo, sans-serif'; g.fillText('S T E R E O', 85, 5.6); g.textBaseline = 'alphabetic'; g.textAlign = 'left'; }
-  if (d.g180){ g.save(); g.translate(x0 + 11, 88); g.rotate(-.12); g.fillStyle = '#C9A24A'; g.beginPath(); g.arc(0,0,8,0,7); g.fill(); g.strokeStyle = '#8a6a26'; g.lineWidth = .35; g.beginPath(); g.arc(0,0,7,0,7); g.stroke();
-    g.fillStyle = '#231A14'; g.textAlign = 'center'; g.font = '900 4.6px Archivo, sans-serif'; g.fillText('180', 0, .6); g.font = '600 1.7px "IBM Plex Mono", monospace'; g.fillText('GRAM VINYL', 0, 3.6); g.fillText('AUDIOPHILE', 0, -3.6); g.restore(); }
+  // the finishing touches each have their own place: a banner across the top, a strip down the left, a sticker top right, a badge bottom right
+  if (d.stereo){ g.fillStyle = '#16120F'; g.fillRect(0, 0, 100, 6.4); g.fillStyle = '#F3E9D4'; g.fillRect(0, 6.4, 100, .5);
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 3.2px Archivo, sans-serif'; g.fillText('S  T  E  R  E  O', (L.X - 6 + 100)/2, 3.4); g.textBaseline = 'alphabetic'; g.textAlign = 'left'; }
   if (d.obi){ g.fillStyle = W.acc; g.fillRect(0,0,11,100); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(9.6,0,1.4,100);
     g.save(); g.translate(6.8, 96); g.rotate(-Math.PI/2); g.fillStyle = W.acc === W.bg ? W.ink : (lum(W.acc) > .55 ? '#231A14' : '#F6EBD6');
     g.font = '900 5px Archivo, sans-serif'; g.fillText((r.name || 'Untitled').toUpperCase().slice(0,30), 0, 0); g.font = '500 2.6px "IBM Plex Mono", monospace'; g.fillText(`SIDE B RECORDS  ${r.cat || ''}`, 0, -5.6); g.restore(); }
-  if (d.sticker){ const h = r.hype || {}; g.save(); g.translate(78, 20); g.rotate(-.2); g.fillStyle = '#F7EEDB'; g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 1.2; g.beginPath(); g.arc(0,0,12,0,7); g.fill(); g.shadowBlur = 0;
+  if (d.g180){ g.save(); g.translate(STICK.badge[0], STICK.badge[1]); g.rotate(-.12); g.fillStyle = '#C9A24A'; g.beginPath(); g.arc(0,0,7.5,0,7); g.fill(); g.strokeStyle = '#8a6a26'; g.lineWidth = .35; g.beginPath(); g.arc(0,0,6.5,0,7); g.stroke();
+    g.fillStyle = '#231A14'; g.textAlign = 'center'; g.font = '900 4.4px Archivo, sans-serif'; g.fillText('180', 0, .6); g.font = '600 1.6px "IBM Plex Mono", monospace'; g.fillText('GRAM VINYL', 0, 3.4); g.fillText('AUDIOPHILE', 0, -3.4); g.restore(); }
+  if (d.sticker){ const h = r.hype || {}; g.save(); g.translate(STICK.sticker[0], STICK.sticker[1] + L.T); g.rotate(-.2); g.fillStyle = '#F7EEDB'; g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 1.2; g.beginPath(); g.arc(0,0,12,0,7); g.fill(); g.shadowBlur = 0;
     g.strokeStyle = '#B8452B'; g.lineWidth = .5; g.beginPath(); g.arc(0,0,10.6,0,7); g.stroke(); g.textAlign = 'center';
     g.fillStyle = '#B8452B'; fitFont(g, h.a || '', 700, 'Archivo, sans-serif', 3, 17); g.fillText(h.a || '', 0, -4.2);
     g.fillStyle = '#231A14'; fitFont(g, h.b || '', 700, 'Caveat, cursive', 5.4, 19); g.fillText(h.b || '', 0, 1.6);
@@ -895,6 +916,45 @@ function drawSleeve(r, size){
   if (d.worn){ g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = size*.02; g.beginPath(); g.arc(size/2, size/2, size*.41, 0, 7); g.stroke(); g.strokeStyle = 'rgba(255,255,255,.2)'; g.lineWidth = size*.012; g.strokeRect(0,0,size,size); }
   const sh = g.createLinearGradient(0,0,size,size); sh.addColorStop(.26,'rgba(255,255,255,0)'); sh.addColorStop(.26,'rgba(255,255,255,.12)'); sh.addColorStop(.34,'rgba(255,255,255,.12)'); sh.addColorStop(.34,'rgba(255,255,255,0)'); g.fillStyle = sh; g.fillRect(0,0,size,size);
   return c;
+}
+// where the sticker and the badge sit, on a cover 100 across
+const STICK = { sticker:[80, 17], badge:[88.5, 88.5] };
+// Works out where the words go: the layout picks the spot, the title is wrapped (up to three lines) and shrunk until it fits,
+// and it keeps clear of the obi strip, the stereo banner, the sticker and the badge. A framed picture takes the space that's left.
+function coverLayout(g, r, framed){
+  const d = r.d, F = TITLE_FONTS.find(f => f[0] === d.font) || TITLE_FONTS[2], [, , wt, fam, up, lh, base] = F;
+  const T = d.stereo ? 7 : 0, X = (d.obi ? 11 : 0) + 6, R = 94, lay = d.lay || 'top';
+  const title = d.showTitle !== false ? (r.name || 'Untitled').trim() : '', txt = up ? title.toUpperCase() : title;
+  const sub = d.showLine !== false ? (r.line || '').trim().toUpperCase() : '';
+  const credit = d.showCredit !== false ? [r.by && `PRESSED BY ${r.by}`, r.to && `FOR ${r.to}`].filter(Boolean).join('  /  ').toUpperCase() : '';
+  const floor = credit ? 88 : 94, subH = sub ? (txt ? 6 : 4) : 0;
+  let x0 = X, x1 = R, top = T + 6, bottom = floor;
+  if (lay === 'top'){ if (d.sticker) x1 = 66; bottom = framed ? T + 38 : 62; }
+  else if (lay === 'bottom'){ if (d.g180) x1 = 79; top = framed ? 60 : d.sticker ? T + 31 : T + 6; }
+  // centred words keep clear of the badge by narrowing evenly on both sides, so they stay centred
+  else { top = framed ? 60 : d.sticker ? T + 31 : T + 8; if (d.g180){ if (framed){ x0 = X + 15; x1 = R - 15; } else bottom = Math.min(bottom, 79); } }
+  const w = x1 - x0, maxH = Math.max(5, bottom - top - subH);
+  let s = base*(d.ts || 1), lines = [];
+  if (txt) for (;;){ g.font = `${wt} ${s}px ${fam}`; lines = wrap(g, txt, w); const wid = Math.max(...lines.map(l => g.measureText(l).width));
+    if ((lines.length <= 3 && wid <= w && lines.length*s*lh <= maxH) || s <= 2.5) break; s -= .25; }
+  const blockH = lines.length*s*lh + subH, y0 = lay === 'top' ? top : lay === 'bottom' ? bottom - blockH : top + (bottom - top - blockH)/2;
+  let frame = null;
+  if (framed){ let fy0 = T + 7, fy1 = floor - 1;
+    if (blockH){ if (lay === 'top') fy0 = y0 + blockH + 4; else fy1 = y0 - 4; }
+    // and steps aside from the sticker rather than sit under it
+    const fx1 = d.sticker && fy0 < T + 30 ? 66 : R, sz = Math.max(24, Math.min(fy1 - fy0, fx1 - X - 4)); frame = [X + (fx1 - X - sz)/2, fy0 + Math.max(0, (fy1 - fy0 - sz)/2), sz]; }
+  return { wt, fam, lh, s, lines, sub, credit, X, x0, x1, T, lay, y0, blockH, frame, creditW:(d.g180 ? 79 : R) - X };
+}
+function drawCoverText(g, L, ink, onPhoto){
+  if (onPhoto && L.blockH){ const a = L.y0 - 10, b = L.y0 + L.blockH + 10, sg = g.createLinearGradient(0, L.lay === 'bottom' ? a : b, 0, L.lay === 'bottom' ? b : a);
+    sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(1, 'rgba(0,0,0,.6)'); g.fillStyle = L.lay === 'centre' ? 'rgba(0,0,0,.38)' : sg; g.fillRect(0, a, 100, b - a); }
+  if (onPhoto && L.credit){ const sg = g.createLinearGradient(0, 86, 0, 100); sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(1, 'rgba(0,0,0,.4)'); g.fillStyle = sg; g.fillRect(0, 86, 100, 14); }
+  const centre = L.lay === 'centre', ax = centre ? (L.x0 + L.x1)/2 : L.x0;
+  g.fillStyle = ink; g.textBaseline = 'alphabetic'; g.textAlign = centre ? 'center' : 'left';
+  g.font = `${L.wt} ${L.s}px ${L.fam}`; L.lines.forEach((l, i) => g.fillText(l, ax, L.y0 + i*L.s*L.lh + L.s*.8));
+  if (L.sub){ fitFont(g, L.sub, 500, '"IBM Plex Mono", monospace', 3.2, L.x1 - L.x0); g.fillText(L.sub, ax, L.y0 + L.blockH - 1.6); }
+  if (L.credit){ fitFont(g, L.credit, 500, '"IBM Plex Mono", monospace', 2.8, L.creditW); g.textAlign = 'left'; g.fillText(L.credit, L.X, 95.6); }
+  g.textAlign = 'left';
 }
 // the picture with one of the filters, clipped to its box
 function photoFiltered(g, im, x, y, w, h, filt, W){
@@ -935,35 +995,6 @@ function drawTexts(g, texts){
     g.font = TEXT_FONTS[t.f][0].replace('X', t.s + 'px'); const lines = t.t.split('\n'); lines.forEach((l, i) => g.fillText(l, 0, (i - (lines.length - 1)/2)*t.s*1.08)); g.restore(); }); }
 function lum(hex){ const n = parseInt(hex.slice(1),16); return ((n>>16)*.299 + ((n>>8)&255)*.587 + (n&255)*.114)/255; }
 function fitFont(g, txt, weight, fam, max, maxW, style=''){ let s = max; g.font = `${style} ${weight} ${s}px ${fam}`; while (g.measureText(txt).width > maxW && s > 3){ s -= .5; g.font = `${style} ${weight} ${s}px ${fam}`; } return s; }
-function drawTitle(g, r, W, x0, onPhoto){
-  const name = (r.name || 'Untitled').trim(), line = (r.line || '').trim(), by = r.by ? `${r.by}` : '', w = 88 - x0, X = 6 + x0, t = r.d.type;
-  const ink = onPhoto ? '#ffffff' : W.ink, lowInk = ink;
-  if (onPhoto){ g.save(); const sg = g.createLinearGradient(0,55,0,100); sg.addColorStop(0,'rgba(0,0,0,0)'); sg.addColorStop(1,'rgba(0,0,0,.55)'); g.fillStyle = sg; g.fillRect(0,55,100,45); g.restore(); }
-  g.fillStyle = ink; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
-  const mono = (txt, x, y, s=3.4, al='left') => { const prev = g.fillStyle; if (y > 62) g.fillStyle = lowInk; g.textAlign = al; g.font = `500 ${s}px "IBM Plex Mono", monospace`; g.fillText(txt, x, y); g.textAlign = 'left'; g.fillStyle = prev; };
-  if (t === 'grotesk'){
-    const words = name.toUpperCase().split(/\s+/).slice(0,4); let y = 8; words.forEach(wd => { const s = fitFont(g, wd, 900, 'Archivo, sans-serif', 17, w); y += s*.86; g.fillText(wd, X, y); y += .6; });
-    mono([by, line].filter(Boolean).join('  /  ').toUpperCase(), X, 95);
-  } else if (t === 'condensed'){
-    const up = name.toUpperCase(); const s = fitFont(g, up, 700, '"Archivo Narrow", sans-serif', 30, w); g.fillStyle = lowInk; g.fillText(up, X, 94); g.fillStyle = ink;
-    mono(line.toUpperCase(), X, 8); mono(by.toUpperCase(), 94, 8, 3.4, 'right');
-  } else if (t === 'serif'){
-    g.textAlign = 'center'; const cx = X + w/2; fitFont(g, name, 400, '"DM Serif Display", serif', 13, w); g.fillText(name, cx, 18);
-    if (line){ fitFont(g, line, 400, '"DM Serif Display", serif', 5, w, 'italic'); g.fillText(line, cx, 25); } mono(by.toUpperCase(), cx, 95, 3.2, 'center');
-  } else if (t === 'script'){
-    g.textAlign = 'center'; const cx = X + w/2; fitFont(g, name, 400, 'Yellowtail, cursive', 21, w); g.fillText(name, cx, 32); mono((line || by).toUpperCase(), cx, 40, 3.6, 'center'); if (line && by) mono(by, cx, 95, 3.2, 'center');
-  } else if (t === 'hand'){
-    g.save(); g.translate(X + w/2, 22); g.rotate(-.05); g.fillStyle = 'rgba(244,236,214,.95)'; g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 1.5; g.fillRect(-w*.45, -11, w*.9, 22); g.shadowBlur = 0;
-    g.fillStyle = 'rgba(217,163,58,.35)'; g.fillRect(-w*.45 - 3, -12, 9, 6); g.fillRect(w*.45 - 6, 7, 9, 6);
-    g.fillStyle = '#231A14'; g.textAlign = 'center'; fitFont(g, name, 700, 'Caveat, cursive', 12, w*.82); g.fillText(name, 0, 2); g.font = '600 5px Caveat, cursive'; g.fillText([line, by].filter(Boolean).join(', '), 0, 8.5); g.restore();
-  } else if (t === 'mono'){
-    g.font = '600 5.2px "IBM Plex Mono", monospace'; const words = name.toUpperCase(); let y = 12; const lines = wrap(g, words, w); lines.slice(0,3).forEach(l => { g.fillText(l, X, y); y += 6; });
-    mono(`SB ${r.cat || ''}`, X, y + 2, 3); mono(line.toUpperCase(), X, 90, 3.2); mono(by ? `PRESSED BY ${by.toUpperCase()}` : '', X, 95, 3);
-  } else {
-    g.textAlign = 'center'; const cx = X + w/2; g.fillStyle = lowInk; g.font = '600 3.8px Archivo, sans-serif'; const sp = name.toUpperCase().split('').join(String.fromCharCode(8202)); g.fillText(sp, cx, 86); mono([by, line].filter(Boolean).join('  '), cx, 91, 2.8, 'center');
-  }
-  g.textAlign = 'left';
-}
 function wrap(g, txt, maxW){ const out = []; let cur = ''; txt.split(' ').forEach(w => { const t = cur ? cur + ' ' + w : w; if (g.measureText(t).width > maxW && cur){ out.push(cur); cur = w; } else cur = t; }); if (cur) out.push(cur); return out; }
 
 function shapePath(g, shape, h, size){
@@ -1060,9 +1091,9 @@ function backHTML(r, A, B){
   const li = (arr, sd) => arr.length ? arr.map((s,i) => `<li><em>${sd}${i+1}</em><div>${esc(s.name)}<span>${esc(s.artist)}</span></div></li>`).join('') : `<li><em></em><div><span>Nothing here yet</span></div></li>`;
   return `<div class="hd"><div><h4>${esc(r.name || 'Untitled')}</h4>${r.line ? `<p class="sub">${esc(r.line)}</p>` : ''}</div><div class="cat">${esc(r.cat || '')}<br>${recSize(r)}-INCH, 33 1/3</div></div>
     <div class="cols"><div><b>SIDE A</b><ol>${li(A,'A')}</ol></div><div><b>SIDE B</b><ol>${li(B,'B')}</ol></div></div>
-    <div class="credits"><span>${r.by ? 'PRESSED BY ' + esc(r.by).toUpperCase() : 'PRESSED AT SIDE B'}${r.to ? '<br>FOR ' + esc(r.to).toUpperCase() : ''}</span><span>&copy; ${esc(r.year || '')} SIDE B RECORDS<br>ONE OF ONE</span></div>
-    ${r.d.legal || r.d.barcode || r.d.half ? `<div class="fine">${r.d.legal ? `<p>&#8471; &amp; &copy; ${esc(r.year || '')} ${esc(r.by || 'Side B Records')}. All rights of the producer and of the owner of the recorded work reserved. Unauthorised copying, hiring, lending, public performance and broadcasting of this record prohibited. Pressed one of one at Side B.</p>` : '<p></p>'}
-      ${r.d.half ? `<span class="hsm"><b>HALF-SPEED</b>MASTERED</span>` : ''}${r.d.barcode ? barcodeSVG(r) : ''}</div>` : ''}
+    <div class="bfoot">${r.d.credits ? `<div class="credits"><span>${r.by ? 'PRESSED BY ' + esc(r.by).toUpperCase() : 'PRESSED AT SIDE B'}${r.to ? '<br>FOR ' + esc(r.to).toUpperCase() : ''}</span><span>&copy; ${esc(r.year || '')} SIDE B RECORDS<br>ONE OF ONE</span></div>` : ''}
+    ${r.d.legal || r.d.barcode || r.d.half ? `<div class="fine"><p>${r.d.legal ? `&#8471; &amp; &copy; ${esc(r.year || '')} ${esc(r.by || 'Side B Records')}. All rights of the producer and of the owner of the recorded work reserved. Unauthorised copying, hiring, lending, public performance and broadcasting of this record prohibited. Pressed one of one at Side B.` : ''}</p>
+      <span class="slot">${r.d.half ? `<span class="hsm"><b>HALF-SPEED</b>MASTERED</span>` : ''}</span><span class="slot bc">${r.d.barcode ? barcodeSVG(r) : ''}</span></div>` : ''}</div>
     <div class="notes" data-face="B"></div>`;
 }
 // a real EAN-13 barcode, using the 20-29 prefix that shops keep for their own use, made from the catalogue number
@@ -1083,7 +1114,7 @@ function renderNotes(container, r, face, editable){
    ============================================================ */
 const MINS = 6, MAXSIDE = 12;
 const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'',
-  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', type:'script', obi:false, sticker:false, worn:false, stereo:false, g180:false, half:false, barcode:true, legal:true, pm:'full', vinyl:'marble', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2' },
+  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', lay:'top', font:'serif', ts:1, showTitle:true, showLine:true, showCredit:true, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:true, pm:'full', vinyl:'marble', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2' },
   hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[], A:[], B:[], notes:[] });
 // a record can come from anyone's link, so check every field before it is drawn or played
 const MEDIA_HOSTS = /(^|\.)(apple\.com|mzstatic\.com)$/;
@@ -1094,6 +1125,7 @@ function cleanRec(r){
   const num = (v, lo, hi, def) => Number.isFinite(+v) && v !== '' && v !== null ? clamp(+v, lo, hi) : def;
   const idx = (v, list, def) => Number.isInteger(v) && v >= 0 && v < list.length ? v : def;
   const pick = (v, list, def) => list.some(o => o[0] === v) ? v : def;
+  const hex = (v, def) => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v.toUpperCase() : def;
   const song = s => { if (!s || typeof s !== 'object') return null;
     if (s.s === 'd'){ const al = idx(s.al, DEMO, -1); if (al < 0) return null; const ti = idx(s.ti, DEMO[al].tracks, -1); return ti < 0 ? null : { s:'d', al, ti }; }
     if (s.s === 'it'){ const t = str(s.t, 200); if (!t) return null; return { s:'it', id:str(s.id, 40), t, a:str(s.a, 200), c:safeURL(s.c), p:safeURL(s.p), u:safeURL(s.u) }; }
@@ -1106,15 +1138,18 @@ function cleanRec(r){
   const texts = (Array.isArray(r.texts) ? r.texts : []).filter(t => t && typeof t === 'object').slice(0, 8).map(t => ({ t:str(t.t, 80), f:idx(t.f, TEXT_FONTS, 0), c:hex(t.c, '#1b1714'),
     s:num(t.s, 2, 40, 9), x:num(t.x, -10, 110, 50), y:num(t.y, -10, 110, 50), r:num(t.r, -45, 45, 0) }));
   const hy = r.hype && typeof r.hype === 'object' ? r.hype : b.hype, hype = { a:str(hy.a, 24), b:str(hy.b, 40), c:str(hy.c, 30) };
-  const hex = (v, def) => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v.toUpperCase() : def;
   const filt = d.pm === 'duotone' ? 'duotone' : d.filt, pm = d.pm === 'duotone' ? 'full' : d.pm;
   // older records stored colours as numbers into fixed lists; turn those into the colours they meant
+  // older records chose one of seven title styles; each becomes the typeface and layout it looked most like
+  const OT = { grotesk:['grotesk','top'], condensed:['narrow','bottom'], serif:['serif','top'], script:['script','centre'], hand:['hand','centre'], mono:['mono','top'], minimal:['grotesk','bottom'] };
+  const ot = typeof d.type === 'string' && Object.prototype.hasOwnProperty.call(OT, d.type) ? OT[d.type] : null;
   const old = Number.isInteger(d.way) && WAYS[d.way] ? WAYS[d.way] : null, oldLab = Number.isInteger(d.lab) && WAYS[d.lab] ? WAYS[d.lab].bg : null;
   const vcol = (v, def) => hex(v, Number.isInteger(v) && VCOLS[v] ? VCOLS[v] : def);
   return { name:str(r.name, 80), line:str(r.line, 120), by:str(r.by, 60), to:str(r.to, 60), year:str(r.year, 10, b.year), cat:str(r.cat, 20, b.cat), photo,
-    d:{ bg:hex(d.bg, old ? old.bg : b.d.bg), ink:hex(d.ink, old ? old.ink : b.d.ink), acc:hex(d.acc, old ? old.acc : b.d.acc), filt:pick(filt, FILTERS, b.d.filt), type:pick(d.type, TYPES, b.d.type), obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
+    d:{ bg:hex(d.bg, old ? old.bg : b.d.bg), ink:hex(d.ink, old ? old.ink : b.d.ink), acc:hex(d.acc, old ? old.acc : b.d.acc), filt:pick(filt, FILTERS, b.d.filt), lay:pick(d.lay, LAYOUTS, ot ? ot[1] : b.d.lay), font:pick(d.font, TITLE_FONTS, ot ? ot[0] : b.d.font), ts:num(d.ts, .6, 1.5, d.type === 'minimal' ? .6 : 1),
+      showTitle:d.type !== 'none' && d.showTitle !== false, showLine:d.showLine !== false, showCredit:d.showCredit !== false, credits:d.credits !== false, obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
       stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:d.legal !== false,
-      pm:pick(pm, PHOTOMODES, b.d.pm), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
+      pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
       shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab) },
     hype, draw, texts, A:side(r.A), B:side(r.B),
     notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:hex(n.c, Number.isInteger(n.c) && NOTECOLS[n.c] ? NOTECOLS[n.c] : NOTECOLS[0]),
@@ -1122,9 +1157,10 @@ function cleanRec(r){
 }
 // every visit starts a new record; the last one is kept so it can be picked up again from the booth
 const hasWork = r => r.A.length + r.B.length > 0 || !!r.name;
-let lastDraft = cleanRec(store.get('sideb-press')), draft = cleanRec(null);
+// a saved draft that can't be read is simply dropped, so it can never stop the site from starting
+let lastDraft = (() => { try { return cleanRec(store.get('sideb-press')); } catch(e){ return cleanRec(null); } })(), draft = cleanRec(null);
 let step = 'songs', selNote = -1, face = 'F';
-const STEPS = ['songs','sleeve','vinyl','words','notes'];
+const STEPS = ['songs','words','sleeve','vinyl','notes'];
 function saveDraft(){ if (!hasWork(draft) && hasWork(lastDraft)) return; if (!store.set('sideb-press', draft)){ const p = draft.photo; draft.photo = ''; store.set('sideb-press', draft); draft.photo = p; } }
 const songKey = s => s.key || (s.s === 'd' ? `d${s.al}-${s.ti}` : `it${s.id}`);
 function hydrateSong(s){ if (s.s === 'd'){ const a = DEMO[s.al]; return { ...s, name:a.tracks[s.ti], artist:a.band, album:a.title, key:songKey(s) }; } return { ...s, name:s.t, artist:s.a, key:songKey(s) }; }
@@ -1182,17 +1218,16 @@ function refreshPreview(){ clearTimeout(prevTimer); prevTimer = setTimeout(() =>
   $('pVin').style.width = (recSize(draft) === 12 ? 62 : 55) + '%'; $('pVin').style.top = (recSize(draft) === 12 ? 2 : 5.5) + '%';
   $('pBack').innerHTML = backHTML(draft, draft.A.map(hydrateSong), draft.B.map(hydrateSong));
   renderNotes($('nFront'), draft, 'F', step === 'notes'); renderNotes($('pBack').querySelector('.notes'), draft, 'B', step === 'notes');
-  if (step === 'sleeve' || step === 'vinyl') refreshTiles();
+  if (step === 'words' || step === 'sleeve' || step === 'vinyl') refreshTiles();
 }, 50); }
 function refreshAll(){ refreshPreview(); }
 // tiles render previews of each option using the current design
 function variant(patch){ return { ...draft, d:{ ...draft.d, ...patch } }; }
 let tileTimer;
 function refreshTiles(){ clearTimeout(tileTimer); tileTimer = setTimeout(() => {
-  if (step === 'sleeve'){
-    if (draft.photo) tilesFill('tFilt', FILTERS, v => sleeveURL(variant({ filt:v }), 140), 'filt');
-    tilesFill('tType', TYPES, v => sleeveURL(variant({ type:v }), 140), 'type');
-  } else if (step === 'vinyl'){
+  if (step === 'words') tilesFill('tLay', LAYOUTS, v => sleeveURL(variant({ lay:v }), 180), 'lay');
+  else if (step === 'sleeve'){ if (draft.photo) tilesFill('tFilt', FILTERS, v => sleeveURL(variant({ filt:v }), 140), 'filt'); }
+  else if (step === 'vinyl'){
     tilesFill('tVinyl', VINYLS, v => vinylURL(variant({ vinyl:v }), 140, 'A'), 'vinyl', true);
     tilesFill('tShape', SHAPES, v => vinylURL(variant({ shape:v }), 140, 'A'), 'shape', true);
     tilesFill('tLabel', LABELS, v => vinylURL(variant({ label:v }), 140, 'A'), 'label', true);
@@ -1213,20 +1248,38 @@ function colourRow(el, swatches, get, set){
   el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.c.toUpperCase() === v));
   const pick = el.querySelector('.pick'), inp = pick.querySelector('input'); pick.classList.toggle('on', !listed && !!v); pick.style.setProperty('--c', v || '#888888');
   if (document.activeElement !== inp && /^#[0-9A-F]{6}$/.test(v)) inp.value = v.toLowerCase(); }
+// one colour choice, folded up: its name and the colour now, and a tray of swatches and the full picker when opened
+function colourField(el, label, swatches, get, set){
+  if (!el.dataset.cf){ el.dataset.cf = '1'; el.classList.add('cfield');
+    el.innerHTML = `<button type="button" class="cf-head" aria-expanded="false"><i class="chip"></i><span class="cf-l">${label}</span><code></code><span class="cf-c">Change</span></button><div class="cf-tray" hidden><div class="dots"></div></div>`;
+    const head = el.querySelector('.cf-head'), tray = el.querySelector('.cf-tray');
+    head.addEventListener('click', () => { const open = tray.hidden;
+      document.querySelectorAll('.cfield').forEach(f => { f.querySelector('.cf-tray').hidden = true; f.querySelector('.cf-head').setAttribute('aria-expanded', false); f.querySelector('.cf-c').textContent = 'Change'; });
+      tray.hidden = !open; head.setAttribute('aria-expanded', open); head.querySelector('.cf-c').textContent = open ? 'Done' : 'Change'; }); }
+  const v = String(get() || '').toUpperCase(); el.querySelector('.chip').style.background = v; el.querySelector('code').textContent = v;
+  colourRow(el.querySelector('.dots'), swatches, get, set); }
+// switches that turn parts of the design on and off; front ones show the front, back ones turn the sleeve over
+function togglesFill(id, list, f){ const ex = $(id);
+  if (!ex.children.length){ ex.innerHTML = list.map(([k,l]) => `<button class="tog" data-k="${k}"><i></i>${l}</button>`).join('');
+    ex.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => { draft.d[b.dataset.k] = !draft.d[b.dataset.k]; if (face !== f){ if (drawMode) setDrawMode(false); setFace(f); } syncControls(); changed(); })); }
+  ex.querySelectorAll('.tog').forEach(b => b.setAttribute('aria-pressed', !!draft.d[b.dataset.k])); }
 function dotsFill(id, colors, key){ const el = $(id);
   if (!el.children.length){ el.innerHTML = colors.map((c,i) => `<button style="background:${c}" data-v="${i}" aria-label="Colour ${i+1}"></button>`).join('');
     el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { draft.d[key] = +b.dataset.v; syncControls(); changed(); })); }
   el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === draft.d[key])); }
 function syncControls(){
   const setD = k => c => { draft.d[k] = c; syncControls(); changed(); };
-  colourRow($('cBg'), SLEEVE_SWATCHES, () => draft.d.bg, setD('bg')); colourRow($('cInk'), SLEEVE_SWATCHES, () => draft.d.ink, setD('ink')); colourRow($('cAcc'), SLEEVE_SWATCHES, () => draft.d.acc, setD('acc'));
-  colourRow($('dV1'), VCOLS, () => draft.d.v1, setD('v1')); colourRow($('dV2'), VCOLS, () => draft.d.v2, setD('v2')); colourRow($('dLab'), SLEEVE_SWATCHES, () => draft.d.lab, setD('lab'));
-  [...$('dV1').querySelectorAll('button'), ...$('dV2').querySelectorAll('button')].forEach(b => { const n = VCOLNAMES[VCOLS.indexOf(b.dataset.c)]; if (n){ b.title = n; b.setAttribute('aria-label', n); } });
-  const need = (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2]; $('v1sec').style.display = need >= 1 ? '' : 'none'; $('v2sec').style.display = need >= 2 ? '' : 'none';
-  const ex = $('extras');
-  if (!ex.children.length){ ex.innerHTML = EXTRAS.map(([k,l]) => `<button class="tog" data-k="${k}"><i></i>${l}</button>`).join('');
-    ex.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => { draft.d[b.dataset.k] = !draft.d[b.dataset.k]; syncControls(); changed(); })); }
-  ex.querySelectorAll('.tog').forEach(b => b.setAttribute('aria-pressed', !!draft.d[b.dataset.k]));
+  colourField($('cBg'), 'Background', SLEEVE_SWATCHES, () => draft.d.bg, setD('bg')); colourField($('cInk'), 'Lettering', SLEEVE_SWATCHES, () => draft.d.ink, setD('ink'));
+  colourField($('cAcc'), 'Accent', SLEEVE_SWATCHES, () => draft.d.acc, setD('acc'));
+  colourField($('dV1'), 'Main colour', VCOLS, () => draft.d.v1, setD('v1')); colourField($('dV2'), 'Second colour', VCOLS, () => draft.d.v2, setD('v2')); colourField($('dLab'), 'Label colour', SLEEVE_SWATCHES, () => draft.d.lab, setD('lab'));
+  document.querySelectorAll('#dV1 .dots button, #dV2 .dots button').forEach(b => { const n = VCOLNAMES[VCOLS.indexOf(b.dataset.c)]; if (n){ b.title = n; b.setAttribute('aria-label', n); } });
+  const need = (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2]; $('dV1').style.display = need >= 1 ? '' : 'none'; $('dV2').style.display = need >= 2 ? '' : 'none';
+  togglesFill('extrasF', FRONT_EXTRAS, 'F'); togglesFill('extrasB', BACK_EXTRAS, 'B'); togglesFill('showTogs', SHOWS, 'F');
+  const tf = $('tFont');
+  if (!tf.children.length){ tf.innerHTML = TITLE_FONTS.map(([k, l, wt, fam, up]) => `<button data-v="${k}" style="font-family:${fam.replace(/"/g, "'")};font-weight:${wt}">${up ? l.toUpperCase() : l}</button>`).join('');
+    tf.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { draft.d.font = b.dataset.v; syncControls(); changed(); })); }
+  tf.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === draft.d.font));
+  if (document.activeElement !== $('tSize')) $('tSize').value = draft.d.ts;
   $('hypePad').style.display = draft.d.sticker ? '' : 'none'; $('filtSec').style.display = draft.photo ? '' : 'none';
   ['a','b','c'].forEach(k => { const el = $('hype' + k.toUpperCase()); if (document.activeElement !== el) el.value = draft.hype[k]; });
   renderTextUI();
@@ -1243,7 +1296,8 @@ $('photoIn').addEventListener('change', e => { const f = e.target.files[0]; if (
       draft.photo = c.toDataURL('image/jpeg', .8); if (draft.d.pm === 'framed' || !draft.d.pm) draft.d.pm = 'full'; syncControls(); changed(); }; im.src = rd.result; };
   rd.readAsDataURL(f); e.target.value = ''; });
 $('surprise').addEventListener('click', () => { const R = Math.random, pick = a => a[Math.floor(R()*a.length)];
-  const w = pick(WAYS); Object.assign(draft.d, { bg:w.bg.toUpperCase(), ink:w.ink.toUpperCase(), acc:w.acc.toUpperCase(), type:pick(TYPES.slice(0, -1))[0], obi:R() < .3, sticker:R() < .3, stereo:R() < .3, g180:R() < .3 }); if (draft.photo) draft.d.filt = pick(FILTERS)[0]; syncControls(); changed(); });
+  const w = pick(WAYS); Object.assign(draft.d, { bg:w.bg.toUpperCase(), ink:w.ink.toUpperCase(), acc:w.acc.toUpperCase(), lay:pick(LAYOUTS)[0], font:pick(TITLE_FONTS)[0], obi:R() < .3, sticker:R() < .3, stereo:R() < .3, g180:R() < .3 }); if (draft.photo) draft.d.filt = pick(FILTERS)[0]; syncControls(); changed(); });
+$('tSize').addEventListener('input', () => { draft.d.ts = +$('tSize').value; saveDraft(); refreshPreview(); });
 ['a','b','c'].forEach(k => $('hype' + k.toUpperCase()).addEventListener('input', e => { draft.hype[k] = e.target.value; saveDraft(); refreshPreview(); }));
 
 // words on the cover: pick one in the list, edit it, drag on the cover to place it
@@ -1258,7 +1312,7 @@ function renderTextUI(){
   const fonts = $('textFonts'); if (!fonts.children.length){ fonts.innerHTML = TEXT_FONTS.map(([f, l], i) => `<button data-i="${i}" style="font:${f.replace('X', '1rem')}">${l}</button>`).join('');
     fonts.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { draft.texts[selText].f = +b.dataset.i; renderTextUI(); changed(); })); }
   fonts.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === t.f));
-  colourRow($('textInks'), INKS, () => draft.texts[selText] && draft.texts[selText].c, c => { if (draft.texts[selText]){ draft.texts[selText].c = c; renderTextUI(); changed(); } });
+  colourField($('textInks'), 'Colour', INKS, () => draft.texts[selText] && draft.texts[selText].c, c => { if (draft.texts[selText]){ draft.texts[selText].c = c; renderTextUI(); changed(); } });
   $('textSize').value = t.s; $('textRot').value = t.r; }
 $('addText').addEventListener('click', () => { if (draft.texts.length >= 8) return; const W = pal(draft.d);
   draft.texts.push({ t:'Your words here', f:0, c:W.ink, s:8, x:50, y:62 + (draft.texts.length % 3)*8, r:0 }); selText = draft.texts.length - 1; if (face !== 'F') setFace('F'); renderTextUI(); $('textIn').select(); changed(); });
@@ -2120,7 +2174,7 @@ async function route(){
 }
 addEventListener('hashchange', route);
 const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihala', to:'Amy', year:'2026', cat:'SB-0412',
-  d:{ way:1, type:'script', obi:true, sticker:true, stereo:true, g180:true, worn:false, pm:'full', vinyl:'marble', v1:2, v2:10, label:'solid', lab:4 },
+  d:{ way:1, lay:'centre', font:'script', obi:true, sticker:true, stereo:true, g180:true, worn:false, pm:'full', vinyl:'marble', v1:2, v2:10, label:'solid', lab:4 },
   A:[{s:'d',al:3,ti:1},{s:'d',al:8,ti:0},{s:'d',al:14,ti:2},{s:'d',al:21,ti:3}], B:[{s:'d',al:27,ti:0},{s:'d',al:5,ti:2},{s:'d',al:11,ti:1}],
   notes:[{t:'Side A is for the way there.',c:0,x:52,y:56,r:-4,f:'F'},{t:'B3 is the one I kept replaying after you left.',c:1,x:54,y:58,r:3,f:'B'}] };
 
