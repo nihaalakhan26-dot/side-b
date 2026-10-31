@@ -1760,22 +1760,22 @@ function buildShop(){
   <rect x="-2000" y="-1500" width="5920" height="4080" fill="#100906"/>`;
   const Z_NEAR = -1100, WL = 100, WR = 1860;
   // a dark room: plaster walls the colour of strong tea, a dark wood floor, a black ceiling
-  s += poly([PJ(WL,40,BACK), PJ(WR,40,BACK), PJ(WR,40,Z_NEAR), PJ(WL,40,Z_NEAR)], '#CFC7BA');
+  s += poly([PJ(WL,40,BACK), PJ(WR,40,BACK), PJ(WR,40,Z_NEAR), PJ(WL,40,Z_NEAR)], '#1C0B0C');
   // exposed pipes and a beam along the ceiling, painted a dusty pink like the reference
-  [[300, -60, 14], [1300, -40, 10]].forEach(([x, z0, r]) => s += box(x - r, x + r, 40, 40 + r*2, z0, Z_NEAR, { front:'#C98F86', under:'#B57A72', side:'#A86E66' }));
-  s += box(WL, WR, 40, 66, -480, -520, { front:'#D6A49B', under:'#C28C83' });
-  s += jpoly([PJ(WL,40,BACK), PJ(WL,40,Z_NEAR), PJ(WL,FLOOR,Z_NEAR), PJ(WL,FLOOR,BACK)], '#D4CABA') + jpoly([PJ(WR,40,BACK), PJ(WR,40,Z_NEAR), PJ(WR,FLOOR,Z_NEAR), PJ(WR,FLOOR,BACK)], '#CEC3B2');
-  s += poly([PJ(WL,FLOOR,BACK), PJ(WR,FLOOR,BACK), PJ(WR,FLOOR,Z_NEAR), PJ(WL,FLOOR,Z_NEAR)], '#8C857A');
-  for (let x = WL; x <= WR; x += 48){ const a = PJ(x, FLOOR, BACK), b = PJ(x, FLOOR, Z_NEAR); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#7A736A" stroke-width="1.2"/>`; }
-  for (let z = -30; z > Z_NEAR; z -= 40){ const a = PJ(WL, FLOOR, z), b = PJ(WR, FLOOR, z); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#7A736A" stroke-width="1.1"/>`; }
-  s += `<g transform="${plane(BACK)}"><rect x="${WL}" y="40" width="${WR - WL}" height="${FLOOR - 40}" fill="#E4DACB"/><rect x="${WL}" y="${FLOOR - 16}" width="${WR - WL}" height="16" fill="#B9AE9C"/></g>`;
+  [[300, -60, 14], [1300, -40, 10]].forEach(([x, z0, r]) => s += box(x - r, x + r, 40, 40 + r*2, z0, Z_NEAR, { front:'#2E1A18', under:'#3A2220', side:'#241412' }));
+  s += box(WL, WR, 40, 66, -480, -520, { front:'#2A1214', under:'#3A1A1C' });
+  s += jpoly([PJ(WL,40,BACK), PJ(WL,40,Z_NEAR), PJ(WL,FLOOR,Z_NEAR), PJ(WL,FLOOR,BACK)], '#3E1418') + jpoly([PJ(WR,40,BACK), PJ(WR,40,Z_NEAR), PJ(WR,FLOOR,Z_NEAR), PJ(WR,FLOOR,BACK)], '#361116');
+  s += poly([PJ(WL,FLOOR,BACK), PJ(WR,FLOOR,BACK), PJ(WR,FLOOR,Z_NEAR), PJ(WL,FLOOR,Z_NEAR)], '#3A2418');
+  for (let x = WL; x <= WR; x += 60){ const a = PJ(x, FLOOR, BACK), b = PJ(x, FLOOR, Z_NEAR); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#2A1910" stroke-width="2"/>`; }
+  s += `<g transform="${plane(BACK)}"><rect x="${WL}" y="40" width="${WR - WL}" height="${FLOOR - 40}" fill="#561C21"/><rect x="${WL}" y="${FLOOR - 18}" width="${WR - WL}" height="18" fill="#2A0E10"/>
+    ${glow(625, 380, 760, 420, .28)}${glow(1660, 420, 420, 380, .3)}</g>`;
   // posters on the wall behind the booth
-  s += `<g transform="${plane(-2)}">${[0,1,2,3].map(i => { const x = 1300 + i*104; return `<rect x="${x + 4}" y="${434 + 4}" width="92" height="128" fill="rgba(60,40,30,.18)"/><rect x="${x}" y="434" width="92" height="128" fill="#EEF1F4"/><rect x="${x + 8}" y="442" width="76" height="26" fill="#2E4FA0"/>
+  s += `<g transform="${plane(-2)}">${[0,1].map(i => { const x = 1196 + i*104; return `<rect x="${x + 4}" y="${434 + 4}" width="92" height="128" fill="rgba(60,40,30,.18)"/><rect x="${x}" y="434" width="92" height="128" fill="#EEF1F4"/><rect x="${x + 8}" y="442" width="76" height="26" fill="#2E4FA0"/>
     <text x="${x + 46}" y="460" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="12" fill="#fff">SIDE B</text><text x="${x + 46}" y="490" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="11" fill="#2E4FA0">PRESS A</text><text x="${x + 46}" y="504" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="11" fill="#2E4FA0">RECORD</text>
     ${[0,1,2,3].map(j => `<rect x="${x + 12}" y="${516 + j*9}" width="${68 - j*8}" height="3" fill="#9AA8C8"/>`).join('')}`; }).join('')}</g>`;
   // a framed print and a record on the wall above the cubbies, lit by a picture light
   s += `<g transform="${plane(-2)}"><rect x="560" y="52" width="130" height="62" fill="#1A0F09"/><rect x="566" y="58" width="118" height="50" fill="#C9A27A"/><text x="625" y="90" text-anchor="middle" font-family="Yellowtail,cursive" font-size="26" fill="#3A1A10">Side B</text>
-    <rect x="575" y="44" width="100" height="5" rx="2" fill="#B8A07A"/><circle cx="260" cy="80" r="30" fill="#141111"/><circle cx="260" cy="80" r="10" fill="#E0682C"/><circle cx="990" cy="80" r="30" fill="#141111"/><circle cx="990" cy="80" r="10" fill="#EDB33A"/></g>`;
+    <rect x="575" y="44" width="100" height="5" rx="2" fill="#B8A07A"/>${glow(625, 110, 160, 70, .5)}<circle cx="260" cy="80" r="30" fill="#141111"/><circle cx="260" cy="80" r="10" fill="#E0682C"/><circle cx="990" cy="80" r="30" fill="#141111"/><circle cx="990" cy="80" r="10" fill="#EDB33A"/></g>`;
 
   // THE RECORD WALL: walnut cubbies, twelve across and five high, each lit by a warm strip under its top.
   // About seven in ten hold a cover facing out; the rest hold piles of records, spines, or something to look at
@@ -1829,18 +1829,18 @@ function buildShop(){
   // THE PRESSING BOOTH: a round oak island towards the right of the room, like a pop-up listening bar.
   // Cubbies of records all round its face, decks and an amp on top, and a ring canopy floating over it with a lit sign and a shelf of covers
   s += `<g id="booth" role="button" tabindex="0" aria-label="Step into the pressing booth" style="cursor:pointer">`;
-  const IS = { cx:1450, cz:-190, R:166, top:722 }, CN = { y0:256, y1:304, y2:382, r:166, hole:104 };
-  const ang = (n, i) => i/n*Math.PI*2, at = (r, a, y) => PJ(IS.cx + r*Math.cos(a), y, IS.cz + r*Math.sin(a));
+  const IS = { cx:1652, cz:-6, R:184, top:722 }, CN = { y0:256, y1:304, y2:382, r:184, hole:118 };
+  const ang = (n, i) => Math.PI + i/n*Math.PI, at = (r, a, y) => PJ(IS.cx + r*Math.cos(a), y, IS.cz + r*Math.sin(a));
   const faces = (r, a) => (VP.x - (IS.cx + r*Math.cos(a)))*Math.cos(a) + (-FOCUS - (IS.cz + r*Math.sin(a)))*Math.sin(a) > 0;
-  const ring = (r, y, n=48) => Array.from({length:n}, (_,i) => at(r, ang(n, i), y));
+  const ring = (r, y, n=24) => Array.from({length:n + 1}, (_,i) => at(r, ang(n, i), y));
   // a curved face from y0 to y1, strip by strip, lit from the window side on the left
-  const band = (r, y0, y1, hue, sat, light, n=48) => { let o = ''; for (let i=0;i<n;i++){ const a0 = ang(n, i), a1 = ang(n, i + 1), am = (a0 + a1)/2; if (!faces(r, am)) continue;
+  const band = (r, y0, y1, hue, sat, light, n=24) => { let o = ''; for (let i=0;i<n;i++){ const a0 = ang(n, i), a1 = ang(n, i + 1), am = (a0 + a1)/2; if (!faces(r, am)) continue;
       const lit = .78 + .22*(-Math.cos(am)); o += poly([at(r, a0, y0), at(r, a1, y0), at(r, a1, y1), at(r, a0, y1)], `hsl(${hue},${sat}%,${(light*lit).toFixed(1)}%)`); } return o; };
   // the floor under it, paved in rings, and its shadow
-  s += poly(ring(IS.R + 150, FLOOR), '#7F786E') + [IS.R + 110, IS.R + 70, IS.R + 30].map(r => `<polygon points="${pts(ring(r, FLOOR))}" fill="none" stroke="#6E675E" stroke-width="1.6"/>`).join('');
+  s += poly(ring(IS.R + 110, FLOOR), '#9A3E22') + `<polyline points="${pts(ring(IS.R + 96, FLOOR))}" fill="none" stroke="#D9894A" stroke-width="3"/><polyline points="${pts(ring(IS.R + 70, FLOOR))}" fill="none" stroke="#6E2414" stroke-width="6"/>`;
   s += poly(ring(IS.R + 30, FLOOR).map(([x, y]) => [x + 24, y + 6]), 'rgba(20,14,10,.4)');
   // the counter: an oak drum with two rows of cubbies round it, a lit rim and a dark plinth
-  { const N = 14; s += band(IS.R, IS.top, FLOOR, 30, 46, 52);
+  { const N = 7; s += band(IS.R, IS.top, FLOOR, 30, 46, 52);
     for (let i=0;i<N;i++){ const a0 = ang(N, i) + .05, a1 = ang(N, i + 1) - .05, am = (a0 + a1)/2; if (!faces(IS.R, am)) continue;
       const front = Math.abs(Math.sin(am) + 1) < .5;
       [[IS.top + 24, IS.top + 92], [IS.top + 100, FLOOR - 14]].forEach(([y0, y1], r) => {
@@ -1852,10 +1852,10 @@ function buildShop(){
     s += band(IS.R + 2, IS.top - 4, IS.top + 14, 32, 52, 66) + band(IS.R - 6, FLOOR - 12, FLOOR, 25, 30, 20); }
   // the counter top, and what's on it: two decks, an amp with blue meters, a pair of little speakers, records
   s += poly(ring(IS.R + 2, IS.top - 4), '#D6A86C') + `<polygon points="${pts(ring(IS.R - 8, IS.top - 4))}" fill="none" stroke="rgba(255,240,210,.35)" stroke-width="2"/>`;
-  s += turntable(1310, IS.top - 4, -130, { silver:true }) + turntable(1490, IS.top - 4, -120, { label:IN.mustard });
-  s += box(1396, 1506, IS.top - 52, IS.top - 4, -190, -250, { front:'#0d0f13', top:'#2a2d33', side:'#1a1c20' }) + ampFront(1400, IS.top - 48, 102, 42, -251);
-  [1350, 1556].forEach(x => s += box(x, x + 34, IS.top - 64, IS.top - 4, -230, -270, { front:'#EDE8DC', top:'#F6F2EA', side:'#CFC8B8' }) + `<g transform="${plane(-271)}"><circle cx="${x + 17}" cy="${IS.top - 22}" r="11" fill="#2a2a2a"/><circle cx="${x + 17}" cy="${IS.top - 22}" r="4" fill="#666"/><circle cx="${x + 17}" cy="${IS.top - 50}" r="4" fill="#2a2a2a"/></g>`);
-  s += `<g transform="${plane(-330)}"><g transform="translate(1440 ${IS.top - 10}) rotate(-3)"><rect x="-88" y="-20" width="176" height="40" fill="${IN.cream}"/><rect x="-88" y="-20" width="176" height="40" fill="url(#grainS)" opacity=".2" style="mix-blend-mode:multiply"/>
+  s += turntable(1478, IS.top - 4, -30, { silver:true }) + turntable(1690, IS.top - 4, -30, { label:IN.mustard });
+  s += box(1592, 1702, IS.top - 52, IS.top - 4, -110, -170, { front:'#0d0f13', top:'#2a2d33', side:'#1a1c20' }) + ampFront(1596, IS.top - 48, 102, 42, -171);
+  [1548, 1708].forEach(x => s += box(x, x + 34, IS.top - 64, IS.top - 4, -120, -150, { front:'#EDE8DC', top:'#F6F2EA', side:'#CFC8B8' }) + `<g transform="${plane(-151)}"><circle cx="${x + 17}" cy="${IS.top - 22}" r="11" fill="#2a2a2a"/><circle cx="${x + 17}" cy="${IS.top - 22}" r="4" fill="#666"/><circle cx="${x + 17}" cy="${IS.top - 50}" r="4" fill="#2a2a2a"/></g>`);
+  s += `<g transform="${plane(-192)}"><g transform="translate(1612 ${IS.top + 46}) rotate(-3)"><rect x="-88" y="-20" width="176" height="40" fill="${IN.cream}"/><rect x="-88" y="-20" width="176" height="40" fill="url(#grainS)" opacity=".2" style="mix-blend-mode:multiply"/>
     <text x="0" y="7" text-anchor="middle" font-family="Caveat,cursive" font-weight="700" font-size="24" fill="#231A14">Step into the booth</text></g></g>`;
   // light falling from the ring onto the counter
   { const c = PJ(IS.cx, IS.top, IS.cz); s += glow(c[0], c[1] - 30, 260, 70, .45); }
@@ -1863,12 +1863,12 @@ function buildShop(){
   [0, 2, 4].forEach(q => { const a = ang(6, q) + .5, p = at(CN.r - 20, a, CN.y0), t = at(CN.r - 20, a, 40); s += `<line x1="${t[0]}" y1="${t[1]}" x2="${p[0]}" y2="${p[1]}" stroke="#2a2a2a" stroke-width="1.4"/>`; });
   s += poly(ring(CN.r, CN.y2), '#B9884F') + poly(ring(CN.hole, CN.y2), '#5A4433') + `<polygon points="${pts(ring(CN.hole + 6, CN.y2))}" fill="none" stroke="#FFF6DE" stroke-width="5"/>`;
   { const c = PJ(IS.cx, CN.y2, IS.cz); s += glow(c[0], c[1], 300, 50, .35); }
-  { const N = 12; s += band(CN.r, CN.y1, CN.y2, 30, 46, 54);
+  { const N = 6; s += band(CN.r, CN.y1, CN.y2, 30, 46, 54);
     for (let i=0;i<N;i++){ const a0 = ang(N, i) + .06, a1 = ang(N, i + 1) - .06, am = (a0 + a1)/2; if (!faces(CN.r, am)) continue;
       const y0 = CN.y1 + 8, y1 = CN.y2 - 8; s += poly([at(CN.r + 1, a0, y0), at(CN.r + 1, a1, y0), at(CN.r + 1, a1, y1), at(CN.r + 1, a0, y1)], '#4A2E18');
       const mx = IS.cx + (CN.r - 8)*Math.cos(am), mz = IS.cz + (CN.r - 8)*Math.sin(am), w = Math.min(60, (CN.r*(a1 - a0))*.86*Math.abs(Math.sin(am)));
       if (w > 30) s += coverAt(176 + i, mx - w/2, y1 - 2, mz, w, 0, { lit:true }); } }
-  s += band(CN.r + 2, CN.y0, CN.y1, 42, 40, 93) + `<polyline points="${pts(ring(CN.r + 2, CN.y1).filter((_, i) => faces(CN.r, ang(48, i))))}" fill="none" stroke="#C99A60" stroke-width="3"/>`;
+  s += band(CN.r + 2, CN.y0, CN.y1, 38, 75, 82) + `<polyline points="${pts(ring(CN.r + 2, CN.y1))}" fill="none" stroke="#C99A60" stroke-width="3"/>`;
   { const f = IS.cz - CN.r - 2, tx = VP.x + (PJ(IS.cx, 0, IS.cz)[0] - VP.x)/kz(f); s += `<g transform="${plane(f)}"><text x="${tx}" y="${CN.y0 + 38}" text-anchor="middle" font-family="Yellowtail,cursive" font-size="36" fill="#3A2414">Pressing Booth</text>
 </g>`;
     const c = PJ(IS.cx, (CN.y0 + CN.y1)/2, f); s += glow(c[0], c[1], 320, 60, .3); }
@@ -1886,7 +1886,7 @@ function buildShop(){
   // lamplight over the wall and the sideboard, then the print grain and a deep vignette
   s += `<g>${glow(625, 650, 600, 140, .14)}</g>`;
   s += `<rect x="-2000" y="-1500" width="5920" height="4080" fill="url(#grainS)" opacity=".22" style="mix-blend-mode:overlay"/><rect x="-2000" y="-1500" width="5920" height="4080" fill="url(#speckS)" opacity=".22"/><rect x="-2000" y="-1500" width="5920" height="4080" fill="url(#vigS)"/>
-    <defs><radialGradient id="vigS" gradientUnits="userSpaceOnUse" cx="960" cy="520" r="1250"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#1a0e06" stop-opacity=".42"/></radialGradient></defs></svg>`;
+    <defs><radialGradient id="vigS" gradientUnits="userSpaceOnUse" cx="960" cy="520" r="1250"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0c0405" stop-opacity=".6"/></radialGradient></defs></svg>`;
   st.innerHTML = s; paintSlots(st);
   const booth = $('booth'); booth.addEventListener('click', enterBooth); booth.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); enterBooth(); } });
   st.querySelectorAll('image.tagme').forEach(el => { el.addEventListener('pointerenter', () => showTag(slotAlbum(+el.dataset.slot), el)); el.addEventListener('pointerleave', hideTag); });
@@ -1906,10 +1906,10 @@ function fitShop(){ const w = $('shopWrap'), vw = w.clientWidth, vh = w.clientHe
   const W = phone ? 1920 : Math.max(1920, vw/s), H = phone ? 1080 : Math.max(1080, vh/s); shopView = { x:960 - W/2, y:540 - H/2 };
   if (svg){ svg.setAttribute('viewBox', `${shopView.x} ${shopView.y} ${W} ${H}`); svg.setAttribute('width', W); svg.setAttribute('height', H); }
   const st = $('shopStage'); st.style.width = W + 'px'; st.style.height = H + 'px'; st.style.transform = `scale(${s})`;
-  $('shopSizer').style.width = W*s + 'px'; $('shopSizer').style.height = H*s + 'px'; if (W*s > vw) w.scrollLeft = Math.min(W*s - vw, Math.max(0, (1560 - shopView.x)*s - vw/2)); }
+  $('shopSizer').style.width = W*s + 'px'; $('shopSizer').style.height = H*s + 'px'; if (W*s > vw) w.scrollLeft = Math.min(W*s - vw, Math.max(0, (1640 - shopView.x)*s - vw/2)); }
 addEventListener('resize', () => { if (current === 'shop') fitShop(); if (window.fitFacade) window.fitFacade(); });
 function enterBooth(){ sfx.slide(); const st = $('shopStage'), sc = parseFloat(st.style.transform.slice(6)) || 1;
-  st.style.transformOrigin = `${1560 - shopView.x}px ${600 - shopView.y}px`; st.style.transform = `scale(${sc*2.4})`;
+  st.style.transformOrigin = `${1690 - shopView.x}px ${600 - shopView.y}px`; st.style.transform = `scale(${sc*2.4})`;
   setTimeout(() => { go('studio'); setTimeout(() => { st.style.transition = 'none'; st.style.transformOrigin = '0 0'; st.style.transform = `scale(${sc})`; void st.offsetWidth; st.style.transition = ''; }, 900); }, reduceMotion ? 0 : 700); }
 const tag = $('tag');
 function showTag(a, el){ const b = el.getBoundingClientRect(); tag.querySelector('b').textContent = a.title; tag.querySelector('span').textContent = a.sub;
