@@ -80,6 +80,8 @@ button{cursor:pointer}
 .steps{display:flex;gap:0;align-self:flex-end;margin-bottom:-13px;position:relative;z-index:1}
 .steps button{position:relative;border:1px solid var(--faded);border-bottom:0;border-radius:4px 4px 0 0;background:#E2D4B6;color:#5d4f43;padding:.5rem .8rem .55rem 1.3rem;margin-right:-1px;font:600 .74rem/1 var(--mono);letter-spacing:.06em}
 .steps button::before{content:"";position:absolute;left:.55rem;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;border:1px solid #8a7a66}
+.steps button{white-space:nowrap}
+@media (max-width:1180px) and (min-width:761px){.shead .model{display:none}.steps button{padding-left:1.1rem;padding-right:.6rem}}
 .steps button[aria-selected="true"]{background:var(--paper);color:var(--ink);padding-bottom:.75rem}
 .steps button[aria-selected="true"]::before{background:var(--mustard);border-color:var(--mustard)}
 .steps button.done::before{background:var(--burg);border-color:var(--burg)}
@@ -167,6 +169,52 @@ button{cursor:pointer}
 .step h2{margin:0;font:400 2rem/1 'Yellowtail',cursive;color:var(--faded)}
 .step .lede{margin:.25rem 0 1rem;color:var(--ink2);font-size:.9rem;line-height:1.45}
 .kicker{font:600 .7rem/1 var(--mono);letter-spacing:.2em;color:var(--burg);margin:0 0 6px}
+/* parts: each long step opens on a list of its parts, and one part is worked on at a time */
+.step .sec[data-sub]{display:none}
+.step.drill .sec.part-on{display:block;border-top:0;margin-top:6px;padding-top:0}
+.step.drill > h2,.step.drill > .lede,.step.drill > .submenu{display:none}
+.subback{display:none;border:0;background:none;padding:2px 0;margin:0 0 12px;font:600 .74rem/1 var(--mono);letter-spacing:.08em;color:var(--burg);text-transform:uppercase;cursor:pointer}
+.subback:hover{text-decoration:underline}
+.step.drill > .subback{display:inline-block}
+.submenu{display:flex;flex-direction:column;margin-top:4px}
+.subrow{display:grid;grid-template-columns:28px minmax(0,1fr) auto 14px;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px dashed rgba(43,37,34,.3);background:none;padding:13px 14px 13px 12px;color:var(--ink);cursor:pointer;transition:background .15s}
+.subrow:last-child{border-bottom:0}
+.subrow:hover,.subrow:focus-visible{background:#F3E6CC}
+.sr-n{font:600 .68rem/1 var(--mono);color:var(--burg);letter-spacing:.1em}
+.sr-t b{display:block;font:700 .95rem/1.2 Archivo,sans-serif}
+.sr-t small{display:block;margin-top:2px;font-size:.78rem;line-height:1.35;color:var(--ink2)}
+.sr-v{font:500 .72rem/1.3 var(--mono);color:var(--ink2);text-align:right;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sr-go{font:400 1.4rem/1 Archivo,sans-serif;color:var(--burg)}
+.cchip{display:inline-block;width:13px;height:13px;margin-left:3px;vertical-align:-2px;border-radius:2px;box-shadow:0 0 0 1px rgba(35,26,20,.35)}
+.optnote{margin:12px 0 0;padding:9px 12px;font-size:.84rem;line-height:1.4;color:var(--ink2);background:#F3E6CC;border-left:3px solid var(--burg)}
+.optnote b{color:var(--ink);margin-right:4px}
+.optnote:empty{display:none}
+/* the recap before pressing, and the slip on the bench */
+.recap{display:flex;flex-direction:column}
+.rrow{display:grid;grid-template-columns:110px minmax(0,1fr) 22px;gap:10px;align-items:baseline;width:100%;text-align:left;border:0;border-bottom:1px dotted rgba(35,26,20,.3);background:none;padding:10px 12px;color:var(--ink);cursor:pointer}
+.rrow:last-child{border-bottom:0}
+.rrow:hover{background:#F3E6CC}
+.rl{font:600 .66rem/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--burg)}
+.rv{font-size:.88rem;line-height:1.35}
+.rp{color:var(--ink2);font-size:.9rem;text-align:right}
+.rrow:hover .rp{color:var(--burg)}
+.needs[hidden]{display:none}
+.needs{margin:0 0 12px;padding:10px 12px;background:#F6DCCB;border:1px solid var(--burg);font-size:.88rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.minilist{margin-top:14px}
+.minilist li .nm em{font-style:normal;color:var(--ink2)}
+.slip{position:absolute;left:4%;top:4.5%;z-index:3;width:240px;padding:10px 0 4px;background:#FBF5E8;transform:rotate(-1.2deg);box-shadow:0 0 0 1px rgba(43,37,34,.35),3px 6px 14px rgba(0,0,0,.35);font-size:.8rem}
+.slip::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.25;pointer-events:none}
+.slip h5{display:flex;justify-content:space-between;margin:0 12px 4px;padding-bottom:6px;border-bottom:3px double rgba(43,37,34,.5);font:600 .62rem/1 var(--mono);letter-spacing:.18em;color:var(--burg)}
+.slip .rrow{grid-template-columns:62px minmax(0,1fr) 14px;padding:5px 12px;gap:8px}
+.slip .rl{font-size:.56rem;letter-spacing:.1em}
+.slip .rv{font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slip .rp{font-size:.74rem}
+.bench .rule{display:none}
+@media (max-width:900px){.slip{display:none}}
+.slip.off{visibility:hidden}
+.ghostpill{background:rgba(251,245,232,.75)!important}
+.benchbar .pill{white-space:nowrap}
+@media (max-width:600px){.benchbar{gap:6px;bottom:2.5%}.benchbar .pill{padding:.38rem .6rem;font-size:.66rem;letter-spacing:.02em}}
 .sec{margin-top:18px}
 .sec{border-top:1px solid rgba(43,37,34,.25);padding-top:14px}
 .sec h3{display:inline-block;margin:0 0 10px;font:600 .66rem/1 var(--mono);letter-spacing:.18em;color:var(--burg);text-transform:uppercase;border:1px solid var(--burg);padding:4px 7px 3px;background:#F3E6CC}
@@ -435,6 +483,7 @@ button{cursor:pointer}
       <button role="tab" data-step="sleeve" aria-selected="false"><b>03</b> SLEEVE</button>
       <button role="tab" data-step="vinyl" aria-selected="false"><b>04</b> VINYL</button>
       <button role="tab" data-step="notes" aria-selected="false"><b>05</b> NOTES</button>
+      <button role="tab" data-step="press" aria-selected="false"><b>06</b> PRESS</button>
     </nav>
     <span class="spacer"></span>
     <button class="btn ghost sm" id="resumeBtn" hidden>Carry on with your last record</button>
@@ -447,7 +496,8 @@ button{cursor:pointer}
         <div class="pvin" id="pVin"></div>
         <div class="pslv"><div class="fc" id="pFront"><div class="notes" id="nFront"></div><canvas class="drawlayer" id="drawCv" aria-label="Drawing area"></canvas></div><div class="fc bk sback" id="pBack"></div></div>
       </div>
-      <div class="benchbar"><button class="pill" id="faceBtn">Turn it over</button><span class="pill sizebadge" id="sizeBadge"></span></div>
+      <div class="slip" id="slip" aria-label="Your record so far"></div>
+      <div class="benchbar"><button class="pill ghostpill" id="resetBtn">Start over</button><button class="pill" id="faceBtn">Turn it over</button><span class="pill sizebadge" id="sizeBadge"></span></div>
     </div>
     <div class="deck">
       <div class="dbody">
@@ -466,38 +516,39 @@ button{cursor:pointer}
         <!-- WORDS -->
         <section class="step" id="st-words">
           <p class="kicker">02 / WORDS</p><h2>Words and layout</h2>
-          <p class="lede">Name your record, then choose where the words sit on the cover and how they look.</p>
+          <p class="lede">Name your record, then choose how the words look. Pick a part to work on.</p>
+          <div class="sec" data-sub="names" data-label="Title and names" data-desc="What it's called, who it's from and who it's for."><h3>Title and names</h3>
           <div class="card credit">
             <label for="fName">TITLE</label><input id="fName" class="big" maxlength="40" placeholder="Songs for the Drive Home">
             <label for="fLine">LINE UNDER THE TITLE</label><input id="fLine" maxlength="40" placeholder="Summer 2026">
             <div class="row"><div><label for="fBy">PRESSED BY</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
             <div class="row"><div><label for="fYear">YEAR</label><input id="fYear" maxlength="4" inputmode="numeric"></div><div><label for="fCat">CATALOGUE NO.</label><input id="fCat" maxlength="10"></div></div>
-          </div>
-          <div class="sec"><h3>Layout</h3><div class="tiles three" id="tLay"></div></div>
-          <div class="sec"><h3>Typeface</h3><div class="faces" id="tFont"></div></div>
-          <div class="sec"><h3>Title size</h3><label class="slide wide"><span>Smaller</span><input type="range" id="tSize" min=".6" max="1.5" step=".05" aria-label="Title size"><span>Bigger</span></label>
+          </div></div>
+          <div class="sec" data-sub="layout" data-label="Layout" data-desc="Where the words sit on the cover."><h3>Layout</h3><div class="tiles three" id="tLay"></div></div>
+          <div class="sec" data-sub="type" data-label="Typeface and size" data-desc="The lettering, and how big the title is."><h3>Typeface</h3><div class="faces" id="tFont"></div>
+            <h3 style="margin-top:16px">Title size</h3><label class="slide wide"><span>Smaller</span><input type="range" id="tSize" min=".6" max="1.5" step=".05" aria-label="Title size"><span>Bigger</span></label>
             <p class="hintline">Long titles shrink to fit, up to three lines.</p></div>
-          <div class="sec"><h3>On the cover</h3><div class="toggles" id="showTogs"></div></div>
+          <div class="sec" data-sub="show" data-label="What shows" data-desc="Switch the title, the line and the credit on or off."><h3>On the cover</h3><div class="toggles" id="showTogs"></div></div>
         </section>
         <!-- SLEEVE -->
         <section class="step" id="st-sleeve">
           <p class="kicker">03 / SLEEVE</p><h2>Design the sleeve</h2>
           <p class="lede">Add a picture and pick your colours, then choose what goes on the front and the back. <button class="btn ghost sm" id="surprise">Surprise me</button></p>
-          <div class="sec"><h3>Picture</h3>
+          <div class="sec" data-sub="picture" data-label="Picture" data-desc="A photo or any art for the cover, with a filter."><h3>Picture</h3>
             <label class="drop" id="drop"><span class="ph" id="photoPh"></span><span><b id="photoTitle">Add a picture for the cover</b><span id="photoSub">A photo, a drawing, a scan, any art. Square works best.</span></span><input type="file" id="photoIn" accept="image/*"></label>
             <div class="pad" id="photoModes" style="margin-top:10px;display:none"></div>
+            <div id="filtSec"><h3 style="margin-top:16px">Filter</h3><div class="tiles" id="tFilt"></div></div>
           </div>
-          <div class="sec" id="filtSec"><h3>Filter</h3><div class="tiles" id="tFilt"></div></div>
-          <div class="sec"><h3>Colours</h3><div class="cfields"><div id="cBg"></div><div id="cInk"></div><div id="cAcc"></div></div><p class="hintline" style="margin-top:8px">The accent colours the obi strip, the record label and some filters.</p></div>
-          <div class="sec"><h3>On the front</h3><p class="hintline">Each one has its own spot, and the title makes room for it.</p><div class="toggles" id="extrasF"></div>
+          <div class="sec" data-sub="colours" data-label="Colours" data-desc="Background, lettering and an accent."><h3>Colours</h3><div class="cfields"><div id="cBg"></div><div id="cInk"></div><div id="cAcc"></div></div><p class="hintline" style="margin-top:8px">The accent colours the obi strip, the record label and some filters.</p></div>
+          <div class="sec" data-sub="front" data-label="On the front" data-desc="Obi strip, stereo banner, hype sticker and more."><h3>On the front</h3><p class="hintline">Each one has its own spot, and the title makes room for it.</p><div class="toggles" id="extrasF"></div>
             <div class="hypepad" id="hypePad" style="display:none"><p class="hintline">What the hype sticker says:</p>
               <input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
-          <div class="sec"><h3>On the back</h3><p class="hintline">The tracklist is always there. Pick what goes around it.</p><div class="toggles" id="extrasB"></div></div>
-          <div class="sec"><h3>Draw</h3><p class="hintline" id="drawTip">Draw straight onto the sleeve, over your picture or on its own.</p>
+          <div class="sec" data-sub="back" data-label="On the back" data-desc="Credits, small print, a logo and a barcode."><h3>On the back</h3><p class="hintline">The tracklist is always there. Pick what goes around it.</p><div class="toggles" id="extrasB"></div></div>
+          <div class="sec" data-sub="draw" data-label="Draw" data-desc="Draw straight onto the sleeve with a pen."><h3>Draw</h3><p class="hintline" id="drawTip">Draw straight onto the sleeve, over your picture or on its own.</p>
             <div class="pad"><button class="btn sm" id="drawBtn" aria-pressed="false">Start drawing</button><button class="btn ghost sm" id="drawWipe">Clear the drawing</button></div>
             <div class="drawtools" id="drawTools" style="display:none"><div class="dots small" id="drawInks"></div><div class="sizes" id="drawSizes"></div>
               <button class="tog" id="drawErase" aria-pressed="false"><i></i>Eraser</button><button class="btn ghost sm" id="drawUndo">Undo</button></div></div>
-          <div class="sec"><h3>More words</h3><p class="hintline">Extra text you can place anywhere on the front.</p>
+          <div class="sec" data-sub="text" data-label="More words" data-desc="Extra bits of text, placed anywhere on the front."><h3>More words</h3><p class="hintline">Extra text you can place anywhere on the front.</p>
             <div class="pad"><button class="btn sm" id="addText">Add text</button><span class="hintline" id="textHint"></span></div>
             <div class="textlist" id="textList"></div>
             <div class="textpad" id="textPad" style="display:none">
@@ -512,11 +563,11 @@ button{cursor:pointer}
         <!-- VINYL -->
         <section class="step" id="st-vinyl">
           <p class="kicker">04 / VINYL</p><h2>Choose the vinyl</h2>
-          <p class="lede">Pick a pressing and a shape, then its colours. The label is the paper circle in the middle.</p>
-          <div class="sec"><h3>Pressing</h3><div class="tiles" id="tVinyl"></div></div>
-          <div class="sec"><h3>Shape</h3><div class="tiles" id="tShape"></div></div>
-          <div class="sec"><h3>Label</h3><div class="tiles" id="tLabel"></div></div>
-          <div class="sec"><h3>Colours</h3><div class="cfields"><div id="dV1"></div><div id="dV2"></div><div id="dLab"></div></div></div>
+          <p class="lede">Pick a pressing and a shape, then its colours. Pick a part to work on.</p>
+          <div class="sec" data-sub="pressing" data-label="Pressing" data-desc="Black, colours, marbles, splatters and more."><h3>Pressing</h3><div class="tiles" id="tVinyl"></div><p class="optnote" id="vNote"></p></div>
+          <div class="sec" data-sub="shape" data-label="Shape" data-desc="Round, or cut into a heart, star or more."><h3>Shape</h3><div class="tiles" id="tShape"></div><p class="optnote" id="shNote"></p></div>
+          <div class="sec" data-sub="label" data-label="Label" data-desc="The paper circle in the middle."><h3>Label</h3><div class="tiles" id="tLabel"></div><p class="optnote" id="lbNote"></p></div>
+          <div class="sec" data-sub="vcolours" data-label="Colours" data-desc="The vinyl's colours and the label's."><h3>Colours</h3><div class="cfields"><div id="dV1"></div><div id="dV2"></div><div id="dLab"></div></div></div>
         </section>
         <!-- NOTES -->
         <section class="step" id="st-notes">
@@ -528,6 +579,14 @@ button{cursor:pointer}
             <div class="pad" style="margin-top:10px"><div class="dots" id="dNote"></div><span style="flex:1"></span><button class="btn ghost sm" id="delNote">Remove</button></div>
           </div>
           <div class="notelist" id="noteList"></div>
+        </section>
+        <!-- PRESS -->
+        <section class="step" id="st-press">
+          <p class="kicker">06 / PRESS</p><h2>Ready to press</h2>
+          <p class="lede">Look it over before it goes to the press. Tap &#9998; on any line to change it.</p>
+          <p class="needs" id="pressNeeds" hidden></p>
+          <div class="card recap" id="recap"></div>
+          <div class="card tracksheet minilist" id="recapTracks"></div>
         </section>
       </div>
       <div class="dfoot"><button class="btn ghost sm" id="prevStep">Back</button><small id="footNote"></small><span class="spacer"></span><button class="btn sm" id="nextStep">Next</button><button class="btn or sm" id="pressBtn" hidden>Press the record</button></div>
@@ -880,6 +939,16 @@ const SHAPES = [['round','Round'],['heart','Heart'],['star','Star'],['hex','Hexa
 const PLAY = { round:.97, heart:.6, star:.56, hex:.84, oct:.88 };
 const LABELS = [['solid','Solid'],['split','Two-tone'],['ring','Ring'],['art','Cover art'],['minimal','Minimal']];
 const PHOTOMODES = [['full','Full bleed'],['framed','Framed']];
+// a line about each choice, shown under the options when it's picked
+const OPT_NOTES = {
+  vinyl:{ black:'The classic. Deep, glossy and quiet.', solid:'One solid colour of your choosing.', translucent:'Tinted and see-through. Hold it up to the light.', clear:'Clear as glass, as if there is nothing there.',
+    metallic:'A pearly sheen that catches the light.', iridescent:'Shifts colour as it turns, like oil on water.', marble:'Two colours folded together, so no two come out the same.',
+    splatter:'Flecks of a second colour flicked across the first.', swirl:'Two colours spun into a spiral.', clouds:'Soft clouds of a second colour drifting through.',
+    split:'One colour on each half, meeting in a straight line.', stripe:'Bands of two colours across the record.', inner:'One colour in the middle, ringed by another.',
+    smoke:'Wisps of smoke through clear vinyl.', eco:'Pressed from leftover vinyl, so every one is a surprise.', picture:'Your cover picture pressed right into the record.' },
+  shape:{ round:'Plays from edge to edge.', heart:'Cut into a heart. The grooves stop short of the curves, so each side plays a little less.', star:'Cut into a star. The smallest playing area of all.',
+    hex:'Six flat sides. Plays nearly to the edge.', oct:'Eight flat sides. Plays nearly to the edge.' },
+  label:{ solid:'One flat colour with the title.', split:'Two colours, half and half.', ring:'A plain centre with a ring around it.', art:'A small copy of your cover in the middle.', minimal:'Just the words, very quiet.' } };
 const NOTECOLS = ['#F6D48A','#F4B6A6','#BFE0C6','#B9D3EA','#F2A65A'];
 const photoImgs = new Map();
 function photoImage(src){ if (!src) return null; if (photoImgs.has(src)) return photoImgs.get(src); const im = new Image(); im.src = src; photoImgs.set(src, im); im.onload = () => { imgCache.clear(); refreshAll(); }; return im; }
@@ -1160,7 +1229,8 @@ const hasWork = r => r.A.length + r.B.length > 0 || !!r.name;
 // a saved draft that can't be read is simply dropped, so it can never stop the site from starting
 let lastDraft = (() => { try { return cleanRec(store.get('sideb-press')); } catch(e){ return cleanRec(null); } })(), draft = cleanRec(null);
 let step = 'songs', selNote = -1, face = 'F';
-const STEPS = ['songs','words','sleeve','vinyl','notes'];
+const STEPS = ['songs','words','sleeve','vinyl','notes','press'];
+const STEPNAME = { songs:'Songs', words:'Words', sleeve:'Sleeve', vinyl:'Vinyl', notes:'Notes', press:'Press' };
 function saveDraft(){ if (!hasWork(draft) && hasWork(lastDraft)) return; if (!store.set('sideb-press', draft)){ const p = draft.photo; draft.photo = ''; store.set('sideb-press', draft); draft.photo = p; } }
 const songKey = s => s.key || (s.s === 'd' ? `d${s.al}-${s.ti}` : `it${s.id}`);
 function hydrateSong(s){ if (s.s === 'd'){ const a = DEMO[s.al]; return { ...s, name:a.tracks[s.ti], artist:a.band, album:a.title, key:songKey(s) }; } return { ...s, name:s.t, artist:s.a, key:songKey(s) }; }
@@ -1218,7 +1288,7 @@ function refreshPreview(){ clearTimeout(prevTimer); prevTimer = setTimeout(() =>
   $('pVin').style.width = (recSize(draft) === 12 ? 62 : 55) + '%'; $('pVin').style.top = (recSize(draft) === 12 ? 2 : 5.5) + '%';
   $('pBack').innerHTML = backHTML(draft, draft.A.map(hydrateSong), draft.B.map(hydrateSong));
   renderNotes($('nFront'), draft, 'F', step === 'notes'); renderNotes($('pBack').querySelector('.notes'), draft, 'B', step === 'notes');
-  if (step === 'words' || step === 'sleeve' || step === 'vinyl') refreshTiles();
+  if (step === 'words' || step === 'sleeve' || step === 'vinyl') refreshTiles(); renderRecap();
 }, 50); }
 function refreshAll(){ refreshPreview(); }
 // tiles render previews of each option using the current design
@@ -1231,6 +1301,7 @@ function refreshTiles(){ clearTimeout(tileTimer); tileTimer = setTimeout(() => {
     tilesFill('tVinyl', VINYLS, v => vinylURL(variant({ vinyl:v }), 140, 'A'), 'vinyl', true);
     tilesFill('tShape', SHAPES, v => vinylURL(variant({ shape:v }), 140, 'A'), 'shape', true);
     tilesFill('tLabel', LABELS, v => vinylURL(variant({ label:v }), 140, 'A'), 'label', true);
+    [['vNote','vinyl',VINYLS],['shNote','shape',SHAPES],['lbNote','label',LABELS]].forEach(([id, k, list]) => $(id).innerHTML = `<b>${nameOf(list, draft.d[k])}</b> ${OPT_NOTES[k][draft.d[k]] || ''}`);
   } }, 30); }
 function tilesFill(id, opts, src, key, round){
   const el = $(id);
@@ -1385,28 +1456,94 @@ addEventListener('pointerup', () => { if (ndrag){ ndrag = null; saveDraft(); } }
 
 function setFace(f){ face = f; $('recwrap').dataset.mode = f === 'B' ? 'back' : (step === 'vinyl' ? 'vinyl' : 'front'); $('faceBtn').textContent = f === 'B' ? 'Show the front' : 'Turn it over'; noteFaceLabel(); }
 $('faceBtn').addEventListener('click', () => { if (drawMode) setDrawMode(false); setFace(face === 'F' ? 'B' : 'F'); sfx.flip(); });
-function goStep(s){
-  if (s !== 'sleeve' && drawMode) setDrawMode(false);
-  step = s; document.querySelectorAll('#steps button').forEach(b => b.setAttribute('aria-selected', b.dataset.step === s));
+// each long step opens on a short list of its parts; pick one to work on it on its own
+const sub = {};
+const partsOf = s => [...document.querySelectorAll(`#st-${s} .sec[data-sub]`)].map(e => e.dataset.sub);
+const partEl = k => document.querySelector(`.sec[data-sub="${k}"]`);
+const BACK_PARTS = ['back'];
+function goStep(s, k = null){
+  if (drawMode && (s !== 'sleeve' || k !== 'draw')) setDrawMode(false);
+  step = s; sub[s] = k; document.querySelectorAll('#steps button').forEach(b => b.setAttribute('aria-selected', b.dataset.step === s));
   document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', p.id === 'st-' + s));
+  const el = $('st-' + s); el.classList.toggle('drill', !!k);
+  el.querySelectorAll('.sec[data-sub]').forEach(e => e.classList.toggle('part-on', e.dataset.sub === k));
   $('recwrap').classList.toggle('editing', s === 'notes');
-  if (s === 'vinyl' && face === 'B') face = 'F';
-  setFace(face); document.querySelector('.dbody').scrollTop = 0; syncControls(); refreshPreview(); refreshTiles(); if (s === 'notes') renderNoteUI(); updateFoot();
+  if (s === 'sleeve' && k) face = BACK_PARTS.includes(k) ? 'B' : 'F';
+  if (s === 'vinyl' || s === 'press') face = 'F';
+  setFace(face); document.querySelector('.dbody').scrollTop = 0; requestAnimationFrame(placeSlip); syncControls(); refreshPreview(); refreshTiles(); if (s === 'notes') renderNoteUI(); updateFoot();
 }
 document.querySelectorAll('#steps button').forEach(b => b.addEventListener('click', () => goStep(b.dataset.step)));
-$('prevStep').addEventListener('click', () => { const i = STEPS.indexOf(step); if (i > 0) goStep(STEPS[i-1]); });
-$('nextStep').addEventListener('click', () => { const i = STEPS.indexOf(step); if (i < STEPS.length - 1) goStep(STEPS[i+1]); });
+function buildMenus(){ STEPS.forEach(s => { const parts = partsOf(s); if (!parts.length) return; const el = $('st-' + s), first = el.querySelector('.sec[data-sub]');
+  const menu = document.createElement('div'); menu.className = 'submenu card';
+  menu.innerHTML = parts.map((k, i) => { const e = partEl(k); return `<button class="subrow" data-part="${k}"><span class="sr-n">${String(i+1).padStart(2,'0')}</span><span class="sr-t"><b>${e.dataset.label}</b><small>${e.dataset.desc}</small></span><span class="sr-v" data-val="${k}"></span><span class="sr-go" aria-hidden="true">&rsaquo;</span></button>`; }).join('');
+  menu.querySelectorAll('.subrow').forEach(b => b.addEventListener('click', () => { sfx.click(); goStep(s, b.dataset.part); }));
+  const back = document.createElement('button'); back.className = 'subback'; back.innerHTML = `&lsaquo; All of ${STEPNAME[s]}`; back.addEventListener('click', () => goStep(s));
+  first.before(menu); menu.before(back); }); }
+buildMenus();
+// the slip sits top left on the bench; the record moves over to make room, and the slip steps out of the way if there isn't any
+function placeSlip(){ const sl = $('slip'), rw = $('recwrap'); rw.style.marginLeft = ''; sl.classList.remove('off');
+  if (getComputedStyle(sl).display === 'none' || !$('studio').classList.contains('on')) return;
+  const B = $('bench').getBoundingClientRect(), R = rw.getBoundingClientRect(), S = sl.getBoundingClientRect();
+  if (S.bottom + 10 < R.top) return; const need = S.right + 18 - R.left; if (need <= 0) return;
+  if (need <= B.right - 14 - R.right) rw.style.marginLeft = need*2 + 'px'; else sl.classList.add('off'); }
+addEventListener('resize', placeSlip);
+$('resetBtn').addEventListener('click', () => { if (hasWork(draft) && !confirm('Start a new record from scratch? You can still carry on with this one from the booth.')) return;
+  if (hasWork(draft)){ saveDraft(); lastDraft = draft; } loadDraft(cleanRec(null)); });
+$('prevStep').addEventListener('click', () => { if (sub[step]) return goStep(step); const i = STEPS.indexOf(step); if (i > 0) goStep(STEPS[i-1]); });
+$('nextStep').addEventListener('click', () => { const parts = partsOf(step), k = sub[step], j = parts.indexOf(k);
+  if (k && j < parts.length - 1) return goStep(step, parts[j+1]); const i = STEPS.indexOf(step); if (i < STEPS.length - 1) goStep(STEPS[i+1]); });
 function loadDraft(r){ draft = r; selNote = -1; selText = -1; face = 'F'; fillFields(); syncControls(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); goStep('songs'); }
 $('resumeBtn').addEventListener('click', () => { lastDraft = cleanRec(null); loadDraft(cleanRec(store.get('sideb-press'))); });
 function updateFoot(){
   $('resumeBtn').hidden = !(hasWork(lastDraft) && !hasWork(draft));
-  const i = STEPS.indexOf(step), n = draft.A.length + draft.B.length, last = i === STEPS.length - 1;
-  $('prevStep').style.visibility = i ? 'visible' : 'hidden';
-  $('nextStep').hidden = last; $('nextStep').textContent = last ? '' : `Next: ${STEPS[i+1][0].toUpperCase() + STEPS[i+1].slice(1)}`;
+  const i = STEPS.indexOf(step), n = draft.A.length + draft.B.length, last = i === STEPS.length - 1, parts = partsOf(step), k = sub[step], j = parts.indexOf(k);
+  $('prevStep').style.visibility = i || k ? 'visible' : 'hidden'; $('prevStep').innerHTML = k ? `&lsaquo; All of ${STEPNAME[step]}` : 'Back';
+  $('nextStep').hidden = last; $('nextStep').textContent = last ? '' : k && j < parts.length - 1 ? `Next: ${partEl(parts[j+1]).dataset.label}` : `Next: ${STEPNAME[STEPS[i+1]]}`;
   $('pressBtn').hidden = !last; $('pressBtn').disabled = n < MINS;
-  $('footNote').textContent = n < MINS ? `${MINS - n} more song${MINS - n === 1 ? '' : 's'} to press` : (!draft.name ? 'Name it in Words' : '');
+  $('footNote').textContent = n < MINS ? `${MINS - n} more song${MINS - n === 1 ? '' : 's'} to press` : (!draft.name && step !== 'words' ? 'Name it in Words' : '');
   document.querySelectorAll('#steps button').forEach(b => { const k = b.dataset.step; b.classList.toggle('done', k === 'songs' ? n >= MINS : k === 'words' ? !!draft.name : k === 'notes' ? (draft.notes||[]).length > 0 : false); });
+  renderRecap();
 }
+// what each part is set to now, for the part lists, the slip on the bench and the recap before pressing
+const nameOf = (list, v) => (list.find(o => o[0] === v) || list[0])[1];
+const chip = c => `<i class="cchip" style="background:${esc(c)}"></i>`;
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const listOn = list => { const on = list.filter(([k]) => draft.d[k]).map(([, l]) => l); return on.length ? on.join(', ') : 'Nothing extra'; };
+const PART_VAL = {
+  names: () => draft.name ? esc(draft.name) : 'No title yet',
+  layout: () => nameOf(LAYOUTS, draft.d.lay),
+  type: () => `${nameOf(TITLE_FONTS, draft.d.font)}, ${Math.round(draft.d.ts*100)}%`,
+  show: () => { const n = SHOWS.filter(([k]) => draft.d[k] !== false).length; return n === SHOWS.length ? 'All on' : `${n} of ${SHOWS.length} on`; },
+  picture: () => draft.photo ? `${nameOf(PHOTOMODES, draft.d.pm)}, ${nameOf(FILTERS, draft.d.filt).toLowerCase()}` : 'No picture',
+  colours: () => chip(draft.d.bg) + chip(draft.d.ink) + chip(draft.d.acc),
+  front: () => listOn(FRONT_EXTRAS), back: () => listOn(BACK_EXTRAS),
+  draw: () => draft.draw.length ? plural(draft.draw.length, 'stroke') : 'Nothing drawn',
+  text: () => draft.texts.length ? plural(draft.texts.length, 'piece') : 'None',
+  pressing: () => nameOf(VINYLS, draft.d.vinyl), shape: () => nameOf(SHAPES, draft.d.shape), label: () => nameOf(LABELS, draft.d.label),
+  vcolours: () => { const need = (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2]; return (need >= 1 ? chip(draft.d.v1) : '') + (need >= 2 ? chip(draft.d.v2) : '') + chip(draft.d.lab); } };
+function recapRows(){ const n = draft.A.length + draft.B.length, big = recSize(draft) === 12;
+  return [
+    ['Songs', n ? `${plural(n, 'song')}, ${draft.A.length} on side A, ${draft.B.length} on side B` : 'None yet', 'songs', null, 1],
+    ['Size', n < MINS ? `${MINS - n} more to press` : big ? '12-inch LP' : '10-inch', 'songs', null, 0],
+    ['Title', PART_VAL.names(), 'words', 'names', 1],
+    ['From and for', draft.by || draft.to ? `${esc(draft.by || 'You')} to ${esc(draft.to || 'someone')}` : 'Not filled in', 'words', 'names', 0],
+    ['Lettering', `${PART_VAL.type().split(',')[0]}, ${PART_VAL.layout().toLowerCase()}`, 'words', 'type', 1],
+    ['Picture', PART_VAL.picture(), 'sleeve', 'picture', 0],
+    ['Colours', PART_VAL.colours(), 'sleeve', 'colours', 1],
+    ['On the front', PART_VAL.front(), 'sleeve', 'front', 0],
+    ['On the back', PART_VAL.back(), 'sleeve', 'back', 0],
+    ['Vinyl', `${PART_VAL.pressing()}, ${PART_VAL.shape().toLowerCase()}`, 'vinyl', 'pressing', 1],
+    ['Label', `${PART_VAL.label()} ${chip(draft.d.lab)}`, 'vinyl', 'label', 0],
+    ['Notes', draft.notes.length ? plural(draft.notes.length, 'note') : 'None', 'notes', null, 1] ]; }
+const recapHTML = rows => rows.map(([l, v, s, k]) => `<button class="rrow" data-go="${s}" data-part="${k || ''}"><span class="rl">${l}</span><span class="rv">${v}</span><span class="rp" aria-label="Change">&#9998;</span></button>`).join('');
+function renderRecap(){ const rows = recapRows(), n = draft.A.length + draft.B.length;
+  document.querySelectorAll('[data-val]').forEach(e => { const v = PART_VAL[e.dataset.val](); if (e.innerHTML !== v) e.innerHTML = v; });
+  $('slip').innerHTML = `<h5><span>YOUR RECORD</span><span>${esc(draft.cat || 'SB-001')}</span></h5>` + recapHTML(rows.filter(r => r[4]));
+  if (step === 'press'){ $('recap').innerHTML = recapHTML(rows);
+    $('pressNeeds').hidden = n >= MINS; $('pressNeeds').innerHTML = n >= MINS ? '' : `It needs ${plural(MINS - n, 'more song')} before it can be pressed. <button class="btn sm" data-go="songs" data-part="">Add songs</button>`;
+    const side = (sd, list) => `<div><h4><span>SIDE ${sd}</span><span>${list.length}</span></h4><ol>${list.length ? list.map((t, i) => `<li><span class="n">${sd}${i+1}</span><span class="nm">${esc(t.name)}<em> ${esc(t.artist)}</em></span></li>`).join('') : '<li class="empty">No songs yet.</li>'}</ol></div>`;
+    $('recapTracks').innerHTML = `<div class="cols">${side('A', draft.A.map(hydrateSong))}${side('B', draft.B.map(hydrateSong))}</div>`; }
+  document.querySelectorAll('#slip [data-go], #st-press [data-go]').forEach(b => b.onclick = () => { sfx.click(); goStep(b.dataset.go, b.dataset.part || null); }); }
 // only the newest search gets to show its results, so a slow older one can't replace them
 let searchSeq = 0;
 async function runSearch(){ const my = ++searchSeq; let list, msg;
