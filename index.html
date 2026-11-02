@@ -1697,7 +1697,7 @@ const ampFront = (x, y, w, h, z) => `<g transform="${plane(z)}"><rect x="${x}" y
   ${[.18, .34, .5, .66, .82].map(f => `<circle cx="${x + w*f}" cy="${y + h*.74}" r="${h*.07}" fill="#cfcac0"/>`).join('')}<text x="${x + w/2}" y="${y + h*.56}" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="800" font-size="${h*.1}" fill="#6fc0ff" letter-spacing="1">SIDE B</text></g>`;
 // a paper lantern hanging from the ceiling at depth z
 function lantern(x, z, drop, r){ const top = PJ(x, 40, z), c = PJ(x, 40 + drop + r, z), k = kz(z), R = r*k;
-  let s = `<line x1="${top[0]}" y1="${top[1]}" x2="${c[0]}" y2="${c[1] - R}" stroke="#2a1a10" stroke-width="1.4"/><circle cx="${c[0]}" cy="${c[1]}" r="${R*2.4}" fill="rgba(255,236,190,.10)"/><circle cx="${c[0]}" cy="${c[1]}" r="${R*1.5}" fill="rgba(255,236,190,.14)"/>
+  let s = `<line x1="${top[0]}" y1="${top[1]}" x2="${c[0]}" y2="${c[1] - R}" stroke="#2a1a10" stroke-width="1.4"/><circle cx="${c[0]}" cy="${c[1]}" r="${R*3}" fill="url(#lampG)"/>
     <circle cx="${c[0]}" cy="${c[1]}" r="${R}" fill="#F7EEDA"/>`;
   for (const d of [-.7,-.42,-.14,.14,.42,.7]) s += `<path d="M${c[0] - Math.sqrt(1 - d*d)*R} ${c[1] + d*R} Q${c[0]} ${c[1] + d*R + R*.12} ${c[0] + Math.sqrt(1 - d*d)*R} ${c[1] + d*R}" stroke="#E2CDA2" stroke-width="1.2" fill="none"/>`;
   return s + `<path d="M${c[0] + R*.25} ${c[1] - R*.95} A${R} ${R} 0 0 1 ${c[0] + R*.25} ${c[1] + R*.95} A${R*.75} ${R} 0 0 0 ${c[0] + R*.25} ${c[1] - R*.95}" fill="rgba(200,140,70,.22)"/><rect x="${c[0] - R*.3}" y="${c[1] - R - 3}" width="${R*.6}" height="5" fill="#3a2a1a"/>`; }
@@ -1719,7 +1719,7 @@ const speckCanvas = (() => { const c = document.createElement('canvas'); c.width
   return c; })();
 // a navy enamel pendant lamp, like the three over the shop front, hanging from the ceiling at depth z
 function pendant(x, z, drop, w=34){ const top = PJ(x, 40, z), b = PJ(x, 40 + drop, z);
-  return `<line x1="${top[0]}" y1="${top[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#0f1a2c" stroke-width="2"/>` + disc(x, 40 + drop + 30, z, w*1.05, 'rgba(255,226,160,.16)') + (() => { const c = PJ(x, 72 + drop, z); return `<ellipse cx="${c[0]}" cy="${c[1] + 40}" rx="${90*kz(z)}" ry="${70*kz(z)}" fill="rgba(255,200,120,.18)" style="mix-blend-mode:screen"/>`; })()
+  return `<line x1="${top[0]}" y1="${top[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#0f1a2c" stroke-width="2"/>`  + (() => { const c = PJ(x, 72 + drop, z); return `<ellipse cx="${c[0]}" cy="${c[1] + 40}" rx="${90*kz(z)}" ry="${70*kz(z)}" fill="rgba(255,200,120,.18)" style="mix-blend-mode:screen"/>`; })()
     + `<g transform="${plane(z)}"><path d="M${x - 6} ${40 + drop} L${x + 6} ${40 + drop} L${x + 9} ${48 + drop} L${x + w} ${70 + drop} L${x - w} ${70 + drop} L${x - 9} ${48 + drop} Z" fill="#3A2A1E"/>
       <path d="M${x - w} ${70 + drop} L${x - 9} ${48 + drop} L${x - 3} ${48 + drop} L${x - w*.45} ${70 + drop} Z" fill="#6A5038"/><rect x="${x - w}" y="${68 + drop}" width="${w*2}" height="3" fill="#0f1a2c"/>
       <ellipse cx="${x}" cy="${72 + drop}" rx="${w*.55}" ry="5" fill="#FFF1C6"/></g>`; }
@@ -1734,6 +1734,7 @@ function buildShop(){
   const st = $('shopStage'), BACK = 0; JIT = mulberry32(77);
   let s = `<svg id="shopSvg" viewBox="0 0 1920 1080" width="1920" height="1080" xmlns="${NS}">
   <defs><mask id="boothDoor" maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="6000" height="6000"><rect x="-2000" y="-2000" width="6000" height="6000" fill="#fff"/><rect x="1294" y="390" width="170" height="510" fill="#000"/></mask>
+    <radialGradient id="lampG"><stop offset="0" stop-color="#FFD9A0" stop-opacity=".55"/><stop offset=".4" stop-color="#FFB060" stop-opacity=".18"/><stop offset="1" stop-color="#FF9040" stop-opacity="0"/></radialGradient>
     <pattern id="grainS" width="256" height="256" patternUnits="userSpaceOnUse"><image href="${noiseCanvas.toDataURL()}" width="256" height="256"/></pattern>
     <pattern id="speckS" width="384" height="384" patternUnits="userSpaceOnUse"><image href="${speckCanvas.toDataURL()}" width="384" height="384"/></pattern>
     <pattern id="tileS" width="13" height="13" patternUnits="userSpaceOnUse"><rect width="13" height="13" fill="#E9E4D8"/><path d="M0 .5H13M.5 0V13" stroke="#C9C1AF" stroke-width="1"/></pattern>
@@ -1746,12 +1747,12 @@ function buildShop(){
   const Z_NEAR = -1100;
   s += poly([PJ(WALL_L,40,BACK), PJ(WALL_R,40,BACK), PJ(WALL_R,40,Z_NEAR), PJ(WALL_L,40,Z_NEAR)], '#1E120A');
   for (let x = WALL_L; x <= WALL_R; x += 44) s += poly([PJ(x,40,BACK), PJ(x + 26,40,BACK), PJ(x + 26,40,Z_NEAR), PJ(x,40,Z_NEAR)], '#2E1C10');
-  s += poly([PJ(WALL_L,40,BACK), PJ(WALL_L,40,Z_NEAR), PJ(WALL_L,FLOOR,Z_NEAR), PJ(WALL_L,FLOOR,BACK)], '#B9A584') + poly([PJ(WALL_L,560,BACK), PJ(WALL_L,560,Z_NEAR), PJ(WALL_L,FLOOR,Z_NEAR), PJ(WALL_L,FLOOR,BACK)], '#3A2112');
-  s += poly([PJ(WALL_R,40,BACK), PJ(WALL_R,40,Z_NEAR), PJ(WALL_R,FLOOR,Z_NEAR), PJ(WALL_R,FLOOR,BACK)], '#A99474') + poly([PJ(WALL_R,560,BACK), PJ(WALL_R,560,Z_NEAR), PJ(WALL_R,FLOOR,Z_NEAR), PJ(WALL_R,FLOOR,BACK)], '#331D10');
+  s += poly([PJ(WALL_L,40,BACK), PJ(WALL_L,40,Z_NEAR), PJ(WALL_L,FLOOR,Z_NEAR), PJ(WALL_L,FLOOR,BACK)], '#7A5A3A') + poly([PJ(WALL_L,560,BACK), PJ(WALL_L,560,Z_NEAR), PJ(WALL_L,FLOOR,Z_NEAR), PJ(WALL_L,FLOOR,BACK)], '#3A2112');
+  s += poly([PJ(WALL_R,40,BACK), PJ(WALL_R,40,Z_NEAR), PJ(WALL_R,FLOOR,Z_NEAR), PJ(WALL_R,FLOOR,BACK)], '#6E5034') + poly([PJ(WALL_R,560,BACK), PJ(WALL_R,560,Z_NEAR), PJ(WALL_R,FLOOR,Z_NEAR), PJ(WALL_R,FLOOR,BACK)], '#331D10');
   s += poly([PJ(WALL_L,FLOOR,BACK), PJ(WALL_R,FLOOR,BACK), PJ(WALL_R,FLOOR,Z_NEAR), PJ(WALL_L,FLOOR,Z_NEAR)], '#4A2E1A');
   for (let x = WALL_L; x <= WALL_R; x += 64){ const a = PJ(x, FLOOR, BACK), b = PJ(x, FLOOR, Z_NEAR); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#36200F" stroke-width="1.8"/>`; }
   for (let i=0;i<40;i++){ const x = WALL_L + 32 + (i*137)%1720, z = -40 - (i*211)%1000, a = PJ(x, FLOOR, z), b = PJ(x + 64, FLOOR, z); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#36200F" stroke-width="1.3"/>`; }
-  s += `<g transform="${plane(BACK)}"><rect x="${WALL_L}" y="40" width="${WALL_R - WALL_L}" height="${FLOOR - 40}" fill="#BCA883"/><rect x="${WALL_L}" y="40" width="${WALL_R - WALL_L}" height="12" fill="rgba(0,0,0,.3)"/><rect x="${WALL_L}" y="560" width="${WALL_R - WALL_L}" height="${FLOOR - 560}" fill="#4A2A16"/>${Array.from({length:Math.ceil((WALL_R - WALL_L)/26)}, (_,i) => `<rect x="${WALL_L + i*26}" y="560" width="2" height="${FLOOR - 560}" fill="#2A160A"/>`).join('')}<rect x="${WALL_L}" y="556" width="${WALL_R - WALL_L}" height="6" fill="#2A160A"/>
+  s += `<g transform="${plane(BACK)}"><rect x="${WALL_L}" y="40" width="${WALL_R - WALL_L}" height="${FLOOR - 40}" fill="#8C6A46"/>${Array.from({length:Math.ceil((WALL_R - WALL_L)/240) + 1}, (_,i) => `<rect x="${WALL_L + i*240 - 9}" y="40" width="18" height="${FLOOR - 40}" fill="#2A160A"/>`).join('')}<rect x="${WALL_L}" y="300" width="${WALL_R - WALL_L}" height="14" fill="#2A160A"/><rect x="${WALL_L}" y="40" width="${WALL_R - WALL_L}" height="12" fill="rgba(0,0,0,.3)"/><rect x="${WALL_L}" y="560" width="${WALL_R - WALL_L}" height="${FLOOR - 560}" fill="#4A2A16"/>${Array.from({length:Math.ceil((WALL_R - WALL_L)/26)}, (_,i) => `<rect x="${WALL_L + i*26}" y="560" width="2" height="${FLOOR - 560}" fill="#2A160A"/>`).join('')}<rect x="${WALL_L}" y="556" width="${WALL_R - WALL_L}" height="6" fill="#2A160A"/>
     <rect x="${WALL_L}" y="${FLOOR - 26}" width="${WALL_R - WALL_L}" height="26" fill="${WD.dark}"/><rect x="1140" y="150" width="34" height="${FLOOR - 150}" fill="${IN.shade}"/></g>`;
 
   // on the wall above the shelves: records hung up, covers in frames, a clock
@@ -1848,9 +1849,17 @@ function buildShop(){
   [[230,-260,150,30],[520,-320,90,26],[760,-240,190,32],[1000,-340,60,24]].forEach(([x,z,drop,r]) => s += lantern(x, z, drop, r));
   { const x = 1215, z = -150, t = PJ(x, 40, z), c = PJ(x, 230, z), k = kz(z); s += `<line x1="${t[0]}" y1="${t[1]}" x2="${c[0]}" y2="${c[1] - 30*k}" stroke="#2a1a10" stroke-width="1.2"/><g transform="translate(${c[0]} ${c[1]}) scale(${k})">
       <path d="M-26 -30 L26 -30 L20 0 L-20 0 Z" fill="#E8DFCC"/>${Array.from({length:9}, (_,i) => `<path d="M${-20 + i*5} -6 q${(i - 4)*4} 40 ${(i - 4)*7} ${70 + (i % 3)*20}" stroke="${i % 2 ? '#3E7A45' : '#2F6238'}" stroke-width="5" fill="none" stroke-linecap="round"/>`).join('')}</g>`; }
+  // the wall between the record wall and the booth: framed gig posters and a little shelf of plants and records
+  s += `<g transform="${plane(-2)}">${[[1158,330,96,130,'#B3252B','#EDB33A'],[1158,480,96,70,'#1F3A63','#F1E3C4']].map(([x,y,w,h,c1,c2]) => `<rect x="${x + 4}" y="${y + 5}" width="${w}" height="${h}" fill="rgba(0,0,0,.35)"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#1E120A"/><rect x="${x + 6}" y="${y + 6}" width="${w - 12}" height="${h - 12}" fill="${c1}"/><circle cx="${x + w/2}" cy="${y + h*.45}" r="${Math.min(w, h)*.24}" fill="${c2}"/><rect x="${x + 14}" y="${y + h - 22}" width="${w - 28}" height="5" fill="${c2}"/>`).join('')}</g>`;
+  s += box(1160, 1256, 600, 608, BACK, -40, { front:'#3B2112', top:'#5A3620', under:'#1A0D06' }) + succulent(1182, 600, -20) + `<g transform="${plane(-16)}">${spines(1204, 560, 46, 40, 801)}</g>`;
+  // evening light: everything warmed and dimmed, glows round every lamp, pools on the floor under the lanterns
+  s += `<g style="mix-blend-mode:multiply"><rect x="-2000" y="-1500" width="5920" height="4080" fill="#C79A6A" opacity=".42"/></g>`;
+  s += `<g style="mix-blend-mode:screen">${[[230,-260,150,30],[520,-320,90,26],[760,-240,190,32],[1000,-340,60,24],[860,-300,40,30],[1180,-240,94,24]].map(([x,z,drop,r]) => { const c = PJ(x, 40 + drop + r, z), f = PJ(x, FLOOR, z), k = kz(z);
+    return `<ellipse cx="${f[0]}" cy="${f[1]}" rx="${160*k}" ry="${34*k}" fill="url(#lampG)" opacity=".6"/>`; }).join('')}
+    <ellipse cx="625" cy="400" rx="620" ry="340" fill="url(#lampG)" opacity=".4"/><ellipse cx="1560" cy="640" rx="300" ry="300" fill="url(#lampG)" opacity=".45"/></g>`;
   // the print: grain and speckle over everything, like the shop front picture
   s += `<rect x="-2000" y="-1500" width="5920" height="4080" fill="url(#grainS)" opacity=".32" style="mix-blend-mode:overlay"/><rect x="-2000" y="-1500" width="5920" height="4080" fill="url(#speckS)" opacity=".25"/><rect x="-2000" y="-1500" width="5920" height="4080" fill="url(#vigS)"/>
-    <defs><radialGradient id="vigS" gradientUnits="userSpaceOnUse" cx="960" cy="540" r="1300"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0a0503" stop-opacity=".62"/></radialGradient></defs></svg>`;
+    <defs><radialGradient id="vigS" gradientUnits="userSpaceOnUse" cx="960" cy="540" r="1300"><stop offset=".35" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0a0402" stop-opacity=".75"/></radialGradient></defs></svg>`;
   st.innerHTML = s; paintSlots(st);
   const booth = $('booth'); booth.addEventListener('click', enterBooth); booth.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); enterBooth(); } });
   st.querySelectorAll('image.tagme').forEach(el => { el.addEventListener('pointerenter', () => showTag(slotAlbum(+el.dataset.slot), el)); el.addEventListener('pointerleave', hideTag); });
