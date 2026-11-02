@@ -71,23 +71,103 @@ button{cursor:pointer}
 #tag.show{opacity:1}
 
 /* ---------- studio ---------- */
-#studio{display:grid;grid-template-rows:auto minmax(0,1fr);grid-template-columns:minmax(0,1fr);background:var(--cream)}
+#studio{display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr);background:#3a2414}
+/* the step names along the top: the current one bold, done ones marked */
+.steps{display:flex;align-items:center;gap:4px;margin:0 auto;font:600 .74rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.steps i{font-style:normal;color:#9b8a73}
+.steps button{border:0;background:none;padding:6px 6px;color:#7d6c58;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;position:relative}
+.steps button:hover{color:var(--ink)}
+.steps button[aria-current="step"]{color:var(--ink);font-weight:800;box-shadow:inset 0 -2px 0 var(--burg)}
+.steps button.done::after{content:"";position:absolute;right:-1px;top:3px;width:5px;height:5px;border-radius:50%;background:var(--burg)}
+.shead{justify-content:space-between}
+@media (max-width:760px){.steps{display:none}.shead{padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0px))}.shead .logo{font-size:1.5rem;margin-right:auto}.shead .btn.sm{font-size:.72rem;padding:.4rem .6rem}}
+/* the bench fills the space; a panel opens on the right (or as a sheet on phones) for steps that need typing */
+.sbody{position:relative;display:grid;grid-template-columns:minmax(0,1fr);min-height:0}
+#studio.panel .sbody{grid-template-columns:minmax(0,1fr) minmax(340px,420px)}
+#studio:not(.panel) .deck{display:none}
+@media (max-width:760px){#studio.panel .sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(150px,32%) minmax(0,1fr)}
+  #studio.panel .deck{border-left:0;border-top:3px double var(--faded);box-shadow:0 -10px 24px rgba(0,0,0,.3)}
+  #studio[data-f="press"] .sbody,#studio[data-f="notes"] .sbody,#studio[data-f="draw"] .sbody{grid-template-rows:minmax(170px,44%) minmax(0,1fr)}}
+.bench{container-type:size}
+.recwrap{position:relative;width:min(56vh,46vw,560px);aspect-ratio:1.5;transition:width .35s}
+@supports (width:1cqw){.recwrap{width:min(84cqw,112cqh,820px)}#studio:not(.panel) .recwrap{width:min(84cqw,104cqh,820px);margin-bottom:var(--ocpad,0px)}}
+@media (max-width:760px){@supports (width:1cqw){.recwrap,#studio:not(.panel) .recwrap{width:min(68cqw,104cqh)}}}
+#studio:not(.panel) .bench{padding-bottom:70px}
+.benchtop{position:absolute;left:12px;right:12px;top:12px;display:flex;gap:8px;z-index:4;pointer-events:none}
+.benchtop .pill{pointer-events:auto;white-space:nowrap}
+.benchtop .spacer{flex:1}
+.ghostpill{background:rgba(251,245,232,.78)!important}
+.bench .prop.pencil,.bench .prop.tape{opacity:.9}
+@media (max-width:760px){.bench .prop{display:none}.benchtop{left:8px;right:8px;top:8px}.benchtop .pill{padding:.38rem .65rem;font-size:.66rem}.mat{inset:4% 3% 4%}}
+/* the option card floats over the bench, just above the dock */
+.ocard{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:4;width:min(560px,calc(100% - 24px));padding:10px 14px;background:rgba(251,245,232,.95);border-radius:3px;box-shadow:0 0 0 1px rgba(43,37,34,.3),0 8px 22px rgba(0,0,0,.35);text-align:center}
+.ocard[hidden]{display:none}
+.oc-line{margin:0;font-size:.86rem;line-height:1.35;color:var(--ink2)}
+.oc-line b{color:var(--ink);font:700 .92rem/1.2 Archivo,sans-serif;margin-right:4px}
+.oc-x{margin-top:8px}.oc-x[hidden]{display:none}
+.oc-small{margin:0 0 6px;font:600 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--burg)}
+.hyperow{display:grid;grid-template-columns:.6fr 1.4fr 1fr;gap:6px}
+.hyperow input{min-width:0;border:0;border-bottom:1.5px solid var(--ink);background:transparent;padding:4px 2px;font:500 .8rem/1.2 var(--mono)}
+.ocard .slide.wide{display:flex;align-items:center;gap:10px;justify-content:center;font:600 .66rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--burg)}
+.ocard .slide input{flex:1;max-width:260px}
+.pickers{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pk{position:relative;display:flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:999px;background:#efe6d2;box-shadow:0 0 0 1px rgba(43,37,34,.3);font:600 .72rem/1 var(--mono);cursor:pointer}
+.pk i{width:18px;height:18px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.pk input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:0;padding:0}
+/* the dock: back, the step's name, its choices as chips, and next */
+.dock{position:relative;z-index:5;display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:6px 14px;padding:12px 18px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:#EDE2CA;border-top:3px double var(--faded);box-shadow:0 -8px 20px rgba(0,0,0,.25)}
+.dock::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.3;pointer-events:none}
+.dk-back,.dk-next{width:46px;height:46px;border-radius:50%;border:0;font:400 1.35rem/1 Archivo,sans-serif;cursor:pointer;display:grid;place-items:center}
+.dk-back{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px rgba(43,37,34,.5)}
+.dk-next{width:58px;height:58px;font-size:1.6rem;background:var(--burg);color:#F6EBD6;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+.dk-next:hover{filter:brightness(1.12)}
+.dk-next.soft{background:#9a8b78}
+.dk-press{white-space:nowrap}
+.dk-press[hidden],.dk-next[hidden]{display:none}
+.dk-name{border:0;background:none;text-align:left;padding:4px 14px 4px 0;border-right:1px solid rgba(43,37,34,.35);cursor:pointer;color:var(--ink);min-width:0}
+.dk-name small{display:block;font:600 .6rem/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--burg);white-space:nowrap}
+.dk-name b{display:block;font:800 1.02rem/1.2 Archivo,sans-serif;white-space:nowrap}
+.dk-name b::after{content:" \25BE";font-size:.7em;color:var(--ink2)}
+.dk-rows{min-width:0;display:flex;flex-direction:column;gap:6px}
+.dkrow{display:flex;align-items:center;gap:10px;min-width:0}
+.dkrl{flex:none;width:62px;font:600 .58rem/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.dkchips{display:flex;gap:8px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;padding:3px 2px;min-width:0;-webkit-mask:linear-gradient(90deg,#000 92%,transparent);mask:linear-gradient(90deg,#000 92%,transparent)}
+.dkchips::-webkit-scrollbar{display:none}
+.dkhint{margin:0;font-size:.88rem;color:var(--ink2)}
+.chip{flex:none;display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-radius:999px;border:0;background:#FBF5E8;color:var(--ink);box-shadow:0 0 0 1px rgba(43,37,34,.3);font:600 .82rem/1 Archivo,sans-serif;white-space:nowrap;cursor:pointer;position:relative}
+.chip:hover{box-shadow:0 0 0 1px rgba(43,37,34,.6)}
+.chip[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--ink);background:#fff}
+.chip.pic{padding:0 14px 0 4px}
+.chip img{width:36px;height:36px;border-radius:3px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.chip.rnd img{border-radius:50%;box-shadow:none}
+.chip .sw{width:24px;height:24px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.chip .anysw{background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)}
+.chip[aria-pressed="true"] .anysw{background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),0 0 0 2px #fff,0 0 0 3px conic-gradient(red,blue)}
+.chip input[type=color]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:50%;bottom:0}
+.trio{display:flex}.trio i{width:16px;height:24px;margin-left:-4px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.2)}.trio i:first-child{margin-left:0;width:20px}
+.dk-prog{position:absolute;left:0;right:0;top:-3px;height:3px;background:rgba(43,37,34,.15)}
+.dk-prog i{display:block;height:100%;width:0;background:var(--burg);transition:width .35s}
+@media (min-width:761px){.dock{margin:0}.dock .dk-rows{max-width:none}}
+@media (max-width:760px){.dock{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"back name next" "rows rows next";padding:8px 10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));gap:6px 8px}
+  .dk-back{grid-area:back;width:38px;height:38px;font-size:1.1rem}.dk-name{grid-area:name;border-right:0;padding:0}.dk-rows{grid-area:rows}.dk-next,.dk-press{grid-area:next;align-self:center}
+  .dk-next{width:54px;height:54px}.dkrl{width:auto;writing-mode:vertical-rl;transform:rotate(180deg);font-size:.5rem;letter-spacing:.08em}
+  .chip{height:40px;padding:0 12px;font-size:.78rem}.chip img{width:32px;height:32px}
+  #studio[data-f="press"] .dk-press{grid-row:1 / span 2}
+  .ocard{bottom:8px;padding:8px 10px}.oc-line{font-size:.78rem}.hyperow{grid-template-columns:1fr 1fr;}.hyperow input:nth-child(2){grid-column:1 / -1;grid-row:1}}
+/* every step at a glance */
+.allsteps{position:fixed;inset:0;z-index:40;background:rgba(20,12,6,.55);display:grid;place-items:end center}
+.allsteps[hidden]{display:none}
+.as-card{width:min(520px,100%);max-height:80vh;overflow:auto;background:var(--paper);border-radius:6px 6px 0 0;padding:14px 4px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.4)}
+@media (min-width:761px){.allsteps{place-items:center}.as-card{border-radius:4px}}
+.as-head{display:flex;justify-content:space-between;align-items:center;padding:0 12px 10px;border-bottom:3px double rgba(43,37,34,.4)}
+.as-head b{font:400 1.7rem/1 Yellowtail,cursive;color:var(--burg)}
+.rrow.here{background:#F3E6CC}
+.minihead{margin:18px 0 8px;font:600 .66rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--burg)}
 .shead{position:relative;display:flex;align-items:center;gap:14px;padding:10px 18px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:#EDE2CA;border-bottom:3px double var(--faded)}
 .shead::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.3;pointer-events:none}
 .shead .logo{font-family:'Yellowtail',cursive;color:var(--burg);font-size:1.9rem;line-height:1;transform:rotate(-3deg)}
 .shead .model{font:600 .66rem/1 var(--mono);letter-spacing:.22em;color:var(--burg);border:1px solid var(--burg);padding:4px 6px;opacity:.8}
 .shead .spacer{flex:1}
-.steps{display:flex;gap:0;align-self:flex-end;margin-bottom:-13px;position:relative;z-index:1}
-.steps button{position:relative;border:1px solid var(--faded);border-bottom:0;border-radius:4px 4px 0 0;background:#E2D4B6;color:#5d4f43;padding:.5rem .8rem .55rem 1.3rem;margin-right:-1px;font:600 .74rem/1 var(--mono);letter-spacing:.06em}
-.steps button::before{content:"";position:absolute;left:.55rem;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;border:1px solid #8a7a66}
-.steps button{white-space:nowrap}
-@media (max-width:1180px) and (min-width:761px){.shead .model{display:none}.steps button{padding-left:1.1rem;padding-right:.6rem}}
-.steps button[aria-selected="true"]{background:var(--paper);color:var(--ink);padding-bottom:.75rem}
-.steps button[aria-selected="true"]::before{background:var(--mustard);border-color:var(--mustard)}
-.steps button.done::before{background:var(--burg);border-color:var(--burg)}
-@media (max-width:760px){.steps{margin-bottom:-11px}.steps button{flex:1 1 0;min-width:0;padding:.5rem .2rem .5rem;font-size:.64rem;white-space:nowrap;letter-spacing:.02em;text-align:center}.steps button::before{display:none}.steps button b{display:none}.steps button[aria-selected="true"]{padding-bottom:.7rem}.shead .model,.shead .spacer{display:none}.shead{flex-wrap:wrap;gap:8px}.steps{order:3;width:100%;overflow-x:auto}.shead .logo{font-size:1.5rem;margin-right:auto}}
-.sbody{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr);min-height:0}
-@media (max-width:900px){.sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:36vh minmax(0,1fr)}}
 .bench{position:relative;min-height:0;overflow:hidden;display:grid;place-items:center;
   background:radial-gradient(ellipse 70% 60% at 45% 40%,rgba(255,214,150,.25),transparent 70%),linear-gradient(rgba(0,0,0,.2),transparent 15%,transparent 85%,rgba(0,0,0,.25)),var(--walnutH) 0 0/512px,#6b4121}
 .mat{position:absolute;inset:7% 8% 10%;background:#ECE1C8;box-shadow:0 2px 2px rgba(0,0,0,.25),6px 22px 40px rgba(0,0,0,.4)!important;border-radius:2px;box-shadow:0 18px 40px rgba(0,0,0,.35),inset 0 0 0 1px rgba(0,0,0,.1);
@@ -97,8 +177,6 @@ button{cursor:pointer}
 .tape{right:10%;bottom:5%;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle,transparent 0 46%,#e8d9a8 47% 100%);box-shadow:0 6px 10px rgba(0,0,0,.3),inset 0 0 0 4px rgba(0,0,0,.06)}
 .pencil{left:9%;bottom:6%;width:150px;height:9px;transform:rotate(-12deg);background:linear-gradient(90deg,#2a2622 0 6%,#e6c08a 6% 14%,#d9a33a 14% 90%,#c76a4a 90%);border-radius:2px;box-shadow:0 3px 5px rgba(0,0,0,.3)}
 .rule{left:6%;top:5%;width:220px;height:22px;transform:rotate(-3deg);background:repeating-linear-gradient(90deg,rgba(0,0,0,.5) 0 1px,transparent 1px 8px) 0 0/100% 8px no-repeat,#e2dccd;box-shadow:0 3px 6px rgba(0,0,0,.25)}
-.recwrap{position:relative;width:min(56vh,46vw,560px);aspect-ratio:1.5}
-@media (max-width:900px){.recwrap{width:min(31vh*1.5,86vw)}}
 .pvin{position:absolute;top:2%;left:24%;width:62%;aspect-ratio:1;background:center/contain no-repeat;filter:drop-shadow(0 12px 16px rgba(0,0,0,.4));transition:transform .7s cubic-bezier(.3,.7,.3,1),opacity .4s}
 .recwrap[data-mode="vinyl"] .pvin{transform:translateX(52%) rotate(60deg)}
 .recwrap[data-mode="front"] .pvin{transform:translateX(18%) rotate(10deg)}
@@ -107,7 +185,6 @@ button{cursor:pointer}
 .recwrap[data-mode="back"] .pslv{transform:perspective(1600px) rotateY(180deg)}
 .pslv .fc{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:center/cover;box-shadow:0 16px 30px rgba(0,0,0,.35)}
 .pslv .bk{transform:rotateY(180deg)}
-.benchbar{position:absolute;left:50%;bottom:3.2%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;z-index:3}
 .pill{background:var(--paper);border:0;border-radius:999px;padding:.4rem .85rem;font:600 .75rem/1 var(--mono);letter-spacing:.06em;box-shadow:0 4px 10px rgba(0,0,0,.25)}
 .sizebadge{background:#1a1714;color:#efe6d2}
 /* notes on sleeves */
@@ -162,29 +239,9 @@ button{cursor:pointer}
 .deck{position:relative;display:flex;flex-direction:column;min-height:0;background:var(--paper);border-left:1px solid var(--faded)}
 .deck::before{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.22;pointer-events:none}
 .dbody{flex:1;overflow:auto;padding:20px 22px 26px}
-.dfoot{position:relative;display:flex;align-items:center;gap:10px;padding:12px 18px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));border-top:3px double var(--faded);background:#EDE2CA}
-.dfoot .spacer{flex:1}
-.dfoot small{font:500 .78rem/1.3 var(--mono);color:var(--ink2)}
 .step{display:none}.step.on{display:block}
 .step h2{margin:0;font:400 2rem/1 'Yellowtail',cursive;color:var(--faded)}
 .step .lede{margin:.25rem 0 1rem;color:var(--ink2);font-size:.9rem;line-height:1.45}
-.kicker{font:600 .7rem/1 var(--mono);letter-spacing:.2em;color:var(--burg);margin:0 0 6px}
-/* parts: each long step opens on a list of its parts, and one part is worked on at a time */
-.step .sec[data-sub]{display:none}
-.step.drill .sec.part-on{display:block;border-top:0;margin-top:6px;padding-top:0}
-.step.drill > h2,.step.drill > .lede,.step.drill > .submenu{display:none}
-.subback{display:none;border:0;background:none;padding:2px 0;margin:0 0 12px;font:600 .74rem/1 var(--mono);letter-spacing:.08em;color:var(--burg);text-transform:uppercase;cursor:pointer}
-.subback:hover{text-decoration:underline}
-.step.drill > .subback{display:inline-block}
-.submenu{display:flex;flex-direction:column;margin-top:4px}
-.subrow{display:grid;grid-template-columns:28px minmax(0,1fr) auto 14px;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px dashed rgba(43,37,34,.3);background:none;padding:13px 14px 13px 12px;color:var(--ink);cursor:pointer;transition:background .15s}
-.subrow:last-child{border-bottom:0}
-.subrow:hover,.subrow:focus-visible{background:#F3E6CC}
-.sr-n{font:600 .68rem/1 var(--mono);color:var(--burg);letter-spacing:.1em}
-.sr-t b{display:block;font:700 .95rem/1.2 Archivo,sans-serif}
-.sr-t small{display:block;margin-top:2px;font-size:.78rem;line-height:1.35;color:var(--ink2)}
-.sr-v{font:500 .72rem/1.3 var(--mono);color:var(--ink2);text-align:right;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sr-go{font:400 1.4rem/1 Archivo,sans-serif;color:var(--burg)}
 .cchip{display:inline-block;width:13px;height:13px;margin-left:3px;vertical-align:-2px;border-radius:2px;box-shadow:0 0 0 1px rgba(35,26,20,.35)}
 .optnote{margin:12px 0 0;padding:9px 12px;font-size:.84rem;line-height:1.4;color:var(--ink2);background:#F3E6CC;border-left:3px solid var(--burg)}
 .optnote b{color:var(--ink);margin-right:4px}
@@ -202,19 +259,6 @@ button{cursor:pointer}
 .needs{margin:0 0 12px;padding:10px 12px;background:#F6DCCB;border:1px solid var(--burg);font-size:.88rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .minilist{margin-top:14px}
 .minilist li .nm em{font-style:normal;color:var(--ink2)}
-.slip{position:absolute;left:4%;top:4.5%;z-index:3;width:240px;padding:10px 0 4px;background:#FBF5E8;transform:rotate(-1.2deg);box-shadow:0 0 0 1px rgba(43,37,34,.35),3px 6px 14px rgba(0,0,0,.35);font-size:.8rem}
-.slip::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.25;pointer-events:none}
-.slip h5{display:flex;justify-content:space-between;margin:0 12px 4px;padding-bottom:6px;border-bottom:3px double rgba(43,37,34,.5);font:600 .62rem/1 var(--mono);letter-spacing:.18em;color:var(--burg)}
-.slip .rrow{grid-template-columns:62px minmax(0,1fr) 14px;padding:5px 12px;gap:8px}
-.slip .rl{font-size:.56rem;letter-spacing:.1em}
-.slip .rv{font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.slip .rp{font-size:.74rem}
-.bench .rule{display:none}
-@media (max-width:900px){.slip{display:none}}
-.slip.off{visibility:hidden}
-.ghostpill{background:rgba(251,245,232,.75)!important}
-.benchbar .pill{white-space:nowrap}
-@media (max-width:600px){.benchbar{gap:6px;bottom:2.5%}.benchbar .pill{padding:.38rem .6rem;font-size:.66rem;letter-spacing:.02em}}
 .sec{margin-top:18px}
 .sec{border-top:1px solid rgba(43,37,34,.25);padding-top:14px}
 .sec h3{display:inline-block;margin:0 0 10px;font:600 .66rem/1 var(--mono);letter-spacing:.18em;color:var(--burg);text-transform:uppercase;border:1px solid var(--burg);padding:4px 7px 3px;background:#F3E6CC}
@@ -476,36 +520,35 @@ button{cursor:pointer}
 
 <section id="studio" class="scene" aria-label="Pressing booth">
   <header class="shead">
-    <span class="logo">Side B</span><span class="model">PRESSING BOOTH, MODEL SB-1</span><span class="spacer"></span>
-    <nav class="steps" role="tablist" aria-label="Steps" id="steps">
-      <button role="tab" data-step="songs" aria-selected="true"><b>01</b> SONGS</button>
-      <button role="tab" data-step="words" aria-selected="false"><b>02</b> WORDS</button>
-      <button role="tab" data-step="sleeve" aria-selected="false"><b>03</b> SLEEVE</button>
-      <button role="tab" data-step="vinyl" aria-selected="false"><b>04</b> VINYL</button>
-      <button role="tab" data-step="notes" aria-selected="false"><b>05</b> NOTES</button>
-      <button role="tab" data-step="press" aria-selected="false"><b>06</b> PRESS</button>
+    <span class="logo">Side B</span>
+    <nav class="steps" aria-label="Steps" id="steps">
+      <button data-g="songs">Songs</button><i>&middot;</i><button data-g="words">Words</button><i>&middot;</i><button data-g="sleeve">Sleeve</button><i>&middot;</i><button data-g="vinyl">Vinyl</button><i>&middot;</i><button data-g="notes">Notes</button><i>&middot;</i><button data-g="press">Press</button>
     </nav>
-    <span class="spacer"></span>
     <button class="btn ghost sm" id="resumeBtn" hidden>Carry on with your last record</button>
     <button class="btn ghost sm" id="toShop">Back to the shop</button>
   </header>
   <div class="sbody">
     <div class="bench" id="bench">
-      <div class="mat"></div><div class="prop rule"></div><div class="prop pencil"></div><div class="prop tape"></div>
+      <div class="mat"></div><div class="prop pencil"></div><div class="prop tape"></div>
       <div class="recwrap" id="recwrap" data-mode="front">
         <div class="pvin" id="pVin"></div>
         <div class="pslv"><div class="fc" id="pFront"><div class="notes" id="nFront"></div><canvas class="drawlayer" id="drawCv" aria-label="Drawing area"></canvas></div><div class="fc bk sback" id="pBack"></div></div>
       </div>
-      <div class="slip" id="slip" aria-label="Your record so far"></div>
-      <div class="benchbar"><button class="pill ghostpill" id="resetBtn">Start over</button><button class="pill" id="faceBtn">Turn it over</button><span class="pill sizebadge" id="sizeBadge"></span></div>
+      <div class="benchtop"><button class="pill ghostpill" id="resetBtn">&#8634; Start over</button><span class="spacer"></span><button class="pill" id="faceBtn">Turn it over</button></div>
+      <div class="ocard" id="ocard" hidden>
+        <p class="oc-line"><b id="ocName"></b> <span id="ocText"></span></p>
+        <div class="oc-x" data-for="letter"><label class="slide wide"><span>Title size</span><input type="range" id="tSize" min=".6" max="1.5" step=".05" aria-label="Title size"></label></div>
+        <div class="oc-x" data-for="colours"><div class="pickers" id="sleevePick"></div></div>
+        <div class="oc-x" data-for="extras" id="hypePad"><p class="oc-small">What the hype sticker says</p><div class="hyperow"><input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
+      </div>
     </div>
-    <div class="deck">
+    <aside class="deck" id="deck">
       <div class="dbody">
         <!-- SONGS -->
-        <section class="step on" id="st-songs">
-          <p class="kicker">01 / SONGS</p><h2>Pick the songs</h2>
-          <p class="lede">At least 6. Up to 10 makes a 10-inch, more than that becomes a full 12-inch LP, up to 12 a side.</p>
-          <div class="card searchrow"><input id="q" type="search" placeholder="search a song or artist" autocomplete="off" aria-label="Search songs"><button class="btn sm" id="qBtn">Search</button></div>
+        <section class="step" id="st-songs">
+          <h2>Pick the songs</h2>
+          <p class="lede">At least 6. Up to 10 makes a 10-inch, more makes a 12-inch LP.</p>
+          <div class="card searchrow"><input id="q" type="search" placeholder="Search a song or artist" autocomplete="off" aria-label="Search songs" enterkeyhint="search"><button class="btn sm" id="qBtn">Search</button></div>
           <p class="src" id="srcNote"></p>
           <ul class="results card" id="results"></ul>
           <div class="card tracksheet">
@@ -513,66 +556,41 @@ button{cursor:pointer}
             <div class="meter"><span id="meterTxt"></span><span class="bar"><i id="meterBar"></i></span></div>
           </div>
         </section>
-        <!-- WORDS -->
-        <section class="step" id="st-words">
-          <p class="kicker">02 / WORDS</p><h2>Words and layout</h2>
-          <p class="lede">Name your record, then choose how the words look. Pick a part to work on.</p>
-          <div class="sec" data-sub="names" data-label="Title and names" data-desc="What it's called, who it's from and who it's for."><h3>Title and names</h3>
+        <!-- TITLE -->
+        <section class="step" id="st-title">
+          <h2>Name it</h2>
+          <p class="lede">What it's called, and who it's from and for.</p>
           <div class="card credit">
             <label for="fName">TITLE</label><input id="fName" class="big" maxlength="40" placeholder="Songs for the Drive Home">
             <label for="fLine">LINE UNDER THE TITLE</label><input id="fLine" maxlength="40" placeholder="Summer 2026">
-            <div class="row"><div><label for="fBy">PRESSED BY</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
+            <div class="row"><div><label for="fBy">FROM</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
             <div class="row"><div><label for="fYear">YEAR</label><input id="fYear" maxlength="4" inputmode="numeric"></div><div><label for="fCat">CATALOGUE NO.</label><input id="fCat" maxlength="10"></div></div>
-          </div></div>
-          <div class="sec" data-sub="layout" data-label="Layout" data-desc="Where the words sit on the cover."><h3>Layout</h3><div class="tiles three" id="tLay"></div></div>
-          <div class="sec" data-sub="type" data-label="Typeface and size" data-desc="The lettering, and how big the title is."><h3>Typeface</h3><div class="faces" id="tFont"></div>
-            <h3 style="margin-top:16px">Title size</h3><label class="slide wide"><span>Smaller</span><input type="range" id="tSize" min=".6" max="1.5" step=".05" aria-label="Title size"><span>Bigger</span></label>
-            <p class="hintline">Long titles shrink to fit, up to three lines.</p></div>
-          <div class="sec" data-sub="show" data-label="What shows" data-desc="Switch the title, the line and the credit on or off."><h3>On the cover</h3><div class="toggles" id="showTogs"></div></div>
-        </section>
-        <!-- SLEEVE -->
-        <section class="step" id="st-sleeve">
-          <p class="kicker">03 / SLEEVE</p><h2>Design the sleeve</h2>
-          <p class="lede">Add a picture and pick your colours, then choose what goes on the front and the back. <button class="btn ghost sm" id="surprise">Surprise me</button></p>
-          <div class="sec" data-sub="picture" data-label="Picture" data-desc="A photo or any art for the cover, with a filter."><h3>Picture</h3>
-            <label class="drop" id="drop"><span class="ph" id="photoPh"></span><span><b id="photoTitle">Add a picture for the cover</b><span id="photoSub">A photo, a drawing, a scan, any art. Square works best.</span></span><input type="file" id="photoIn" accept="image/*"></label>
-            <div class="pad" id="photoModes" style="margin-top:10px;display:none"></div>
-            <div id="filtSec"><h3 style="margin-top:16px">Filter</h3><div class="tiles" id="tFilt"></div></div>
           </div>
-          <div class="sec" data-sub="colours" data-label="Colours" data-desc="Background, lettering and an accent."><h3>Colours</h3><div class="cfields"><div id="cBg"></div><div id="cInk"></div><div id="cAcc"></div></div><p class="hintline" style="margin-top:8px">The accent colours the obi strip, the record label and some filters.</p></div>
-          <div class="sec" data-sub="front" data-label="On the front" data-desc="Obi strip, stereo banner, hype sticker and more."><h3>On the front</h3><p class="hintline">Each one has its own spot, and the title makes room for it.</p><div class="toggles" id="extrasF"></div>
-            <div class="hypepad" id="hypePad" style="display:none"><p class="hintline">What the hype sticker says:</p>
-              <input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
-          <div class="sec" data-sub="back" data-label="On the back" data-desc="Credits, small print, a logo and a barcode."><h3>On the back</h3><p class="hintline">The tracklist is always there. Pick what goes around it.</p><div class="toggles" id="extrasB"></div></div>
-          <div class="sec" data-sub="draw" data-label="Draw" data-desc="Draw straight onto the sleeve with a pen."><h3>Draw</h3><p class="hintline" id="drawTip">Draw straight onto the sleeve, over your picture or on its own.</p>
-            <div class="pad"><button class="btn sm" id="drawBtn" aria-pressed="false">Start drawing</button><button class="btn ghost sm" id="drawWipe">Clear the drawing</button></div>
-            <div class="drawtools" id="drawTools" style="display:none"><div class="dots small" id="drawInks"></div><div class="sizes" id="drawSizes"></div>
-              <button class="tog" id="drawErase" aria-pressed="false"><i></i>Eraser</button><button class="btn ghost sm" id="drawUndo">Undo</button></div></div>
-          <div class="sec" data-sub="text" data-label="More words" data-desc="Extra bits of text, placed anywhere on the front."><h3>More words</h3><p class="hintline">Extra text you can place anywhere on the front.</p>
-            <div class="pad"><button class="btn sm" id="addText">Add text</button><span class="hintline" id="textHint"></span></div>
-            <div class="textlist" id="textList"></div>
-            <div class="textpad" id="textPad" style="display:none">
-              <textarea id="textIn" rows="2" maxlength="80" placeholder="Type something for the cover."></textarea>
-              <div class="fonts" id="textFonts"></div>
-              <div id="textInks"></div>
-              <label class="slide">Size <input type="range" id="textSize" min="2" max="30" step=".5"></label>
-              <label class="slide">Tilt <input type="range" id="textRot" min="-30" max="30" step="1"></label>
-              <button class="btn ghost sm" id="delText">Remove this text</button>
-            </div></div>
+          <p class="minihead">Show on the cover</p><div class="toggles" id="showTogs"></div>
         </section>
-        <!-- VINYL -->
-        <section class="step" id="st-vinyl">
-          <p class="kicker">04 / VINYL</p><h2>Choose the vinyl</h2>
-          <p class="lede">Pick a pressing and a shape, then its colours. Pick a part to work on.</p>
-          <div class="sec" data-sub="pressing" data-label="Pressing" data-desc="Black, colours, marbles, splatters and more."><h3>Pressing</h3><div class="tiles" id="tVinyl"></div><p class="optnote" id="vNote"></p></div>
-          <div class="sec" data-sub="shape" data-label="Shape" data-desc="Round, or cut into a heart, star or more."><h3>Shape</h3><div class="tiles" id="tShape"></div><p class="optnote" id="shNote"></p></div>
-          <div class="sec" data-sub="label" data-label="Label" data-desc="The paper circle in the middle."><h3>Label</h3><div class="tiles" id="tLabel"></div><p class="optnote" id="lbNote"></p></div>
-          <div class="sec" data-sub="vcolours" data-label="Colours" data-desc="The vinyl's colours and the label's."><h3>Colours</h3><div class="cfields"><div id="dV1"></div><div id="dV2"></div><div id="dLab"></div></div></div>
+        <!-- DRAW AND WRITE -->
+        <section class="step" id="st-draw">
+          <h2>Draw and write</h2>
+          <p class="lede" id="drawTip">Draw straight onto the sleeve, or add words anywhere on it. Both are optional.</p>
+          <div class="pad"><button class="btn sm" id="drawBtn" aria-pressed="false">Start drawing</button><button class="btn ghost sm" id="drawWipe">Clear the drawing</button></div>
+          <div class="drawtools" id="drawTools" style="display:none"><div class="dots small" id="drawInks"></div><div class="sizes" id="drawSizes"></div>
+            <button class="tog" id="drawErase" aria-pressed="false"><i></i>Eraser</button><button class="btn ghost sm" id="drawUndo">Undo</button></div>
+          <p class="minihead">Words on the front</p>
+          <div class="pad"><button class="btn sm" id="addText">Add text</button><span class="hintline" id="textHint"></span></div>
+          <div class="textlist" id="textList"></div>
+          <div class="textpad" id="textPad" style="display:none">
+            <textarea id="textIn" rows="2" maxlength="80" placeholder="Type something for the cover."></textarea>
+            <div class="fonts" id="textFonts"></div>
+            <div id="textInks"></div>
+            <label class="slide">Size <input type="range" id="textSize" min="2" max="30" step=".5"></label>
+            <label class="slide">Tilt <input type="range" id="textRot" min="-30" max="30" step="1"></label>
+            <button class="btn ghost sm" id="delText">Remove this text</button>
+          </div>
         </section>
         <!-- NOTES -->
         <section class="step" id="st-notes">
-          <p class="kicker">05 / NOTES</p><h2>Leave some notes</h2>
-          <p class="lede">Stick notes on the front or the back. Drag them around on the sleeve to place them.</p>
+          <h2>Leave some notes</h2>
+          <p class="lede">Stick notes on the front or the back, then drag them into place. Optional.</p>
           <div class="pad"><button class="btn sm" id="addNote">Add a sticky note</button><span class="mono" style="font-size:.74rem;color:var(--ink2)" id="noteFace">Adding to the front</span></div>
           <div class="card notepad" id="notePad" style="display:none">
             <textarea id="noteText" maxlength="140" placeholder="Write something small."></textarea>
@@ -582,18 +600,26 @@ button{cursor:pointer}
         </section>
         <!-- PRESS -->
         <section class="step" id="st-press">
-          <p class="kicker">06 / PRESS</p><h2>Ready to press</h2>
-          <p class="lede">Look it over before it goes to the press. Tap &#9998; on any line to change it.</p>
+          <h2>Ready to press</h2>
+          <p class="lede">Look it over. Tap any line to change it.</p>
           <p class="needs" id="pressNeeds" hidden></p>
           <div class="card recap" id="recap"></div>
           <div class="card tracksheet minilist" id="recapTracks"></div>
         </section>
       </div>
-      <div class="dfoot"><button class="btn ghost sm" id="prevStep">Back</button><small id="footNote"></small><span class="spacer"></span><button class="btn sm" id="nextStep">Next</button><button class="btn or sm" id="pressBtn" hidden>Press the record</button></div>
-    </div>
+    </aside>
   </div>
+  <div class="dock" id="dock">
+    <button class="dk-back" id="prevStep" aria-label="Back">&larr;</button>
+    <button class="dk-name" id="dkName" aria-label="All steps"><small id="dkGroup"></small><b id="dkTitle"></b></button>
+    <div class="dk-rows" id="dkRows"></div>
+    <button class="dk-next" id="nextStep" aria-label="Next">&rarr;</button>
+    <button class="btn or dk-press" id="pressBtn" hidden>Press the record</button>
+    <div class="dk-prog"><i id="dkProg"></i></div>
+  </div>
+  <div class="allsteps" id="allSteps" hidden><div class="as-card"><div class="as-head"><b>Your record</b><button class="btn ghost sm" id="asClose">Close</button></div><div id="asList"></div></div></div>
+  <input type="file" id="photoIn" accept="image/*" hidden>
 </section>
-
 <div id="share" role="dialog" aria-modal="true" aria-labelledby="shareH">
   <div class="sharecard">
     <h2 id="shareH">Pressed and wrapped.</h2>
@@ -1229,8 +1255,6 @@ const hasWork = r => r.A.length + r.B.length > 0 || !!r.name;
 // a saved draft that can't be read is simply dropped, so it can never stop the site from starting
 let lastDraft = (() => { try { return cleanRec(store.get('sideb-press')); } catch(e){ return cleanRec(null); } })(), draft = cleanRec(null);
 let step = 'songs', selNote = -1, face = 'F';
-const STEPS = ['songs','words','sleeve','vinyl','notes','press'];
-const STEPNAME = { songs:'Songs', words:'Words', sleeve:'Sleeve', vinyl:'Vinyl', notes:'Notes', press:'Press' };
 function saveDraft(){ if (!hasWork(draft) && hasWork(lastDraft)) return; if (!store.set('sideb-press', draft)){ const p = draft.photo; draft.photo = ''; store.set('sideb-press', draft); draft.photo = p; } }
 const songKey = s => s.key || (s.s === 'd' ? `d${s.al}-${s.ti}` : `it${s.id}`);
 function hydrateSong(s){ if (s.s === 'd'){ const a = DEMO[s.al]; return { ...s, name:a.tracks[s.ti], artist:a.band, album:a.title, key:songKey(s) }; } return { ...s, name:s.t, artist:s.a, key:songKey(s) }; }
@@ -1278,7 +1302,6 @@ function renderSides(){
   const n = draft.A.length + draft.B.length;
   $('meterTxt').textContent = n < MINS ? `${MINS - n} more to press` : n <= 10 ? `${n} songs, a 10-inch` : `${n} songs, a 12-inch LP`;
   $('meterBar').style.width = Math.min(100, n/24*100) + '%';
-  $('sizeBadge').textContent = `${recSize(draft)}-INCH, ${n} SONG${n === 1 ? '' : 'S'}`;
   updateFoot();
 }
 function changed(){ saveDraft(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); }
@@ -1288,27 +1311,11 @@ function refreshPreview(){ clearTimeout(prevTimer); prevTimer = setTimeout(() =>
   $('pVin').style.width = (recSize(draft) === 12 ? 62 : 55) + '%'; $('pVin').style.top = (recSize(draft) === 12 ? 2 : 5.5) + '%';
   $('pBack').innerHTML = backHTML(draft, draft.A.map(hydrateSong), draft.B.map(hydrateSong));
   renderNotes($('nFront'), draft, 'F', step === 'notes'); renderNotes($('pBack').querySelector('.notes'), draft, 'B', step === 'notes');
-  if (step === 'words' || step === 'sleeve' || step === 'vinyl') refreshTiles(); renderRecap();
+  renderDock();
 }, 50); }
 function refreshAll(){ refreshPreview(); }
 // tiles render previews of each option using the current design
 function variant(patch){ return { ...draft, d:{ ...draft.d, ...patch } }; }
-let tileTimer;
-function refreshTiles(){ clearTimeout(tileTimer); tileTimer = setTimeout(() => {
-  if (step === 'words') tilesFill('tLay', LAYOUTS, v => sleeveURL(variant({ lay:v }), 180), 'lay');
-  else if (step === 'sleeve'){ if (draft.photo) tilesFill('tFilt', FILTERS, v => sleeveURL(variant({ filt:v }), 140), 'filt'); }
-  else if (step === 'vinyl'){
-    tilesFill('tVinyl', VINYLS, v => vinylURL(variant({ vinyl:v }), 140, 'A'), 'vinyl', true);
-    tilesFill('tShape', SHAPES, v => vinylURL(variant({ shape:v }), 140, 'A'), 'shape', true);
-    tilesFill('tLabel', LABELS, v => vinylURL(variant({ label:v }), 140, 'A'), 'label', true);
-    [['vNote','vinyl',VINYLS],['shNote','shape',SHAPES],['lbNote','label',LABELS]].forEach(([id, k, list]) => $(id).innerHTML = `<b>${nameOf(list, draft.d[k])}</b> ${OPT_NOTES[k][draft.d[k]] || ''}`);
-  } }, 30); }
-function tilesFill(id, opts, src, key, round){
-  const el = $(id);
-  if (!el.children.length){ el.innerHTML = opts.map(([v,l]) => `<button class="tile ${round ? 'round' : ''}" data-v="${v}" aria-pressed="false"><img alt=""><span>${l}</span></button>`).join('');
-    el.querySelectorAll('.tile').forEach(b => b.addEventListener('click', () => { draft.d[key] = b.dataset.v; syncControls(); changed(); })); }
-  el.querySelectorAll('.tile').forEach(b => { b.setAttribute('aria-pressed', b.dataset.v === draft.d[key]); const im = b.querySelector('img'), s = src(b.dataset.v); if (im.src !== s) im.src = s; });
-}
 // a row of quick swatches and a rainbow button that opens the full colour picker
 function colourRow(el, swatches, get, set){
   if (!el.dataset.built){ el.dataset.built = '1';
@@ -1339,35 +1346,16 @@ function dotsFill(id, colors, key){ const el = $(id);
     el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { draft.d[key] = +b.dataset.v; syncControls(); changed(); })); }
   el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === draft.d[key])); }
 function syncControls(){
-  const setD = k => c => { draft.d[k] = c; syncControls(); changed(); };
-  colourField($('cBg'), 'Background', SLEEVE_SWATCHES, () => draft.d.bg, setD('bg')); colourField($('cInk'), 'Lettering', SLEEVE_SWATCHES, () => draft.d.ink, setD('ink'));
-  colourField($('cAcc'), 'Accent', SLEEVE_SWATCHES, () => draft.d.acc, setD('acc'));
-  colourField($('dV1'), 'Main colour', VCOLS, () => draft.d.v1, setD('v1')); colourField($('dV2'), 'Second colour', VCOLS, () => draft.d.v2, setD('v2')); colourField($('dLab'), 'Label colour', SLEEVE_SWATCHES, () => draft.d.lab, setD('lab'));
-  document.querySelectorAll('#dV1 .dots button, #dV2 .dots button').forEach(b => { const n = VCOLNAMES[VCOLS.indexOf(b.dataset.c)]; if (n){ b.title = n; b.setAttribute('aria-label', n); } });
-  const need = (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2]; $('dV1').style.display = need >= 1 ? '' : 'none'; $('dV2').style.display = need >= 2 ? '' : 'none';
-  togglesFill('extrasF', FRONT_EXTRAS, 'F'); togglesFill('extrasB', BACK_EXTRAS, 'B'); togglesFill('showTogs', SHOWS, 'F');
-  const tf = $('tFont');
-  if (!tf.children.length){ tf.innerHTML = TITLE_FONTS.map(([k, l, wt, fam, up]) => `<button data-v="${k}" style="font-family:${fam.replace(/"/g, "'")};font-weight:${wt}">${up ? l.toUpperCase() : l}</button>`).join('');
-    tf.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { draft.d.font = b.dataset.v; syncControls(); changed(); })); }
-  tf.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === draft.d.font));
+  togglesFill('showTogs', SHOWS, 'F');
   if (document.activeElement !== $('tSize')) $('tSize').value = draft.d.ts;
-  $('hypePad').style.display = draft.d.sticker ? '' : 'none'; $('filtSec').style.display = draft.photo ? '' : 'none';
   ['a','b','c'].forEach(k => { const el = $('hype' + k.toUpperCase()); if (document.activeElement !== el) el.value = draft.hype[k]; });
   renderTextUI();
-  const pmEl = $('photoModes'); pmEl.style.display = draft.photo ? 'flex' : 'none';
-  if (!pmEl.children.length){ pmEl.innerHTML = PHOTOMODES.map(([v,l]) => `<button class="tog" data-v="${v}"><i></i>${l}</button>`).join('') + '<button class="btn ghost sm" id="rmPhoto">Remove the picture</button>';
-    pmEl.querySelectorAll('.tog').forEach(b => b.addEventListener('click', () => { draft.d.pm = b.dataset.v; syncControls(); changed(); }));
-    $('rmPhoto').addEventListener('click', e => { e.preventDefault(); draft.photo = ''; syncControls(); changed(); }); }
-  pmEl.querySelectorAll('.tog').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === draft.d.pm));
-  $('photoPh').style.backgroundImage = draft.photo ? `url(${draft.photo})` : ''; $('photoTitle').textContent = draft.photo ? 'Change the picture' : 'Add a picture for the cover';
 }
 $('photoIn').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   rd.onload = () => { const im = new Image(); im.onload = () => { const S = 640, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
       const r = Math.max(S/im.width, S/im.height); g.drawImage(im, (S - im.width*r)/2, (S - im.height*r)/2, im.width*r, im.height*r);
       draft.photo = c.toDataURL('image/jpeg', .8); if (draft.d.pm === 'framed' || !draft.d.pm) draft.d.pm = 'full'; syncControls(); changed(); }; im.src = rd.result; };
   rd.readAsDataURL(f); e.target.value = ''; });
-$('surprise').addEventListener('click', () => { const R = Math.random, pick = a => a[Math.floor(R()*a.length)];
-  const w = pick(WAYS); Object.assign(draft.d, { bg:w.bg.toUpperCase(), ink:w.ink.toUpperCase(), acc:w.acc.toUpperCase(), lay:pick(LAYOUTS)[0], font:pick(TITLE_FONTS)[0], obi:R() < .3, sticker:R() < .3, stereo:R() < .3, g180:R() < .3 }); if (draft.photo) draft.d.filt = pick(FILTERS)[0]; syncControls(); changed(); });
 $('tSize').addEventListener('input', () => { draft.d.ts = +$('tSize').value; saveDraft(); refreshPreview(); });
 ['a','b','c'].forEach(k => $('hype' + k.toUpperCase()).addEventListener('input', e => { draft.hype[k] = e.target.value; saveDraft(); refreshPreview(); }));
 
@@ -1456,94 +1444,127 @@ addEventListener('pointerup', () => { if (ndrag){ ndrag = null; saveDraft(); } }
 
 function setFace(f){ face = f; $('recwrap').dataset.mode = f === 'B' ? 'back' : (step === 'vinyl' ? 'vinyl' : 'front'); $('faceBtn').textContent = f === 'B' ? 'Show the front' : 'Turn it over'; noteFaceLabel(); }
 $('faceBtn').addEventListener('click', () => { if (drawMode) setDrawMode(false); setFace(face === 'F' ? 'B' : 'F'); sfx.flip(); });
-// each long step opens on a short list of its parts; pick one to work on it on its own
-const sub = {};
-const partsOf = s => [...document.querySelectorAll(`#st-${s} .sec[data-sub]`)].map(e => e.dataset.sub);
-const partEl = k => document.querySelector(`.sec[data-sub="${k}"]`);
-const BACK_PARTS = ['back'];
-function goStep(s, k = null){
-  if (drawMode && (s !== 'sleeve' || k !== 'draw')) setDrawMode(false);
-  step = s; sub[s] = k; document.querySelectorAll('#steps button').forEach(b => b.setAttribute('aria-selected', b.dataset.step === s));
-  document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', p.id === 'st-' + s));
-  const el = $('st-' + s); el.classList.toggle('drill', !!k);
-  el.querySelectorAll('.sec[data-sub]').forEach(e => e.classList.toggle('part-on', e.dataset.sub === k));
-  $('recwrap').classList.toggle('editing', s === 'notes');
-  if (s === 'sleeve' && k) face = BACK_PARTS.includes(k) ? 'B' : 'F';
-  if (s === 'vinyl' || s === 'press') face = 'F';
-  setFace(face); document.querySelector('.dbody').scrollTop = 0; requestAnimationFrame(placeSlip); syncControls(); refreshPreview(); refreshTiles(); if (s === 'notes') renderNoteUI(); updateFoot();
+// THE FLOW: one decision per step, in a straight line. Steps with a few choices show them as chips in the dock;
+// steps that need typing (songs, the name, drawing, notes, the recap) open the side panel, or a sheet on phones.
+const needCols = () => (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2];
+const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, l:names ? names[i] : '', on:String(draft.d[key]).toUpperCase() === c.toUpperCase() })),
+  { v:'*', any:key, sw:draft.d[key], l:'Any colour', on:!cols.some(c => c.toUpperCase() === String(draft.d[key]).toUpperCase()) }];
+const setKey = key => v => { draft.d[key] = v; };
+const FLOW = [
+  { id:'songs', g:'songs', name:'Songs', panel:'st-songs', val:() => { const n = draft.A.length + draft.B.length; return n ? `${plural(n, 'song')}, ${n < MINS ? `${MINS - n} more to press` : recSize(draft) === 12 ? '12-inch LP' : '10-inch'}` : 'None yet'; } },
+  { id:'title', g:'words', name:'Title', panel:'st-title', val:() => draft.name ? esc(draft.name) : 'No title yet' },
+  { id:'letter', g:'words', name:'Lettering', face:'F', val:() => `${nameOf(TITLE_FONTS, draft.d.font)}, ${nameOf(LAYOUTS, draft.d.lay).toLowerCase()}`,
+    rows:[ { l:'Typeface', items:() => TITLE_FONTS.map(([k, l, wt, fam, up]) => ({ v:k, l:up ? l.toUpperCase() : l, font:`font-family:${fam.replace(/"/g, "'")};font-weight:${wt}`, on:draft.d.font === k })), pick:setKey('font') },
+           { l:'Layout', items:() => LAYOUTS.map(([k, l]) => ({ v:k, l, img:sleeveURL(variant({ lay:k }), 96), on:draft.d.lay === k })), pick:setKey('lay') } ],
+    card:() => [nameOf(TITLE_FONTS, draft.d.font), `with the words at the ${nameOf(LAYOUTS, draft.d.lay).toLowerCase()}. Long titles shrink to fit.`] },
+  { id:'picture', g:'sleeve', name:'Picture', face:'F', val:() => draft.photo ? `${nameOf(PHOTOMODES, draft.d.pm)}, ${nameOf(FILTERS, draft.d.filt).toLowerCase()}` : 'No picture',
+    rows:[ { l:'Picture', items:() => [{ v:'add', l:draft.photo ? 'Change picture' : '+ Add a picture', add:1 }, { v:'none', l:'No picture', on:!draft.photo },
+             ...(draft.photo ? PHOTOMODES.map(([k, l]) => ({ v:k, l, on:draft.d.pm === k })) : [])],
+           pick:v => { if (v === 'add') return $('photoIn').click(); if (v === 'none') draft.photo = ''; else draft.d.pm = v; } },
+           { l:'Filter', show:() => !!draft.photo, items:() => FILTERS.map(([k, l]) => ({ v:k, l, img:sleeveURL(variant({ filt:k }), 96), on:draft.d.filt === k })), pick:setKey('filt') } ],
+    card:() => draft.photo ? [nameOf(FILTERS, draft.d.filt), 'Pick a filter, or keep the picture as it is.'] : ['No picture', 'A photo, a drawing, a scan, any art. Square works best.'] },
+  { id:'colours', g:'sleeve', name:'Colours', face:'F', val:() => chip(draft.d.bg) + chip(draft.d.ink) + chip(draft.d.acc),
+    rows:[ { l:'Colours', items:() => [{ v:'?', l:'Surprise me' }, ...WAYS.map((w, i) => ({ v:String(i), l:w.n, trio:[w.bg, w.ink, w.acc], on:draft.d.bg === w.bg.toUpperCase() && draft.d.ink === w.ink.toUpperCase() && draft.d.acc === w.acc.toUpperCase() }))],
+           pick:v => { const w = v === '?' ? WAYS[Math.floor(Math.random()*WAYS.length)] : WAYS[+v]; Object.assign(draft.d, { bg:w.bg.toUpperCase(), ink:w.ink.toUpperCase(), acc:w.acc.toUpperCase() }); } } ],
+    card:() => { const w = WAYS.find(w => draft.d.bg === w.bg.toUpperCase() && draft.d.ink === w.ink.toUpperCase() && draft.d.acc === w.acc.toUpperCase()); return [w ? w.n : 'Your own', 'Tap a colour below to change just that one.']; } },
+  { id:'extras', g:'sleeve', name:'Finishing touches', val:() => { const on = [...FRONT_EXTRAS, ...BACK_EXTRAS].filter(([k]) => draft.d[k]).map(([, l]) => l); return on.length ? on.join(', ') : 'Nothing extra'; },
+    rows:[ { l:'Front', multi:1, items:() => FRONT_EXTRAS.map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; if (face !== 'F') setFace('F'); } },
+           { l:'Back', multi:1, items:() => BACK_EXTRAS.map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; if (face !== 'B') setFace('B'); } } ],
+    card:() => ['Finishing touches', 'Each one has its own spot, so nothing overlaps. Back ones turn the sleeve over.'] },
+  { id:'draw', g:'sleeve', name:'Draw and write', panel:'st-draw', face:'F', val:() => draft.draw.length || draft.texts.length ? [draft.draw.length ? plural(draft.draw.length, 'stroke') : '', draft.texts.length ? plural(draft.texts.length, 'bit') + ' of text' : ''].filter(Boolean).join(', ') : 'Nothing yet' },
+  { id:'vinyl', g:'vinyl', name:'Pressing', val:() => nameOf(VINYLS, draft.d.vinyl),
+    rows:[ { l:'Pressing', items:() => VINYLS.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ vinyl:k }), 96, 'A'), round:1, on:draft.d.vinyl === k })), pick:setKey('vinyl') } ],
+    card:() => [nameOf(VINYLS, draft.d.vinyl), OPT_NOTES.vinyl[draft.d.vinyl] || ''] },
+  { id:'vcol', g:'vinyl', name:'Vinyl colour', skip:() => !needCols(), val:() => (needCols() >= 1 ? chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : '') || 'Not needed',
+    rows:[ { l:'Main', items:() => colourChips(VCOLS, 'v1', VCOLNAMES), pick:setKey('v1') },
+           { l:'Second', show:() => needCols() >= 2, items:() => colourChips(VCOLS, 'v2', VCOLNAMES), pick:setKey('v2') } ],
+    card:() => [nameOf(VINYLS, draft.d.vinyl), needCols() >= 2 ? 'Pick the main colour and the one mixed through it.' : 'Pick its colour.'] },
+  { id:'shape', g:'vinyl', name:'Shape', val:() => nameOf(SHAPES, draft.d.shape),
+    rows:[ { l:'Shape', items:() => SHAPES.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ shape:k }), 96, 'A'), round:1, on:draft.d.shape === k })), pick:setKey('shape') } ],
+    card:() => [nameOf(SHAPES, draft.d.shape), OPT_NOTES.shape[draft.d.shape] || ''] },
+  { id:'label', g:'vinyl', name:'Label', val:() => `${nameOf(LABELS, draft.d.label)} ${chip(draft.d.lab)}`,
+    rows:[ { l:'Style', items:() => LABELS.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ label:k }), 96, 'A'), round:1, on:draft.d.label === k })), pick:setKey('label') },
+           { l:'Colour', items:() => colourChips(SLEEVE_SWATCHES, 'lab'), pick:setKey('lab') } ],
+    card:() => [nameOf(LABELS, draft.d.label), OPT_NOTES.label[draft.d.label] || ''] },
+  { id:'notes', g:'notes', name:'Notes', panel:'st-notes', val:() => draft.notes.length ? plural(draft.notes.length, 'note') : 'None' },
+  { id:'press', g:'press', name:'Ready to press', panel:'st-press', face:'F', val:() => '' } ];
+const GROUPNAME = { songs:'Songs', words:'Words', sleeve:'Sleeve', vinyl:'Vinyl', notes:'Notes', press:'Press' };
+let fstep = 'songs';
+const fIdx = id => FLOW.findIndex(f => f.id === id), cur = () => FLOW[fIdx(fstep)];
+const live = () => FLOW.filter(f => !f.skip || !f.skip());
+function goStep(id){
+  if (!FLOW.some(f => f.id === id)) id = (FLOW.find(f => f.g === id) || FLOW[0]).id;
+  const F = FLOW[fIdx(id)];
+  if (drawMode && id !== 'draw') setDrawMode(false);
+  fstep = id; step = F.g; $('allSteps').hidden = true;
+  $('studio').classList.toggle('panel', !!F.panel); $('studio').dataset.f = id;
+  document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', p.id === F.panel));
+  document.querySelectorAll('#steps button').forEach(b => b.setAttribute('aria-current', b.dataset.g === F.g ? 'step' : 'false'));
+  $('recwrap').classList.toggle('editing', id === 'notes');
+  if (F.face) face = F.face; if (F.g === 'vinyl') face = 'F';
+  setFace(face); document.querySelector('.dbody').scrollTop = 0; dockScroll = {};
+  syncControls(); refreshPreview(); renderDock(true); if (id === 'notes') renderNoteUI(); updateFoot();
 }
-document.querySelectorAll('#steps button').forEach(b => b.addEventListener('click', () => goStep(b.dataset.step)));
-function buildMenus(){ STEPS.forEach(s => { const parts = partsOf(s); if (!parts.length) return; const el = $('st-' + s), first = el.querySelector('.sec[data-sub]');
-  const menu = document.createElement('div'); menu.className = 'submenu card';
-  menu.innerHTML = parts.map((k, i) => { const e = partEl(k); return `<button class="subrow" data-part="${k}"><span class="sr-n">${String(i+1).padStart(2,'0')}</span><span class="sr-t"><b>${e.dataset.label}</b><small>${e.dataset.desc}</small></span><span class="sr-v" data-val="${k}"></span><span class="sr-go" aria-hidden="true">&rsaquo;</span></button>`; }).join('');
-  menu.querySelectorAll('.subrow').forEach(b => b.addEventListener('click', () => { sfx.click(); goStep(s, b.dataset.part); }));
-  const back = document.createElement('button'); back.className = 'subback'; back.innerHTML = `&lsaquo; All of ${STEPNAME[s]}`; back.addEventListener('click', () => goStep(s));
-  first.before(menu); menu.before(back); }); }
-buildMenus();
-// the slip sits top left on the bench; the record moves over to make room, and the slip steps out of the way if there isn't any
-function placeSlip(){ const sl = $('slip'), rw = $('recwrap'); rw.style.marginLeft = ''; sl.classList.remove('off');
-  if (getComputedStyle(sl).display === 'none' || !$('studio').classList.contains('on')) return;
-  const B = $('bench').getBoundingClientRect(), R = rw.getBoundingClientRect(), S = sl.getBoundingClientRect();
-  if (S.bottom + 10 < R.top) return; const need = S.right + 18 - R.left; if (need <= 0) return;
-  if (need <= B.right - 14 - R.right) rw.style.marginLeft = need*2 + 'px'; else sl.classList.add('off'); }
-addEventListener('resize', placeSlip);
+document.querySelectorAll('#steps button').forEach(b => b.addEventListener('click', () => { sfx.click(); goStep(b.dataset.g); }));
+function move(d){ const L = live(), i = L.findIndex(f => f.id === fstep); const t = L[i + d]; if (t){ sfx.click(); goStep(t.id); } }
+$('prevStep').addEventListener('click', () => move(-1));
+$('nextStep').addEventListener('click', () => move(1));
+// the dock: the step's name, its rows of chips and the arrows
+let dockScroll = {}, dockTimer;
+const chipHTML = (it, r) => `<button class="chip${it.round ? ' rnd' : ''}${it.img ? ' pic' : ''}" data-r="${r}" data-v="${esc(it.v)}" aria-pressed="${!!it.on}"${it.any ? ` data-any="${it.any}"` : ''}>`
+  + (it.img ? `<img alt="" src="${it.img}">` : it.trio ? `<span class="trio">${it.trio.map(c => `<i style="background:${c}"></i>`).join('')}</span>` : it.sw ? `<i class="sw${it.any ? ' anysw' : ''}" style="--c:${esc(it.sw)}"></i>` : '')
+  + (it.l ? `<span class="cl"${it.font ? ` style="${it.font}"` : ''}>${esc(it.l)}</span>` : '') + (it.any ? `<input type="color" value="${esc(String(draft.d[it.any]).toLowerCase())}" aria-label="Any colour">` : '') + `</button>`;
+function renderDock(now){ clearTimeout(dockTimer); if (!now){ dockTimer = setTimeout(() => renderDock(true), 40); return; }
+  const F = cur(), L = live(), i = L.findIndex(f => f.id === fstep), n = draft.A.length + draft.B.length;
+  $('dkGroup').textContent = `${GROUPNAME[F.g]} · ${i + 1} of ${L.length}`; $('dkTitle').textContent = F.name;
+  $('dkProg').style.width = ((i + 1) / L.length * 100) + '%';
+  $('prevStep').style.visibility = i > 0 ? 'visible' : 'hidden';
+  const last = i === L.length - 1; $('nextStep').hidden = last; $('pressBtn').hidden = !last; $('pressBtn').disabled = n < MINS;
+  $('nextStep').classList.toggle('soft', F.id === 'songs' && n < MINS);
+  const rows = $('dkRows'); rows.querySelectorAll('.dkchips').forEach((c, r) => dockScroll[r] = c.scrollLeft);
+  if (F.rows){ const vis = F.rows.map((R, r) => [R, r]).filter(([R]) => !R.show || R.show());
+    rows.innerHTML = vis.map(([R, r]) => `<div class="dkrow">${vis.length > 1 ? `<span class="dkrl">${R.l}</span>` : ''}<div class="dkchips">${R.items().map(it => chipHTML(it, r)).join('')}</div></div>`).join('');
+    rows.querySelectorAll('.dkchips').forEach((c, r) => { if (dockScroll[r] != null) c.scrollLeft = dockScroll[r]; else { const on = c.querySelector('[aria-pressed="true"]'); if (on) c.scrollLeft = on.offsetLeft - c.clientWidth/2 + on.offsetWidth/2; } });
+    rows.querySelectorAll('.chip').forEach(b => { const R = F.rows[+b.dataset.r], inp = b.querySelector('input');
+      if (inp){ inp.addEventListener('input', () => { R.pick(inp.value.toUpperCase()); syncControls(); changed(); }); inp.addEventListener('click', e => e.stopPropagation()); }
+      b.addEventListener('click', () => { if (inp) return inp.click(); sfx.click(); R.pick(b.dataset.v); syncControls(); changed(); }); }); }
+  else rows.innerHTML = `<p class="dkhint">${F.id === 'songs' ? (n < MINS ? `${plural(n, 'song')} so far. ${MINS - n} more to press.` : `${plural(n, 'song')}, ${recSize(draft) === 12 ? 'a 12-inch LP' : 'a 10-inch'}.`)
+    : F.id === 'press' ? (n < MINS ? `Add ${plural(MINS - n, 'more song')} to press it.` : 'All set. Press it when you\'re happy.') : F.id === 'title' ? (draft.name ? esc(draft.name) : 'Give it a name.') : 'Optional. Skip it if you like.'}</p>`;
+  const oc = $('ocard'), c = F.card && F.card(); oc.hidden = !c;
+  if (c){ $('ocName').textContent = c[0]; $('ocText').textContent = c[1]; oc.querySelectorAll('.oc-x').forEach(x => x.hidden = x.dataset.for !== F.id || (F.id === 'extras' && !draft.d.sticker)); }
+  if (F.id === 'colours') sleevePickers();
+  if (!$('allSteps').hidden) renderAllSteps();
+}
+// the three sleeve colours, each a chip that opens the full colour picker
+function sleevePickers(){ const el = $('sleevePick');
+  if (!el.children.length){ el.innerHTML = [['bg','Background'],['ink','Lettering'],['acc','Accent']].map(([k, l]) => `<label class="pk"><i style="background:var(--c)"></i><span>${l}</span><input type="color" data-k="${k}"></label>`).join('');
+    el.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { draft.d[inp.dataset.k] = inp.value.toUpperCase(); changed(); })); }
+  el.querySelectorAll('label').forEach(lb => { const inp = lb.querySelector('input'), v = draft.d[inp.dataset.k]; lb.style.setProperty('--c', v); if (document.activeElement !== inp) inp.value = String(v).toLowerCase(); }); }
+// every step and what it's set to, to jump straight to one
+function renderAllSteps(){ $('asList').innerHTML = live().filter(f => f.id !== 'press').map((f, i) => `<button class="rrow${f.id === fstep ? ' here' : ''}" data-go="${f.id}"><span class="rl">${String(i + 1).padStart(2, '0')} ${f.name}</span><span class="rv">${f.val()}</span><span class="rp" aria-hidden="true">&rsaquo;</span></button>`).join('');
+  $('asList').querySelectorAll('[data-go]').forEach(b => b.onclick = () => goStep(b.dataset.go)); }
+$('dkName').addEventListener('click', () => { renderAllSteps(); $('allSteps').hidden = false; });
+$('asClose').addEventListener('click', () => $('allSteps').hidden = true);
+$('allSteps').addEventListener('click', e => { if (e.target === $('allSteps')) $('allSteps').hidden = true; });
 $('resetBtn').addEventListener('click', () => { if (hasWork(draft) && !confirm('Start a new record from scratch? You can still carry on with this one from the booth.')) return;
   if (hasWork(draft)){ saveDraft(); lastDraft = draft; } loadDraft(cleanRec(null)); });
-$('prevStep').addEventListener('click', () => { if (sub[step]) return goStep(step); const i = STEPS.indexOf(step); if (i > 0) goStep(STEPS[i-1]); });
-$('nextStep').addEventListener('click', () => { const parts = partsOf(step), k = sub[step], j = parts.indexOf(k);
-  if (k && j < parts.length - 1) return goStep(step, parts[j+1]); const i = STEPS.indexOf(step); if (i < STEPS.length - 1) goStep(STEPS[i+1]); });
 function loadDraft(r){ draft = r; selNote = -1; selText = -1; face = 'F'; fillFields(); syncControls(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); goStep('songs'); }
 $('resumeBtn').addEventListener('click', () => { lastDraft = cleanRec(null); loadDraft(cleanRec(store.get('sideb-press'))); });
 function updateFoot(){
   $('resumeBtn').hidden = !(hasWork(lastDraft) && !hasWork(draft));
-  const i = STEPS.indexOf(step), n = draft.A.length + draft.B.length, last = i === STEPS.length - 1, parts = partsOf(step), k = sub[step], j = parts.indexOf(k);
-  $('prevStep').style.visibility = i || k ? 'visible' : 'hidden'; $('prevStep').innerHTML = k ? `&lsaquo; All of ${STEPNAME[step]}` : 'Back';
-  $('nextStep').hidden = last; $('nextStep').textContent = last ? '' : k && j < parts.length - 1 ? `Next: ${partEl(parts[j+1]).dataset.label}` : `Next: ${STEPNAME[STEPS[i+1]]}`;
-  $('pressBtn').hidden = !last; $('pressBtn').disabled = n < MINS;
-  $('footNote').textContent = n < MINS ? `${MINS - n} more song${MINS - n === 1 ? '' : 's'} to press` : (!draft.name && step !== 'words' ? 'Name it in Words' : '');
-  document.querySelectorAll('#steps button').forEach(b => { const k = b.dataset.step; b.classList.toggle('done', k === 'songs' ? n >= MINS : k === 'words' ? !!draft.name : k === 'notes' ? (draft.notes||[]).length > 0 : false); });
-  renderRecap();
+  const n = draft.A.length + draft.B.length;
+  document.querySelectorAll('#steps button').forEach(b => { const k = b.dataset.g; b.classList.toggle('done', k === 'songs' ? n >= MINS : k === 'words' ? !!draft.name : k === 'notes' ? draft.notes.length > 0 : false); });
+  renderRecap(); renderDock();
 }
-// what each part is set to now, for the part lists, the slip on the bench and the recap before pressing
 const nameOf = (list, v) => (list.find(o => o[0] === v) || list[0])[1];
 const chip = c => `<i class="cchip" style="background:${esc(c)}"></i>`;
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
-const listOn = list => { const on = list.filter(([k]) => draft.d[k]).map(([, l]) => l); return on.length ? on.join(', ') : 'Nothing extra'; };
-const PART_VAL = {
-  names: () => draft.name ? esc(draft.name) : 'No title yet',
-  layout: () => nameOf(LAYOUTS, draft.d.lay),
-  type: () => `${nameOf(TITLE_FONTS, draft.d.font)}, ${Math.round(draft.d.ts*100)}%`,
-  show: () => { const n = SHOWS.filter(([k]) => draft.d[k] !== false).length; return n === SHOWS.length ? 'All on' : `${n} of ${SHOWS.length} on`; },
-  picture: () => draft.photo ? `${nameOf(PHOTOMODES, draft.d.pm)}, ${nameOf(FILTERS, draft.d.filt).toLowerCase()}` : 'No picture',
-  colours: () => chip(draft.d.bg) + chip(draft.d.ink) + chip(draft.d.acc),
-  front: () => listOn(FRONT_EXTRAS), back: () => listOn(BACK_EXTRAS),
-  draw: () => draft.draw.length ? plural(draft.draw.length, 'stroke') : 'Nothing drawn',
-  text: () => draft.texts.length ? plural(draft.texts.length, 'piece') : 'None',
-  pressing: () => nameOf(VINYLS, draft.d.vinyl), shape: () => nameOf(SHAPES, draft.d.shape), label: () => nameOf(LABELS, draft.d.label),
-  vcolours: () => { const need = (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2]; return (need >= 1 ? chip(draft.d.v1) : '') + (need >= 2 ? chip(draft.d.v2) : '') + chip(draft.d.lab); } };
-function recapRows(){ const n = draft.A.length + draft.B.length, big = recSize(draft) === 12;
-  return [
-    ['Songs', n ? `${plural(n, 'song')}, ${draft.A.length} on side A, ${draft.B.length} on side B` : 'None yet', 'songs', null, 1],
-    ['Size', n < MINS ? `${MINS - n} more to press` : big ? '12-inch LP' : '10-inch', 'songs', null, 0],
-    ['Title', PART_VAL.names(), 'words', 'names', 1],
-    ['From and for', draft.by || draft.to ? `${esc(draft.by || 'You')} to ${esc(draft.to || 'someone')}` : 'Not filled in', 'words', 'names', 0],
-    ['Lettering', `${PART_VAL.type().split(',')[0]}, ${PART_VAL.layout().toLowerCase()}`, 'words', 'type', 1],
-    ['Picture', PART_VAL.picture(), 'sleeve', 'picture', 0],
-    ['Colours', PART_VAL.colours(), 'sleeve', 'colours', 1],
-    ['On the front', PART_VAL.front(), 'sleeve', 'front', 0],
-    ['On the back', PART_VAL.back(), 'sleeve', 'back', 0],
-    ['Vinyl', `${PART_VAL.pressing()}, ${PART_VAL.shape().toLowerCase()}`, 'vinyl', 'pressing', 1],
-    ['Label', `${PART_VAL.label()} ${chip(draft.d.lab)}`, 'vinyl', 'label', 0],
-    ['Notes', draft.notes.length ? plural(draft.notes.length, 'note') : 'None', 'notes', null, 1] ]; }
-const recapHTML = rows => rows.map(([l, v, s, k]) => `<button class="rrow" data-go="${s}" data-part="${k || ''}"><span class="rl">${l}</span><span class="rv">${v}</span><span class="rp" aria-label="Change">&#9998;</span></button>`).join('');
-function renderRecap(){ const rows = recapRows(), n = draft.A.length + draft.B.length;
-  document.querySelectorAll('[data-val]').forEach(e => { const v = PART_VAL[e.dataset.val](); if (e.innerHTML !== v) e.innerHTML = v; });
-  $('slip').innerHTML = `<h5><span>YOUR RECORD</span><span>${esc(draft.cat || 'SB-001')}</span></h5>` + recapHTML(rows.filter(r => r[4]));
-  if (step === 'press'){ $('recap').innerHTML = recapHTML(rows);
-    $('pressNeeds').hidden = n >= MINS; $('pressNeeds').innerHTML = n >= MINS ? '' : `It needs ${plural(MINS - n, 'more song')} before it can be pressed. <button class="btn sm" data-go="songs" data-part="">Add songs</button>`;
-    const side = (sd, list) => `<div><h4><span>SIDE ${sd}</span><span>${list.length}</span></h4><ol>${list.length ? list.map((t, i) => `<li><span class="n">${sd}${i+1}</span><span class="nm">${esc(t.name)}<em> ${esc(t.artist)}</em></span></li>`).join('') : '<li class="empty">No songs yet.</li>'}</ol></div>`;
-    $('recapTracks').innerHTML = `<div class="cols">${side('A', draft.A.map(hydrateSong))}${side('B', draft.B.map(hydrateSong))}</div>`; }
-  document.querySelectorAll('#slip [data-go], #st-press [data-go]').forEach(b => b.onclick = () => { sfx.click(); goStep(b.dataset.go, b.dataset.part || null); }); }
+function renderRecap(){ if (fstep !== 'press') return; const n = draft.A.length + draft.B.length;
+  $('recap').innerHTML = live().filter(f => f.id !== 'press').map(f => `<button class="rrow" data-go="${f.id}"><span class="rl">${f.name}</span><span class="rv">${f.val()}</span><span class="rp" aria-label="Change">&#9998;</span></button>`).join('');
+  $('pressNeeds').hidden = n >= MINS; $('pressNeeds').innerHTML = n >= MINS ? '' : `It needs ${plural(MINS - n, 'more song')} before it can be pressed. <button class="btn sm" data-go="songs">Add songs</button>`;
+  const side = (sd, list) => `<div><h4><span>SIDE ${sd}</span><span>${list.length}</span></h4><ol>${list.length ? list.map((t, i) => `<li><span class="n">${sd}${i+1}</span><span class="nm">${esc(t.name)}<em> ${esc(t.artist)}</em></span></li>`).join('') : '<li class="empty">No songs yet.</li>'}</ol></div>`;
+  $('recapTracks').innerHTML = `<div class="cols">${side('A', draft.A.map(hydrateSong))}${side('B', draft.B.map(hydrateSong))}</div>`;
+  document.querySelectorAll('#st-press [data-go]').forEach(b => b.onclick = () => { sfx.click(); goStep(b.dataset.go); }); }
 // only the newest search gets to show its results, so a slow older one can't replace them
 let searchSeq = 0;
 async function runSearch(){ const my = ++searchSeq; let list, msg;
@@ -1731,7 +1752,7 @@ function sample(s, btn){ const me = btn.dataset.on === '1'; stopSample(); docume
    ============================================================ */
 let current = 'intro';
 function go(name){ document.querySelectorAll('.scene').forEach(s => s.classList.toggle('on', s.id === name)); current = name; setScene(name); hideTag(); $('hint').textContent = '';
-  $('soundBtn').hidden = !ctx || name === 'studio'; if (name === 'shop') requestAnimationFrame(fitShop); if (name === 'studio') goStep(step); }
+  $('soundBtn').hidden = !ctx || name === 'studio'; if (name === 'shop') requestAnimationFrame(fitShop); if (name === 'studio') goStep(fstep); }
 function enterShop(){
   ensureAudio(); sfx.bell(); const door = $('doorPanel'), inner = $('outsideInner'), hit = $('doorHit').getBoundingClientRect(), box = inner.getBoundingClientRect();
   inner.style.transformOrigin = `${hit.left - box.left + hit.width/2}px ${hit.top - box.top + hit.height*.45}px`; const t0 = performance.now();
