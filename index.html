@@ -133,6 +133,10 @@ button{cursor:pointer}
 /* words on the sleeve, handled right on it */
 .txtlayer{position:absolute;inset:0;z-index:3;display:none;touch-action:none;overflow:visible}
 .txtlayer.on{display:block}
+.addpic{position:absolute;inset:8%;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px dashed rgba(241,230,207,.7);border-radius:4px;background:rgba(0,0,0,.12);color:#F1E6CF;font:700 .95rem/1.2 Archivo,sans-serif;cursor:pointer}
+.addpic b{font:300 2.6rem/1 Archivo,sans-serif}
+.addpic:hover{background:rgba(0,0,0,.22)}
+.addpic[hidden]{display:none}
 .wtx{position:absolute;white-space:pre;text-align:center;cursor:move;user-select:none;-webkit-user-select:none;padding:.08em .14em;line-height:1.08}
 .wtx:hover{outline:1px dashed rgba(255,255,255,.6);outline-offset:2px}
 .wtx.sel{outline:2px dashed #fff;outline-offset:3px;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
@@ -546,7 +550,7 @@ button{cursor:pointer}
       <div class="mat"></div>
       <div class="recwrap" id="recwrap" data-mode="front">
         <div class="pvin" id="pVin"></div>
-        <div class="pslv"><div class="fc" id="pFront"><div class="notes" id="nFront"></div><div class="txtlayer" id="txtLayer"></div><canvas class="drawlayer" id="drawCv" aria-label="Drawing area"></canvas></div><div class="fc bk sback" id="pBack"></div></div>
+        <div class="pslv"><div class="fc" id="pFront"><div class="notes" id="nFront"></div><div class="txtlayer" id="txtLayer"></div><button class="addpic" id="addPic" hidden><b>+</b>Add your cover picture</button><canvas class="drawlayer" id="drawCv" aria-label="Drawing area"></canvas></div><div class="fc bk sback" id="pBack"></div></div>
       </div>
       <div class="benchtop"><button class="pill ghostpill" id="resetBtn">&#8634; Start over</button><span class="spacer"></span><button class="pill" id="faceBtn">Turn it over</button></div>
     </div>
@@ -1203,7 +1207,7 @@ function renderNotes(container, r, face, editable){
    ============================================================ */
 const MINS = 6, MAXSIDE = 12;
 const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'',
-  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:true, pm:'full', vinyl:'marble', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2' },
+  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:true, pm:'full', vinyl:'marble', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'art', lab:'#EFE6D2' },
   hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[{ t:'A record for you', f:2, c:'#F1E6CF', s:10, x:50, y:22, r:0 }], A:[], B:[], notes:[] });
 // a record can come from anyone's link, so check every field before it is drawn or played
 const MEDIA_HOSTS = /(^|\.)(apple\.com|mzstatic\.com)$/;
@@ -1305,9 +1309,11 @@ function refreshPreview(){ clearTimeout(prevTimer); prevTimer = setTimeout(() =>
   $('pVin').style.width = (recSize(draft) === 12 ? 62 : 55) + '%'; $('pVin').style.top = (recSize(draft) === 12 ? 2 : 5.5) + '%';
   $('pBack').innerHTML = backHTML(draft, draft.A.map(hydrateSong), draft.B.map(hydrateSong));
   renderNotes($('nFront'), draft, 'F', false); renderNotes($('pBack').querySelector('.notes'), draft, 'B', false);
+  $('addPic').hidden = !!draft.photo || face !== 'F';
   renderDock();
 }, 50); }
 function refreshAll(){ refreshPreview(); }
+$('addPic').addEventListener('click', () => $('photoIn').click());
 // tiles render previews of each option using the current design
 function variant(patch){ return { ...draft, d:{ ...draft.d, ...patch } }; }
 // a row of quick swatches and a rainbow button that opens the full colour picker
@@ -1346,7 +1352,7 @@ function syncControls(){
 $('photoIn').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   rd.onload = () => { const im = new Image(); im.onload = () => { const S = 640, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
       const r = Math.max(S/im.width, S/im.height); g.drawImage(im, (S - im.width*r)/2, (S - im.height*r)/2, im.width*r, im.height*r);
-      draft.photo = c.toDataURL('image/jpeg', .8); if (draft.d.pm === 'framed' || !draft.d.pm) draft.d.pm = 'full'; syncControls(); changed(); }; im.src = rd.result; };
+      draft.photo = c.toDataURL('image/jpeg', .8); draft.d.pm = 'full'; syncControls(); changed(); }; im.src = rd.result; };
   rd.readAsDataURL(f); e.target.value = ''; });
 ['a','b','c'].forEach(k => $('hype' + k.toUpperCase()).addEventListener('input', e => { draft.hype[k] = e.target.value; saveDraft(); refreshPreview(); }));
 
@@ -1438,44 +1444,29 @@ $('faceBtn').addEventListener('click', () => { if (drawMode) setDrawMode(false);
 // THE FLOW: one decision per step, in a straight line. The layout never changes: the record on the bench,
 // the step's choices in the panel beside it (below it on phones), and back and next in the bar along the bottom.
 const needCols = () => (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2];
-const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, l:names ? names[i] : '', on:String(draft.d[key]).toUpperCase() === c.toUpperCase() })),
-  { v:'*', any:key, sw:draft.d[key], l:'Any colour', on:!cols.some(c => c.toUpperCase() === String(draft.d[key]).toUpperCase()) }];
+const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, dot:1, title:names ? names[i] : c, on:String(draft.d[key]).toUpperCase() === c.toUpperCase() })),
+  { v:'*', any:key, sw:draft.d[key], dot:1, title:'Any colour', on:!cols.some(c => c.toUpperCase() === String(draft.d[key]).toUpperCase()) }];
 const setKey = key => v => { draft.d[key] = v; };
 const FLOW = [
   { id:'songs', g:'songs', name:'Pick the songs', short:'Songs', sec:'st-songs', lede:'At least 6. Up to 10 makes a 10-inch, more makes a 12-inch LP.',
     val:() => { const n = draft.A.length + draft.B.length; return n ? `${plural(n, 'song')}, ${n < MINS ? `${MINS - n} more to press` : recSize(draft) === 12 ? '12-inch LP' : '10-inch'}` : 'None yet'; } },
-  { id:'picture', g:'sleeve', name:'Picture', face:'F', lede:'A photo, a drawing, a scan, any art. Square works best. Optional.',
-    val:() => draft.photo ? `${nameOf(PHOTOMODES, draft.d.pm)}, ${nameOf(FILTERS, draft.d.filt).toLowerCase()}` : 'No picture',
-    rows:[ { items:() => [{ v:'add', l:draft.photo ? 'Change picture' : '+ Add a picture' }, { v:'none', l:'No picture', on:!draft.photo },
-             ...(draft.photo ? PHOTOMODES.map(([k, l]) => ({ v:k, l, on:draft.d.pm === k })) : [])],
-           pick:v => { if (v === 'add') return $('photoIn').click(); if (v === 'none') draft.photo = ''; else draft.d.pm = v; } },
-           { l:'Filter', show:() => !!draft.photo, tiles:1, items:() => FILTERS.map(([k, l]) => ({ v:k, l, img:sleeveURL(variant({ filt:k, texts:[] }), 120), on:draft.d.filt === k })), pick:setKey('filt') } ] },
-  { id:'colours', g:'sleeve', name:'Colours', face:'F', lede:'Pick a set of colours, then change any one of them if you like.', val:() => chip(draft.d.bg) + chip(draft.d.ink) + chip(draft.d.acc),
-    rows:[ { items:() => [{ v:'?', l:'Surprise me' }, ...WAYS.map((w, i) => ({ v:String(i), l:w.n, trio:[w.bg, w.ink, w.acc], on:draft.d.bg === w.bg.toUpperCase() && draft.d.ink === w.ink.toUpperCase() && draft.d.acc === w.acc.toUpperCase() }))],
-           pick:v => { const w = v === '?' ? WAYS[Math.floor(Math.random()*WAYS.length)] : WAYS[+v], old = draft.d.ink;
-             Object.assign(draft.d, { bg:w.bg.toUpperCase(), ink:w.ink.toUpperCase(), acc:w.acc.toUpperCase() }); draft.texts.forEach(t => { if (t.c.toUpperCase() === old) t.c = draft.d.ink; }); } } ] },
-  { id:'words', g:'sleeve', name:'Words', face:'F', sec:'st-words', lede:'Write anything, anywhere on the sleeve, as many times as you like.',
+  { id:'cover', g:'sleeve', name:'Cover picture', face:'F', lede:'Your sleeve is a picture: a photo, a drawing, a scan, any art. Square works best.',
+    val:() => draft.photo ? (draft.d.filt === 'none' ? 'Your picture' : `Your picture, ${nameOf(FILTERS, draft.d.filt).toLowerCase()}`) : 'Not added yet',
+    rows:[ { items:() => [{ v:'add', l:draft.photo ? 'Change the picture' : '+ Add your picture', on:!draft.photo }], pick:() => $('photoIn').click() },
+           { l:'Filter', show:() => !!draft.photo, tiles:1, items:() => FILTERS.filter(([k]) => FILTER_PICKS.includes(k)).map(([k, l]) => ({ v:k, l, img:sleeveURL(variant({ filt:k, texts:[] }), 120), on:draft.d.filt === k })), pick:setKey('filt') } ] },
+  { id:'words', g:'sleeve', name:'Words', face:'F', sec:'st-words', lede:'Write anything, anywhere on the sleeve. Optional.',
     val:() => draft.texts.length ? draft.texts.map(t => esc(t.t)).filter(Boolean).slice(0, 3).join(' / ') : 'None' },
-  { id:'draw', g:'sleeve', name:'Draw', face:'F', sec:'st-draw', lede:'Draw straight onto the sleeve. Optional.', val:() => draft.draw.length ? plural(draft.draw.length, 'stroke') : 'Nothing drawn' },
-  { id:'extras', g:'sleeve', name:'Finishing touches', lede:'Each has its own spot, so nothing overlaps. The back ones turn the sleeve over.',
-    val:() => { const on = [...FRONT_EXTRAS, ...BACK_EXTRAS].filter(([k]) => draft.d[k]).map(([, l]) => l); return on.length ? on.join(', ') : 'Nothing extra'; },
-    rows:[ { l:'On the front', multi:1, items:() => FRONT_EXTRAS.map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; if (face !== 'F') setFace('F'); } },
-           { l:'On the back', multi:1, items:() => BACK_EXTRAS.map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; if (face !== 'B') setFace('B'); } } ] },
-  { id:'vinyl', g:'vinyl', name:'Pressing', lede:'What the record itself looks like.', val:() => nameOf(VINYLS, draft.d.vinyl),
-    rows:[ { tiles:1, items:() => VINYLS.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ vinyl:k }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:setKey('vinyl') } ],
+  { id:'vinyl', g:'vinyl', name:'Vinyl', lede:'What the record itself looks like.',
+    val:() => nameOf(VINYLS, draft.d.vinyl) + (needCols() >= 1 ? ' ' + chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : ''),
+    rows:[ { tiles:1, items:() => VINYLS.filter(([k]) => VINYL_PICKS.includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ vinyl:k }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:setKey('vinyl') },
+           { l:'Colour', show:() => needCols() >= 1, items:() => colourChips(VPICK, 'v1', VPICK.map(c => VCOLNAMES[VCOLS.indexOf(c)])), pick:setKey('v1') },
+           { l:'Second colour', show:() => needCols() >= 2, items:() => colourChips(VPICK, 'v2', VPICK.map(c => VCOLNAMES[VCOLS.indexOf(c)])), pick:setKey('v2') } ],
     note:() => [nameOf(VINYLS, draft.d.vinyl), OPT_NOTES.vinyl[draft.d.vinyl] || ''] },
-  { id:'vcol', g:'vinyl', name:'Vinyl colour', skip:() => !needCols(), lede:'', val:() => (needCols() >= 1 ? chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : '') || 'Not needed',
-    rows:[ { l:'Main colour', items:() => colourChips(VCOLS, 'v1', VCOLNAMES), pick:setKey('v1') },
-           { l:'Second colour', show:() => needCols() >= 2, items:() => colourChips(VCOLS, 'v2', VCOLNAMES), pick:setKey('v2') } ] },
-  { id:'shape', g:'vinyl', name:'Shape', lede:'', val:() => nameOf(SHAPES, draft.d.shape),
-    rows:[ { tiles:1, items:() => SHAPES.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ shape:k }), 120, 'A'), round:1, on:draft.d.shape === k })), pick:setKey('shape') } ],
-    note:() => [nameOf(SHAPES, draft.d.shape), OPT_NOTES.shape[draft.d.shape] || ''] },
-  { id:'label', g:'vinyl', name:'Label', lede:'The paper circle in the middle of the record.', val:() => `${nameOf(LABELS, draft.d.label)} ${chip(draft.d.lab)}`,
-    rows:[ { l:'Style', tiles:1, items:() => LABELS.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ label:k }), 120, 'A'), round:1, on:draft.d.label === k })), pick:setKey('label') },
-           { l:'Colour', items:() => colourChips(SLEEVE_SWATCHES, 'lab'), pick:setKey('lab') } ],
-    note:() => [nameOf(LABELS, draft.d.label), OPT_NOTES.label[draft.d.label] || ''] },
-  { id:'press', g:'press', name:'Ready to press', sec:'st-press', face:'F', lede:'Give it a name, look it over, then press it. Tap any line to change it.', val:() => '' } ];
-FLOW.forEach(f => f.vcolLede = 0);
+  { id:'press', g:'press', name:'Ready to press', short:'Press', sec:'st-press', face:'F', lede:'Give it a name, look it over, then press it. Tap any line to change it.', val:() => '' } ];
+// a short list of pressings to choose from; older records may still have any of the others
+const VINYL_PICKS = ['black','solid','translucent','clear','marble','splatter','split','picture'];
+const VPICK = ['#141414','#B3262E','#E89AB5','#2E5DA8','#2F7D4F','#F2C230','#C9A24A','#EDEAE2'];
+const FILTER_PICKS = ['none','bw','sepia','faded','riso','grain'];
 const GROUPNAME = { songs:'Songs', sleeve:'Sleeve', vinyl:'Vinyl', press:'Press' };
 let fstep = 'songs';
 const fIdx = id => FLOW.findIndex(f => f.id === id), cur = () => FLOW[fIdx(fstep)];
@@ -1497,7 +1488,7 @@ function move(d){ const L = live(), i = L.findIndex(f => f.id === fstep); const 
 $('prevStep').addEventListener('click', () => move(-1));
 $('nextStep').addEventListener('click', () => move(1));
 let dockTimer;
-const chipHTML = (it, r, tiles) => `<button class="chip${tiles ? ' tile' : ''}${it.round ? ' rnd' : ''}${it.img ? ' pic' : ''}" data-r="${r}" data-v="${esc(it.v)}" aria-pressed="${!!it.on}"${it.any ? ` data-any="${it.any}"` : ''}>`
+const chipHTML = (it, r, tiles) => `<button class="chip${it.dot ? ' dot' : ''}${tiles ? ' tile' : ''}${it.round ? ' rnd' : ''}${it.img ? ' pic' : ''}" data-r="${r}" data-v="${esc(it.v)}" aria-pressed="${!!it.on}"${it.title ? ` title="${esc(it.title)}" aria-label="${esc(it.title)}"` : ''}${it.any ? ` data-any="${it.any}"` : ''}>`
   + (it.img ? `<img alt="" src="${it.img}">` : it.trio ? `<span class="trio">${it.trio.map(c => `<i style="background:${c}"></i>`).join('')}</span>` : it.sw ? `<i class="sw${it.any ? ' anysw' : ''}" style="--c:${esc(it.sw)}"></i>` : '')
   + (it.l ? `<span class="cl">${esc(it.l)}</span>` : '') + (it.any ? `<input type="color" value="${esc(String(draft.d[it.any]).toLowerCase())}" aria-label="Any colour">` : '') + `</button>`;
 // the panel and the bar: the step's name, its choices, and back and next
@@ -1506,9 +1497,9 @@ function renderDock(now){ clearTimeout(dockTimer); if (!now){ dockTimer = setTim
   $('dkGroup').textContent = `${GROUPNAME[F.g]} · ${i + 1} of ${L.length}`; $('dkTitle').textContent = F.short || F.name;
   $('dkProg').style.width = ((i + 1) / L.length * 100) + '%';
   $('prevStep').style.visibility = i > 0 ? 'visible' : 'hidden';
-  const last = i === L.length - 1; $('nextStep').hidden = last; $('pressBtn').hidden = !last; $('pressBtn').disabled = n < MINS;
+  const last = i === L.length - 1; $('nextStep').hidden = last; $('pressBtn').hidden = !last; $('pressBtn').disabled = n < MINS || !draft.photo;
   $('stKick').textContent = `${String(i + 1).padStart(2, '0')} / ${GROUPNAME[F.g].toUpperCase()}`; $('stTitle').textContent = F.name;
-  const lede = F.id === 'vcol' ? (needCols() >= 2 ? 'The main colour, and the one mixed through it.' : 'Pick its colour.') : F.lede; $('stLede').textContent = lede; $('stLede').hidden = !lede;
+  const lede = F.lede; $('stLede').textContent = lede; $('stLede').hidden = !lede;
   const box = $('stOpts');
   if (F.rows){ const vis = F.rows.map((R, r) => [R, r]).filter(([R]) => !R.show || R.show());
     box.innerHTML = vis.map(([R, r]) => `${R.l ? `<p class="minihead">${R.l}</p>` : ''}<div class="chips${R.tiles ? ' tiles' : ''}">${R.items().map(it => chipHTML(it, r, R.tiles)).join('')}</div>`).join('');
@@ -1545,7 +1536,8 @@ const chip = c => `<i class="cchip" style="background:${esc(c)}"></i>`;
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 function renderRecap(){ if (fstep !== 'press') return; const n = draft.A.length + draft.B.length;
   $('recap').innerHTML = live().filter(f => f.id !== 'press').map(f => `<button class="rrow" data-go="${f.id}"><span class="rl">${f.name}</span><span class="rv">${f.val()}</span><span class="rp" aria-label="Change">&#9998;</span></button>`).join('');
-  $('pressNeeds').hidden = n >= MINS; $('pressNeeds').innerHTML = n >= MINS ? '' : `It needs ${plural(MINS - n, 'more song')} before it can be pressed. <button class="btn sm" data-go="songs">Add songs</button>`;
+  const need = [n < MINS ? [`${plural(MINS - n, 'more song')}`, 'songs', 'Add songs'] : null, !draft.photo ? ['a cover picture', 'cover', 'Add a picture'] : null].filter(Boolean);
+  $('pressNeeds').hidden = !need.length; $('pressNeeds').innerHTML = need.length ? `It needs ${need.map(x => x[0]).join(' and ')} before it can be pressed. ` + need.map(x => `<button class="btn sm" data-go="${x[1]}">${x[2]}</button>`).join(' ') : '';
   const side = (sd, list) => `<div><h4><span>SIDE ${sd}</span><span>${list.length}</span></h4><ol>${list.length ? list.map((t, i) => `<li><span class="n">${sd}${i+1}</span><span class="nm">${esc(t.name)}<em> ${esc(t.artist)}</em></span></li>`).join('') : '<li class="empty">No songs yet.</li>'}</ol></div>`;
   $('recapTracks').innerHTML = `<div class="cols">${side('A', draft.A.map(hydrateSong))}${side('B', draft.B.map(hydrateSong))}</div>`;
   document.querySelectorAll('#st-press [data-go]').forEach(b => b.onclick = () => { sfx.click(); goStep(b.dataset.go); }); }
