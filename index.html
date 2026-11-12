@@ -179,6 +179,50 @@ button{cursor:pointer}
 .as-head{display:flex;justify-content:space-between;align-items:center;padding:0 12px 10px;border-bottom:3px double rgba(43,37,34,.4)}
 .as-head b{font:400 1.7rem/1 Yellowtail,cursive;color:var(--burg)}
 .rrow.here{background:#F3E6CC}
+/* the panel's content slides in with each step */
+.dbody.enter > *{animation:pin .45s cubic-bezier(.3,.7,.3,1) both}
+.dbody.enter > *:nth-child(2){animation-delay:.03s}.dbody.enter > *:nth-child(3){animation-delay:.06s}.dbody.enter > *:nth-child(n+4){animation-delay:.09s}
+@keyframes pin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.dbody.enter > *{animation:none}}
+/* tabs: Side A and Side B, Front and Back */
+.segs{display:inline-flex;gap:3px;padding:3px;margin:2px 0 6px;background:#E6D9BD;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(43,37,34,.2)}
+.segs[hidden]{display:none}
+.segs button{border:0;background:none;padding:.45rem 1rem;border-radius:999px;font:700 .8rem/1 Archivo,sans-serif;color:var(--ink2);cursor:pointer}
+.segs button[aria-selected="true"]{background:#FBF5E8;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.chips.segrow{gap:6px}
+.chip.segopt{min-height:34px;padding:0 14px;font-size:.78rem}
+.chip.segopt[aria-pressed="true"]{background:var(--ink);color:#F6EBD6;box-shadow:none}
+/* cover types: a card each, with a line about it */
+.chips.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chip.cardopt{flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;border-radius:4px;min-height:0;text-align:left}
+.chip.cardopt small{font:400 .72rem/1.3 Archivo,sans-serif;color:var(--ink2)}
+@media (max-width:420px){.chips.cards{grid-template-columns:1fr}}
+/* adding words and pictures, and the list of what's there */
+.addrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.addbtn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border:0;border-radius:4px;background:#FBF5E8;box-shadow:0 0 0 1px rgba(43,37,34,.3);font:700 .8rem/1 Archivo,sans-serif;color:var(--ink);cursor:pointer}
+.addbtn b{font:700 1.2rem/1 "DM Serif Display",serif}
+.addbtn:hover{box-shadow:0 0 0 1.5px var(--ink)}
+.addbtn:disabled{opacity:.4}
+.imgpad{margin-top:12px}.imgpad[hidden]{display:none}
+.imgpad .slide{display:flex;flex-direction:column;gap:4px;font:600 .64rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--burg)}
+.layers{display:flex;flex-direction:column;gap:6px}
+.ly{display:grid;grid-template-columns:30px minmax(0,1fr) auto 26px;align-items:center;gap:8px;padding:7px 8px;background:#FBF5E8;border-radius:4px;box-shadow:0 0 0 1px rgba(43,37,34,.22);cursor:pointer;font-size:.84rem}
+.ly.on{box-shadow:0 0 0 2px var(--ink)}
+.ly > b{width:30px;height:30px;display:grid;place-items:center;border-radius:3px;background:#E6D9BD;font:700 .95rem/1 "DM Serif Display",serif;background-size:cover;background-position:center}
+.ly span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.ly small{font:500 .66rem/1 var(--mono);color:var(--ink2)}
+.ly button{border:0;background:none;font-size:1.1rem;color:var(--ink2);cursor:pointer}
+.layers .empty{margin:0;font-size:.84rem;color:var(--ink2)}
+.fontgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.fontgrid button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border:0;border-radius:4px;background:#FBF5E8;box-shadow:0 0 0 1px rgba(43,37,34,.25);cursor:pointer;color:var(--ink)}
+.fontgrid button small{font:500 .64rem/1 var(--mono);color:var(--ink2)}
+.fontgrid button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink);background:#fff}
+.layerops{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.layerops button{padding:8px;border:0;border-radius:4px;background:#EFE5CF;font:600 .76rem/1 Archivo,sans-serif;color:var(--ink);cursor:pointer}
+.layerops button:hover{background:#E6D9BD}
+.layerops .danger{color:var(--burg)}
+.wtx .tsz{position:absolute;left:50%;top:100%;margin-top:6px;transform:translateX(-50%);padding:2px 6px;border-radius:999px;background:rgba(20,12,6,.85);color:#fff;font:600 10px/1.2 var(--mono);white-space:nowrap}
+.step + .step.on{margin-top:6px}
 .minihead{display:block;margin:16px 0 8px;font:600 .66rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--burg)}
 #stOpts > .minihead:first-child{margin-top:4px}
 .shead{position:relative;display:flex;align-items:center;gap:14px;padding:10px 18px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:#EDE2CA;border-bottom:3px double var(--faded)}
@@ -196,11 +240,36 @@ button{cursor:pointer}
 .pencil{left:9%;bottom:6%;width:150px;height:9px;transform:rotate(-12deg);background:linear-gradient(90deg,#2a2622 0 6%,#e6c08a 6% 14%,#d9a33a 14% 90%,#c76a4a 90%);border-radius:2px;box-shadow:0 3px 5px rgba(0,0,0,.3)}
 .rule{left:6%;top:5%;width:220px;height:22px;transform:rotate(-3deg);background:repeating-linear-gradient(90deg,rgba(0,0,0,.5) 0 1px,transparent 1px 8px) 0 0/100% 8px no-repeat,#e2dccd;box-shadow:0 3px 6px rgba(0,0,0,.25)}
 .pvin{position:absolute;top:2%;left:24%;width:62%;aspect-ratio:1;background:center/contain no-repeat;filter:drop-shadow(0 12px 16px rgba(0,0,0,.4));transition:transform .7s cubic-bezier(.3,.7,.3,1),opacity .4s}
-.recwrap[data-mode="vinyl"] .pvin{transform:translateX(52%) rotate(60deg)}
 .recwrap[data-mode="front"] .pvin{transform:translateX(18%) rotate(10deg)}
 .recwrap[data-mode="back"] .pvin{opacity:0}
 .pslv{position:absolute;top:0;left:0;width:66.6%;aspect-ratio:1;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,.7,.3,1)}
 .recwrap[data-mode="back"] .pslv{transform:perspective(1600px) rotateY(180deg)}
+/* THE RECORD'S POSES: out of the sleeve and centred for its shape and vinyl, zoomed into its label for the labels */
+.recwrap{z-index:2}
+.pvinI{position:absolute;inset:0;background:center/contain no-repeat;border-radius:50%}
+.pslv{transition:transform .7s cubic-bezier(.3,.7,.3,1),opacity .5s}
+.recwrap[data-mode="disc"] .pvin{transform:translate(var(--dx),var(--dy)) scale(var(--ds))}
+.recwrap[data-mode="disc"] .pslv,.recwrap[data-mode="label"] .pslv{transform:translateX(-85%) rotate(-10deg);opacity:0;pointer-events:none}
+.recwrap[data-mode="label"] .pvin{transform:translate(var(--dx),var(--dy)) scale(var(--ls))}
+.recwrap[data-mode="disc"] .pvinI{animation:vfloat 7s ease-in-out infinite}
+.recwrap .pvinI.spin{animation:vspin 1s cubic-bezier(.2,.7,.2,1)}
+@keyframes vspin{0%{transform:perspective(900px) rotateX(0) rotate(0) scale(1)}40%{transform:perspective(900px) rotateX(42deg) rotate(160deg) scale(.93)}100%{transform:perspective(900px) rotateX(0) rotate(360deg) scale(1)}}
+@keyframes vfloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-1.2%) rotate(4deg)}}
+.plabel{position:absolute;left:50%;top:50%;width:38.9%;aspect-ratio:1;border-radius:50%;background:center/contain no-repeat;transform:translate(-50%,-50%) scale(.4);opacity:0;pointer-events:none;transition:opacity .35s,transform .7s cubic-bezier(.3,.7,.3,1);z-index:3}
+.recwrap[data-mode="label"] .plabel{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;transition-delay:.25s,0s}
+.plabel.flip{animation:lflip .6s cubic-bezier(.3,.7,.3,1)}
+@keyframes lflip{0%{transform:translate(-50%,-50%) perspective(900px) rotateY(0)}50%{transform:translate(-50%,-50%) perspective(900px) rotateY(90deg)}100%{transform:translate(-50%,-50%) perspective(900px) rotateY(0)}}
+.plabel .txtlayer{border-radius:50%}
+/* the labels are worked on in the dark, so the label is all you see */
+.bench::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at 50% 46%,rgba(14,7,3,.45),rgba(10,5,2,.92) 70%);opacity:0;transition:opacity .7s}
+#studio[data-f="labels"] .bench::after{opacity:1}
+/* a line about the chosen option, on the bench */
+.caption{position:absolute;left:16px;bottom:14px;z-index:4;max-width:min(320px,40%);margin:0;padding:8px 12px;background:rgba(251,245,232,.92);font-size:.8rem;line-height:1.35;color:var(--ink2);box-shadow:0 4px 14px rgba(0,0,0,.3);opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;pointer-events:none}
+.caption.on{opacity:1;transform:none}
+.caption b{display:block;color:var(--ink);font:700 .9rem/1.2 Archivo,sans-serif;margin-bottom:2px}
+@media (max-width:760px){.caption{display:none}}
+@media (min-width:761px){#stNote{display:none!important}}
+@media (prefers-reduced-motion: reduce){.recwrap .pvinI.spin,.recwrap[data-mode="disc"] .pvinI,.plabel.flip{animation:none}}
 .pslv .fc{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:center/cover;box-shadow:0 16px 30px rgba(0,0,0,.35)}
 .pslv .bk{transform:rotateY(180deg)}
 .pill{background:var(--paper);border:0;border-radius:999px;padding:.4rem .85rem;font:600 .75rem/1 var(--mono);letter-spacing:.06em;box-shadow:0 4px 10px rgba(0,0,0,.25)}
@@ -539,9 +608,7 @@ button{cursor:pointer}
 <section id="studio" class="scene" aria-label="Pressing booth">
   <header class="shead">
     <span class="logo">Side B</span>
-    <nav class="steps" aria-label="Steps" id="steps">
-      <button data-g="songs">Songs</button><i>&middot;</i><button data-g="sleeve">Sleeve</button><i>&middot;</i><button data-g="vinyl">Vinyl</button><i>&middot;</i><button data-g="press">Press</button>
-    </nav>
+    <nav class="steps" aria-label="Steps" id="steps"></nav>
     <button class="btn ghost sm" id="resumeBtn" hidden>Carry on with your last record</button>
     <button class="btn ghost sm" id="toShop">Back to the shop</button>
   </header>
@@ -549,20 +616,23 @@ button{cursor:pointer}
     <div class="bench" id="bench">
       <div class="mat"></div>
       <div class="recwrap" id="recwrap" data-mode="front">
-        <div class="pvin" id="pVin"></div>
+        <div class="pvin" id="pVin"><i class="pvinI" id="pVinI"></i></div>
         <div class="pslv"><div class="fc" id="pFront"><div class="notes" id="nFront"></div><div class="txtlayer" id="txtLayer"></div><button class="addpic" id="addPic" hidden><b>+</b>Add your cover picture</button><canvas class="drawlayer" id="drawCv" aria-label="Drawing area"></canvas></div><div class="fc bk sback" id="pBack"></div></div>
+        <div class="plabel" id="pLabel"><div class="txtlayer" id="labLayer"></div></div>
       </div>
+      <p class="caption" id="caption"></p>
       <div class="benchtop"><button class="pill ghostpill" id="resetBtn">&#8634; Start over</button><span class="spacer"></span><button class="pill" id="faceBtn">Turn it over</button></div>
     </div>
     <aside class="deck" id="deck">
-      <div class="dbody">
+      <div class="dbody" id="dbody">
         <p class="kicker" id="stKick"></p>
         <h2 class="sth" id="stTitle"></h2>
         <p class="lede" id="stLede"></p>
+        <div class="segs" id="stTabs" role="tablist"></div>
         <div id="stOpts"></div>
         <p class="optnote" id="stNote" hidden></p>
-        <div class="xtra" data-for="colours"><p class="minihead">Change one colour</p><div class="pickers" id="sleevePick"></div></div>
-        <div class="xtra" data-for="extras" id="hypePad"><p class="minihead">What the hype sticker says</p><div class="hyperow"><input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
+        <div class="xtra" data-for="colours"><p class="minihead">Or pick each colour</p><div class="pickers" id="sleevePick"></div></div>
+        <div class="xtra" data-for="hype" id="hypePad"><p class="minihead">What the hype sticker says</p><div class="hyperow"><input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
         <!-- SONGS -->
         <section class="step" id="st-songs">
           <div class="card searchrow"><input id="q" type="search" placeholder="Search a song or artist" autocomplete="off" aria-label="Search songs" enterkeyhint="search"><button class="btn sm" id="qBtn">Search</button></div>
@@ -573,25 +643,29 @@ button{cursor:pointer}
             <div class="meter"><span id="meterTxt"></span><span class="bar"><i id="meterBar"></i></span></div>
           </div>
         </section>
-        <!-- WORDS ON THE SLEEVE -->
-        <section class="step" id="st-words">
-          <button class="btn" id="addText">+ Add words</button>
-          <div class="textpad" id="textPad" hidden>
-            <label class="minihead" for="textIn">The words</label>
-            <textarea id="textIn" rows="2" maxlength="120" placeholder="Type something for the cover."></textarea>
-            <p class="minihead">Typeface</p><div class="chips" id="textFonts"></div>
-            <p class="minihead">Colour</p><div class="chips" id="textInks"></div>
-            <div class="sliders"><label class="slide">Size <input type="range" id="textSize" min="2" max="40" step=".5"></label><label class="slide">Turn <input type="range" id="textRot" min="-45" max="45" step="1"></label></div>
-            <div class="pad"><button class="btn ghost sm" id="dupText">Copy it</button><button class="btn ghost sm" id="delText">Remove these words</button></div>
-          </div>
-          <p class="hintline" id="textHint"></p>
-        </section>
-        <!-- DRAW -->
+        <!-- DRAW (sleeves you draw on) -->
         <section class="step" id="st-draw">
+          <p class="minihead">Draw</p>
           <div class="pad"><button class="btn sm" id="drawBtn" aria-pressed="false">Start drawing</button><button class="btn ghost sm" id="drawWipe">Clear the drawing</button></div>
           <p class="hintline" id="drawTip"></p>
           <div class="drawtools" id="drawTools" style="display:none"><div class="dots small" id="drawInks"></div><div class="sizes" id="drawSizes"></div>
             <button class="tog" id="drawErase" aria-pressed="false"><i></i>Eraser</button><button class="btn ghost sm" id="drawUndo">Undo</button></div>
+        </section>
+        <!-- LAYERS: words and a picture, on the sleeve front or on a label -->
+        <section class="step" id="st-layers">
+          <div class="addrow"><button class="addbtn" id="addText"><b>T</b>Add text</button><button class="addbtn" id="addImg"><b>&#9638;</b><span id="addImgL">Add image</span></button></div>
+          <div class="imgpad" id="imgPad" hidden><label class="slide">Picture size <input type="range" id="imgZoom" min="1" max="3" step=".05"></label><div class="pad"><button class="btn ghost sm" id="imgFill">Fill the label</button><button class="btn ghost sm" id="imgDel">Remove the picture</button></div></div>
+          <div class="textpad" id="textPad" hidden>
+            <label class="minihead" for="textIn">Text</label>
+            <textarea id="textIn" rows="2" maxlength="120" placeholder="Type something."></textarea>
+            <div class="sliders"><label class="slide">Size <input type="range" id="textSize" min="2" max="40" step=".5"></label><label class="slide">Turn <input type="range" id="textRot" min="-45" max="45" step="1"></label></div>
+            <p class="minihead">Font</p><div class="fontgrid" id="textFonts"></div>
+            <p class="minihead">Colour</p><div class="chips" id="textInks"></div>
+            <p class="minihead">Layer</p><div class="layerops"><button id="lyUp">Bring forward</button><button id="lyDown">Send backward</button><button id="dupText">Duplicate</button><button id="delText" class="danger">Delete</button></div>
+          </div>
+          <p class="minihead">Layers</p>
+          <div class="layers" id="layerList"></div>
+          <p class="hintline" id="textHint"></p>
         </section>
         <!-- PRESS -->
         <section class="step" id="st-press">
@@ -616,8 +690,9 @@ button{cursor:pointer}
     <div class="dk-prog"><i id="dkProg"></i></div>
   </div>
   <div class="allsteps" id="allSteps" hidden><div class="as-card"><div class="as-head"><b>Your record</b><button class="btn ghost sm" id="asClose">Close</button></div><div id="asList"></div></div></div>
-  <input type="file" id="photoIn" accept="image/*" hidden>
+  <input type="file" id="photoIn" accept="image/*" hidden><input type="file" id="labIn" accept="image/*" hidden>
 </section>
+
 <div id="share" role="dialog" aria-modal="true" aria-labelledby="shareH">
   <div class="sharecard">
     <h2 id="shareH">Pressed and wrapped.</h2>
@@ -963,6 +1038,7 @@ const SHAPES = [['round','Round'],['heart','Heart'],['star','Star'],['hex','Hexa
 const PLAY = { round:.97, heart:.6, star:.56, hex:.84, oct:.88 };
 const LABELS = [['solid','Solid'],['split','Two-tone'],['ring','Ring'],['art','Cover art'],['minimal','Minimal']];
 const PHOTOMODES = [['full','Full bleed'],['framed','Framed']];
+const COVERS = [['photo','Your picture','A photo, a drawing, a scan, any art.'],['plain','Plain colour','A colour of your choosing, with your words on it.'],['draw','Draw on it','A blank sleeve to draw and write on.']];
 // a line about each choice, shown under the options when it's picked
 const OPT_NOTES = {
   vinyl:{ black:'The classic. Deep, glossy and quiet.', solid:'One solid colour of your choosing.', translucent:'Tinted and see-through. Hold it up to the light.', clear:'Clear as glass, as if there is nothing there.',
@@ -982,7 +1058,7 @@ function drawPhoto(g, im, x, y, w, h){ if (!im || !im.complete || !im.naturalWid
 function drawSleeve(r, size){
   const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d'), d = r.d, W = pal(d);
   g.scale(size/100, size/100); g.fillStyle = W.bg; g.fillRect(0,0,100,100);
-  const im = r.photo ? photoImage(r.photo) : null, full = !!im && d.pm !== 'framed', L = coverLayout(g, r, !!im && !full);
+  const im = r.photo && (d.cover || 'photo') === 'photo' ? photoImage(r.photo) : null, full = !!im && d.pm !== 'framed', L = coverLayout(g, r, !!im && !full);
   if (im){
     if (full) photoFiltered(g, im, 0, 0, 100, 100, d.filt, W);
     else { const [x, y, s] = L.frame; g.fillStyle = W.ink; g.fillRect(x - 1.4, y - 1.4, s + 2.8, s + 2.8); photoFiltered(g, im, x, y, s, s, d.filt, W); }
@@ -1151,16 +1227,26 @@ function drawVinyl(r, size, side){
   g.restore(); g.save();
   shapePath(g, shape, h, size); g.lineWidth = size*.016; g.strokeStyle = '#1b1714'; g.stroke();
   g.beginPath(); g.arc(h, h, h, 0, 7); g.clip();
-  const L = { bg:d.lab, ink:inkOn(d.lab), acc:d.acc }, lr = h*.33;
+  paintLabel(g, r, side, h, h*.33, size);
+  g.fillStyle = '#0a0a0a'; g.beginPath(); g.arc(h, h, size*.012, 0, 7); g.fill();
+  g.restore(); return c;
+}
+// the paper label in the middle of a record, centred at (h, h) with radius lr; size is the whole record's size, for the lettering
+function paintLabel(g, r, side, h, lr, size){ const d = r.d, L = { bg:d.lab, ink:inkOn(d.lab), acc:d.acc };
   g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = size*.01; g.fillStyle = '#000'; g.beginPath(); g.arc(h, h, lr, 0, 7); g.fill(); g.restore();
   g.save(); g.beginPath(); g.arc(h, h, lr, 0, 7); g.clip();
   if (d.label === 'art'){ g.drawImage(drawSleeve(r, 256), h-lr, h-lr, lr*2, lr*2); }
   else if (d.label === 'split'){ g.fillStyle = L.bg; g.fillRect(h-lr, h-lr, lr*2, lr); g.fillStyle = L.acc; g.fillRect(h-lr, h, lr*2, lr); }
   else if (d.label === 'minimal'){ g.fillStyle = '#F2EADA'; g.fillRect(h-lr, h-lr, lr*2, lr*2); }
   else { g.fillStyle = L.bg; g.fillRect(h-lr, h-lr, lr*2, lr*2); if (d.label === 'ring'){ g.strokeStyle = L.acc; g.lineWidth = lr*.14; g.beginPath(); g.arc(h, h, lr*.8, 0, 7); g.stroke(); } }
-  g.globalCompositeOperation = 'overlay'; g.globalAlpha = .22; g.drawImage(noiseCanvas, h-lr, h-lr, lr*2, lr*2); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.restore();
+  const LS = r.lab && r.lab[side], own = !!(LS && (LS.img || LS.texts.length));
+  if (LS && LS.img){ const im = photoImage(LS.img), w = lr*2*(LS.z || 1); if (im) drawPhoto(g, im, h - w/2, h - w/2, w, w); }
+  g.globalCompositeOperation = 'overlay'; g.globalAlpha = .22; g.drawImage(noiseCanvas, h-lr, h-lr, lr*2, lr*2); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  if (LS && LS.texts.length){ g.save(); g.translate(h - lr, h - lr); g.scale(lr/50, lr/50); drawTexts(g, LS.texts); g.restore(); }
+  g.restore();
   const tc = d.label === 'minimal' ? '#231A14' : d.label === 'art' ? '#fff' : L.ink; g.fillStyle = tc; g.textAlign = 'center';
-  if (d.label === 'art'){ g.fillStyle = 'rgba(0,0,0,.55)'; g.beginPath(); g.roundRect ? g.roundRect(h - lr*.42, h + lr*.42, lr*.84, lr*.3, lr*.15) : g.rect(h - lr*.42, h + lr*.42, lr*.84, lr*.3); g.fill(); g.fillStyle = '#fff'; g.font = `600 ${size*.018}px "IBM Plex Mono", monospace`; g.fillText(`SIDE ${side}`, h, h + lr*.62); }
+  if (own){}
+  else if (d.label === 'art'){ g.fillStyle = 'rgba(0,0,0,.55)'; g.beginPath(); g.roundRect ? g.roundRect(h - lr*.42, h + lr*.42, lr*.84, lr*.3, lr*.15) : g.rect(h - lr*.42, h + lr*.42, lr*.84, lr*.3); g.fill(); g.fillStyle = '#fff'; g.font = `600 ${size*.018}px "IBM Plex Mono", monospace`; g.fillText(`SIDE ${side}`, h, h + lr*.62); }
   else {
     let fs = size*.032; const nm = (r.name || 'Untitled').toUpperCase(); g.font = `900 ${fs}px Archivo, sans-serif`; while (g.measureText(nm).width > lr*1.5 && fs > 5){ fs -= 1; g.font = `900 ${fs}px Archivo, sans-serif`; }
     g.fillText(nm, h, h - lr*.42); g.font = `600 ${size*.02}px "IBM Plex Mono", monospace`; g.fillText(`SIDE ${side}  33 1/3`, h, h + lr*.5);
@@ -1168,15 +1254,16 @@ function drawVinyl(r, size, side){
     if (d.label === 'split'){ g.fillStyle = L.ink; } g.font = `500 ${size*.014}px "IBM Plex Mono", monospace`; g.fillText(r.cat || '', h, h - lr*.66);
   }
   g.strokeStyle = '#1b1714'; g.lineWidth = size*.008; g.beginPath(); g.arc(h, h, lr, 0, 7); g.stroke();
-  g.fillStyle = '#0a0a0a'; g.beginPath(); g.arc(h, h, size*.012, 0, 7); g.fill();
-  g.restore(); return c;
 }
+// a label on its own, filling the picture: for editing it, and for the label tiles
+function labelURL(r, side, px){ return cached('l' + px + side + designKey(r), () => { const c = document.createElement('canvas'); c.width = c.height = px; const g = c.getContext('2d');
+  paintLabel(g, r, side, px/2, px/2 - 1, (px/2 - 1)/.165); g.fillStyle = '#0a0a0a'; g.beginPath(); g.arc(px/2, px/2, px*.036, 0, 7); g.fill(); return c.toDataURL('image/png'); }); }
 // every design change makes new images, so keep only the most recent ones
 const imgCache = new Map(), IMG_CACHE_MAX = 120;
 function cached(k, make){ let v = imgCache.get(k); if (v !== undefined){ imgCache.delete(k); imgCache.set(k, v); return v; }
   v = make(); imgCache.set(k, v); while (imgCache.size > IMG_CACHE_MAX) imgCache.delete(imgCache.keys().next().value); return v; }
 const hashStr = str => { let h = 5381; for (let i=0;i<str.length;i++) h = (h*33 ^ str.charCodeAt(i)) >>> 0; return h.toString(36); };
-const designKey = r => JSON.stringify([r.d, r.name, r.line, r.by, r.to, r.cat, r.photo ? r.photo.length + r.photo.slice(-24) : '', hashStr(JSON.stringify([r.draw, r.texts, r.hype]))]);
+const designKey = r => JSON.stringify([r.d, r.name, r.line, r.by, r.to, r.cat, r.photo ? r.photo.length + r.photo.slice(-24) : '', hashStr(JSON.stringify([r.draw, r.texts, r.hype, r.lab], (k, v) => k === 'img' && v ? v.length + v.slice(-24) : v))]);
 function sleeveURL(r, size){ return cached('s' + size + designKey(r), () => drawSleeve(r, size).toDataURL('image/jpeg', .9)); }
 function vinylURL(r, size, side){ return cached('v' + size + side + designKey(r), () => drawVinyl(r, size, side).toDataURL('image/png')); }
 const recSize = r => (r.A.length + r.B.length) > 10 ? 12 : 10;
@@ -1207,8 +1294,8 @@ function renderNotes(container, r, face, editable){
    ============================================================ */
 const MINS = 6, MAXSIDE = 12;
 const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'',
-  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:true, pm:'full', vinyl:'marble', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'art', lab:'#EFE6D2' },
-  hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[{ t:'A record for you', f:2, c:'#F1E6CF', s:10, x:50, y:22, r:0 }], A:[], B:[], notes:[] });
+  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', cover:'photo', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:true, pm:'full', vinyl:'marble', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2' },
+  hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[{ t:'A record for you', f:2, c:'#F1E6CF', s:10, x:50, y:22, r:0 }], lab:{ A:{ texts:[], img:'', z:1 }, B:{ texts:[], img:'', z:1 } }, A:[], B:[], notes:[] });
 // a record can come from anyone's link, so check every field before it is drawn or played
 const MEDIA_HOSTS = /(^|\.)(apple\.com|mzstatic\.com)$/;
 function safeURL(v){ try { const u = new URL(String(v)); return u.protocol === 'https:' && MEDIA_HOSTS.test(u.hostname) && !/["'()\s\\<>]/.test(u.href) ? u.href : ''; } catch(e){ return ''; } }
@@ -1228,8 +1315,12 @@ function cleanRec(r){
   let budget = 8000; const draw = (Array.isArray(r.draw) ? r.draw : []).slice(0, 300).map(st => { if (!st || !Array.isArray(st.p)) return null;
     const p = st.p.slice(0, Math.min(2000, budget)).map(v => Math.round(clamp(+v || 0, 0, 1000))); if (p.length % 2) p.pop(); budget -= p.length;
     return p.length >= 2 ? { c:hex(st.c, '#1b1714'), w:Math.round(num(st.w, 1, 80, 14)), e:st.e ? 1 : 0, p } : null; }).filter(Boolean);
-  const fresh = !r.d, texts = (Array.isArray(r.texts) ? r.texts : fresh ? b.texts : []).filter(t => t && typeof t === 'object').slice(0, 30).map(t => ({ t:str(t.t, 120), f:idx(t.f, TEXT_FONTS, 0), c:hex(t.c, '#1b1714'),
+  const cleanTexts = v => (Array.isArray(v) ? v : []).filter(t => t && typeof t === 'object').slice(0, 30).map(t => ({ t:str(t.t, 120), f:idx(t.f, TEXT_FONTS, 0), c:hex(t.c, '#1b1714'),
     s:num(t.s, 2, 40, 9), x:num(t.x, -10, 110, 50), y:num(t.y, -10, 110, 50), r:num(t.r, -45, 45, 0) }));
+  const fresh = !r.d, texts = Array.isArray(r.texts) ? cleanTexts(r.texts) : fresh ? cleanTexts(b.texts) : [];
+  const img = v => typeof v === 'string' && v.length < 60000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(v) ? v : '';
+  const labSide = v => { v = v && typeof v === 'object' ? v : {}; return { texts:cleanTexts(v.texts), img:img(v.img), z:num(v.z, 1, 3, 1) }; };
+  const lab = { A:labSide(r.lab && r.lab.A), B:labSide(r.lab && r.lab.B) };
   const hy = r.hype && typeof r.hype === 'object' ? r.hype : b.hype, hype = { a:str(hy.a, 24), b:str(hy.b, 40), c:str(hy.c, 30) };
   const filt = d.pm === 'duotone' ? 'duotone' : d.filt, pm = d.pm === 'duotone' ? 'full' : d.pm;
   // older records stored colours as numbers into fixed lists; turn those into the colours they meant
@@ -1242,9 +1333,9 @@ function cleanRec(r){
     d:{ bg:hex(d.bg, old ? old.bg : b.d.bg), ink:hex(d.ink, old ? old.ink : b.d.ink), acc:hex(d.acc, old ? old.acc : b.d.acc), filt:pick(filt, FILTERS, b.d.filt), lay:pick(d.lay, LAYOUTS, ot ? ot[1] : b.d.lay), font:pick(d.font, TITLE_FONTS, ot ? ot[0] : b.d.font), ts:num(d.ts, .6, 1.5, d.type === 'minimal' ? .6 : 1),
       showTitle:!fresh && d.type !== 'none' && d.showTitle !== false, showLine:!fresh && d.showLine !== false, showCredit:!fresh && d.showCredit !== false, credits:d.credits !== false, obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
       stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:d.legal !== false,
-      pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
+      pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
       shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab) },
-    hype, draw, texts, A:side(r.A), B:side(r.B),
+    hype, draw, texts, lab, A:side(r.A), B:side(r.B),
     notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:hex(n.c, Number.isInteger(n.c) && NOTECOLS[n.c] ? NOTECOLS[n.c] : NOTECOLS[0]),
       x:num(n.x, -6, 70, 30), y:num(n.y, -6, 82, 30), r:num(n.r, -15, 15, 0), f:n.f === 'B' ? 'B' : 'F' })) };
 }
@@ -1305,11 +1396,17 @@ function renderSides(){
 function changed(){ saveDraft(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); }
 let prevTimer;
 function refreshPreview(){ clearTimeout(prevTimer); prevTimer = setTimeout(() => {
-  $('pFront').style.backgroundImage = `url(${sleeveURL(drawMode ? { ...draft, draw:[] } : fstep === 'words' ? { ...draft, texts:[] } : draft, 720)})`; if (drawMode) drawLive(); $('pVin').style.backgroundImage = `url(${vinylURL(draft, 720, 'A')})`;
-  $('pVin').style.width = (recSize(draft) === 12 ? 62 : 55) + '%'; $('pVin').style.top = (recSize(draft) === 12 ? 2 : 5.5) + '%';
+  const S = surf(), big = recSize(draft) === 12, pw = big ? .62 : .55, top = big ? .02 : .055, side = fstep === 'labels' ? tabs.labels : 'A';
+  $('pFront').style.backgroundImage = `url(${sleeveURL(drawMode ? { ...draft, draw:[] } : S && S.kind === 'sleeve' ? { ...draft, texts:[] } : draft, 720)})`; if (drawMode) drawLive();
+  const v = $('pVin'); v.style.width = pw*100 + '%'; v.style.top = top*100 + '%'; $('pVinI').style.backgroundImage = `url(${vinylURL(draft, 720, side)})`;
+  // how far to move and scale the record to centre it on the bench, and to fill the bench with its label
+  const cx = .24 + pw/2, cy = top/1.5 + pw/2;
+  v.style.setProperty('--dx', ((.5 - cx)/pw*100).toFixed(2) + '%'); v.style.setProperty('--dy', ((1/3 - cy)/pw*100).toFixed(2) + '%');
+  const fd = innerWidth <= 760 ? .64 : .39; v.style.setProperty('--ds', (.64/pw).toFixed(3)); v.style.setProperty('--ls', (fd/.33/pw).toFixed(3)); $('pLabel').style.width = fd*100 + '%';
+  if (fstep === 'labels'){ const L = draft.lab[side]; $('pLabel').style.backgroundImage = `url(${labelURL({ ...draft, lab:{ ...draft.lab, [side]:{ ...L, texts:L.texts.length ? [{ t:'', f:0, c:'#000000', s:1, x:0, y:0, r:0 }] : [] } } }, side, 640)})`; }
   $('pBack').innerHTML = backHTML(draft, draft.A.map(hydrateSong), draft.B.map(hydrateSong));
   renderNotes($('nFront'), draft, 'F', false); renderNotes($('pBack').querySelector('.notes'), draft, 'B', false);
-  $('addPic').hidden = !!draft.photo || face !== 'F';
+  $('addPic').hidden = !(fstep === 'sleeve' && face === 'F' && draft.d.cover === 'photo' && !draft.photo);
   renderDock();
 }, 50); }
 function refreshAll(){ refreshPreview(); }
@@ -1352,59 +1449,87 @@ function syncControls(){
 $('photoIn').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
   rd.onload = () => { const im = new Image(); im.onload = () => { const S = 640, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
       const r = Math.max(S/im.width, S/im.height); g.drawImage(im, (S - im.width*r)/2, (S - im.height*r)/2, im.width*r, im.height*r);
-      draft.photo = c.toDataURL('image/jpeg', .8); draft.d.pm = 'full'; syncControls(); changed(); }; im.src = rd.result; };
+      draft.photo = c.toDataURL('image/jpeg', .8); draft.d.pm = 'full'; draft.d.cover = 'photo'; syncControls(); changed(); renderTextUI(); }; im.src = rd.result; };
   rd.readAsDataURL(f); e.target.value = ''; });
 ['a','b','c'].forEach(k => $('hype' + k.toUpperCase()).addEventListener('input', e => { draft.hype[k] = e.target.value; saveDraft(); refreshPreview(); }));
 
-// WORDS ON THE SLEEVE: as many as you like, each placed, sized and turned right on the sleeve.
-// While this step is open the cover is drawn without its words, and the words sit over it as real text you can handle.
+// LAYERS: words and a picture, on the sleeve front or on either side of the label, handled right on the preview.
+// While a surface is open it's drawn without its words, and the words sit over it as real text you can drag, resize and turn.
 const MAXTEXTS = 30;
 let selText = -1, tgrab = null;
 const tFont = (t, px) => TEXT_FONTS[t.f][0].replace('X', px + 'px/1.08').replace(/"/g, "'");
-function renderTextLayer(){ const L = $('txtLayer'), on = fstep === 'words';
-  L.classList.toggle('on', on); if (!on){ L.innerHTML = ''; return; }
-  const W = $('pFront').getBoundingClientRect().width || 1;
-  L.innerHTML = draft.texts.map((t, i) => `<div class="wtx${i === selText ? ' sel' : ''}" data-i="${i}" style="left:${t.x}%;top:${t.y}%;font:${tFont(t, t.s*W/100)};color:${t.c};transform:translate(-50%,-50%) rotate(${t.r}deg)">${esc(t.t || ' ')}`
-    + (i === selText ? `<b class="th th-rot" data-h="rot" aria-label="Turn"></b><b class="th th-size" data-h="size" aria-label="Resize"></b><b class="th th-del" data-h="del" aria-label="Remove">&times;</b>` : '') + `</div>`).join(''); }
+// the surface being edited, if any: the front of the sleeve, or side A or B of the label
+function surf(){
+  if (fstep === 'labels'){ const side = tabs.labels, L = draft.lab[side]; return { kind:'label', side, list:L.texts, layer:$('labLayer'), box:$('pLabel'), img:L.img }; }
+  if (fstep === 'sleeve' && tabs.sleeve === 'F') return { kind:'sleeve', list:draft.texts, layer:$('txtLayer'), box:$('pFront'), img:draft.d.cover === 'photo' ? draft.photo : '' };
+  return null; }
+function renderTextLayer(){ const S = surf();
+  ['txtLayer','labLayer'].forEach(id => { const L = $(id), on = !!S && S.layer === L; L.classList.toggle('on', on); if (!on) L.innerHTML = ''; });
+  if (!S) return; const W = S.box.getBoundingClientRect().width || 1;
+  S.layer.innerHTML = S.list.map((t, i) => `<div class="wtx${i === selText ? ' sel' : ''}" data-i="${i}" style="left:${t.x}%;top:${t.y}%;font:${tFont(t, t.s*W/100)};color:${t.c};transform:translate(-50%,-50%) rotate(${t.r}deg)">${esc(t.t || ' ')}`
+    + (i === selText ? `<b class="th th-rot" data-h="rot" aria-label="Turn"></b><b class="th th-size" data-h="size" aria-label="Resize"></b><b class="th th-del" data-h="del" aria-label="Remove">&times;</b><span class="tsz">${Math.round(t.s)}</span>` : '') + `</div>`).join(''); }
 function selectText(i){ selText = i; renderTextLayer(); renderTextUI(); }
-function renderTextUI(){
-  const t = draft.texts[selText]; $('textPad').hidden = !t; $('addText').disabled = draft.texts.length >= MAXTEXTS;
-  $('textHint').textContent = !draft.texts.length ? 'Nothing written on the sleeve yet.' : t ? 'On the sleeve: drag the words to move them, pull the corner to resize, pull the top knob to turn them.' : 'Tap any words on the sleeve to change them.';
+function renderTextUI(){ const S = surf(); if (!S) return;
+  const t = S.list[selText]; $('textPad').hidden = !t; $('addText').disabled = S.list.length >= MAXTEXTS;
+  $('addImgL').textContent = S.img ? 'Change image' : 'Add image';
+  $('imgPad').hidden = S.kind !== 'label' || !S.img; if (S.kind === 'label' && document.activeElement !== $('imgZoom')) $('imgZoom').value = draft.lab[S.side].z;
+  const rows = S.list.map((t, i) => [i, t]).reverse().map(([i, t]) => `<div class="ly${i === selText ? ' on' : ''}" data-i="${i}" role="button" tabindex="0"><b>T</b><span>${esc(t.t || 'Empty text')}</span><small>${TEXT_FONTS[t.f][1]}</small><button data-del="${i}" aria-label="Delete">&times;</button></div>`);
+  if (S.img) rows.push(`<div class="ly pic" data-img="1"><b style="background-image:url(${S.img})"></b><span>Picture</span><small>${S.kind === 'label' ? 'under the words' : 'the cover'}</small><button data-delimg="1" aria-label="Remove">&times;</button></div>`);
+  $('layerList').innerHTML = rows.join('') || '<p class="empty">Nothing here yet. Add some text or a picture.</p>';
+  $('layerList').querySelectorAll('.ly[data-i]').forEach(el => el.addEventListener('click', e => { if (e.target.dataset.del){ S.list.splice(+e.target.dataset.del, 1); selectText(-1); layersChanged(); return; } selectText(+el.dataset.i); }));
+  $('layerList').querySelectorAll('[data-delimg]').forEach(b => b.addEventListener('click', () => { if (S.kind === 'label') draft.lab[S.side].img = ''; else draft.photo = ''; layersChanged(); }));
+  $('textHint').textContent = !S.list.length ? '' : t ? 'On the preview: drag the words to move them, pull the corner to resize, pull the knob on top to turn them.' : 'Tap any words on the preview to change them.';
   if (!t) return;
   if (document.activeElement !== $('textIn')) $('textIn').value = t.t;
-  const fonts = $('textFonts'); if (!fonts.children.length){ fonts.innerHTML = TEXT_FONTS.map(([f, l], i) => `<button class="chip" data-i="${i}"><span class="cl" style="font:${f.replace('X', '1rem')}">${l}</span></button>`).join('');
-    fonts.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const t = draft.texts[selText]; if (t){ t.f = +b.dataset.i; textChanged(); } })); }
+  const fonts = $('textFonts'); if (!fonts.children.length){ fonts.innerHTML = TEXT_FONTS.map(([f, l], i) => `<button data-i="${i}"><b style="font:${f.replace('X', '1.15rem').replace(/"/g, "'")}">Ag</b><small>${l}</small></button>`).join('');
+    fonts.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const t = surf() && surf().list[selText]; if (t){ t.f = +b.dataset.i; layersChanged(); } })); }
   fonts.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === t.f));
   const inks = $('textInks'), v = t.c.toUpperCase(), listed = INKS.some(c => c.toUpperCase() === v);
   inks.innerHTML = INKS.map(c => `<button class="chip dot" data-c="${c}" aria-pressed="${c.toUpperCase() === v}" aria-label="Colour ${c}"><i class="sw" style="--c:${c}"></i></button>`).join('')
     + `<label class="chip dot" aria-pressed="${!listed}" title="Any colour"><i class="sw anysw" style="--c:${t.c}"></i><input type="color" value="${t.c.toLowerCase()}" aria-label="Any colour"></label>`;
-  inks.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const t = draft.texts[selText]; if (t){ t.c = b.dataset.c.toUpperCase(); textChanged(); } }));
-  inks.querySelector('input').addEventListener('input', e => { const t = draft.texts[selText]; if (t){ t.c = e.target.value.toUpperCase(); textChanged(true); } });
+  inks.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const t = surf().list[selText]; if (t){ t.c = b.dataset.c.toUpperCase(); layersChanged(); } }));
+  inks.querySelector('input').addEventListener('input', e => { const t = surf().list[selText]; if (t){ t.c = e.target.value.toUpperCase(); layersChanged(true); } });
   if (document.activeElement !== $('textSize')) $('textSize').value = t.s; if (document.activeElement !== $('textRot')) $('textRot').value = t.r; }
-function textChanged(quiet){ saveDraft(); renderTextLayer(); if (!quiet) renderTextUI(); refreshPreview(); }
-$('addText').addEventListener('click', () => { if (draft.texts.length >= MAXTEXTS) return; const n = draft.texts.length;
-  draft.texts.push({ t:'Your words here', f:n ? 2 : 0, c:pal(draft.d).ink, s:n ? 7 : 11, x:50, y:n ? 30 + (n*9) % 50 : 20, r:0 }); selectText(n); $('textIn').focus(); $('textIn').select(); textChanged(); });
-$('textIn').addEventListener('input', () => { const t = draft.texts[selText]; if (!t) return; t.t = $('textIn').value; textChanged(true); });
-$('textSize').addEventListener('input', () => { const t = draft.texts[selText]; if (t){ t.s = +$('textSize').value; textChanged(true); } });
-$('textRot').addEventListener('input', () => { const t = draft.texts[selText]; if (t){ t.r = +$('textRot').value; textChanged(true); } });
-$('dupText').addEventListener('click', () => { const t = draft.texts[selText]; if (!t || draft.texts.length >= MAXTEXTS) return; draft.texts.push({ ...t, x:clamp(t.x + 6, 0, 100), y:clamp(t.y + 6, 0, 100) }); selectText(draft.texts.length - 1); textChanged(); });
-$('delText').addEventListener('click', () => { if (selText < 0) return; draft.texts.splice(selText, 1); selectText(-1); textChanged(); });
-// handling the words on the sleeve itself
-$('txtLayer').addEventListener('pointerdown', e => { const el = e.target.closest('.wtx'), box = $('pFront').getBoundingClientRect();
-  if (!el){ if (selText >= 0) selectText(-1); return; }
-  e.preventDefault(); const i = +el.dataset.i, t = draft.texts[i], h = e.target.dataset.h;
-  if (h === 'del'){ draft.texts.splice(i, 1); selectText(-1); textChanged(); return; }
-  if (i !== selText) selectText(i);
-  const cx = box.left + t.x/100*box.width, cy = box.top + t.y/100*box.height;
-  tgrab = { i, h:h || 'move', box, cx, cy, ox:e.clientX, oy:e.clientY, x0:t.x, y0:t.y, s0:t.s, r0:t.r, d0:Math.max(8, Math.hypot(e.clientX - cx, e.clientY - cy)), a0:Math.atan2(e.clientY - cy, e.clientX - cx) };
-  $('txtLayer').setPointerCapture(e.pointerId); });
-$('txtLayer').addEventListener('pointermove', e => { if (!tgrab) return; const g = tgrab, t = draft.texts[g.i]; if (!t) return;
-  if (g.h === 'move'){ t.x = clamp(g.x0 + (e.clientX - g.ox)/g.box.width*100, 0, 100); t.y = clamp(g.y0 + (e.clientY - g.oy)/g.box.height*100, 0, 100); }
-  else if (g.h === 'size') t.s = clamp(Math.round(g.s0 * Math.hypot(e.clientX - g.cx, e.clientY - g.cy) / g.d0 * 2) / 2, 2, 40);
-  else if (g.h === 'rot') t.r = clamp(Math.round(g.r0 + (Math.atan2(e.clientY - g.cy, e.clientX - g.cx) - g.a0) * 180/Math.PI), -45, 45);
-  renderTextLayer(); });
-['pointerup','pointercancel'].forEach(ev => $('txtLayer').addEventListener(ev, () => { if (tgrab){ tgrab = null; renderTextUI(); saveDraft(); refreshPreview(); } }));
-addEventListener('resize', () => { if (fstep === 'words') renderTextLayer(); });
+function layersChanged(quiet){ saveDraft(); renderTextLayer(); if (!quiet) renderTextUI(); refreshPreview(); }
+const curText = () => { const S = surf(); return S ? S.list[selText] : null; };
+$('addText').addEventListener('click', () => { const S = surf(); if (!S || S.list.length >= MAXTEXTS) return; const n = S.list.length;
+  const ink = S.kind === 'label' ? (draft.lab[S.side].img ? '#FFFFFF' : inkOn(draft.d.lab)) : pal(draft.d).ink;
+  S.list.push(S.kind === 'label' ? { t:n ? 'Side ' + S.side : (draft.name || 'Your text'), f:n ? 5 : 0, c:ink, s:n ? 7 : 11, x:50, y:n ? 68 : 30, r:0 }
+                                 : { t:'Your words here', f:n ? 2 : 0, c:ink, s:n ? 7 : 11, x:50, y:n ? 30 + (n*9) % 50 : 20, r:0 });
+  selectText(n); sfx.click(); $('textIn').focus(); $('textIn').select(); layersChanged(); });
+$('addImg').addEventListener('click', () => { const S = surf(); if (!S) return; if (S.kind === 'label') $('labIn').click(); else { draft.d.cover = 'photo'; $('photoIn').click(); } });
+$('textIn').addEventListener('input', () => { const t = curText(); if (t){ t.t = $('textIn').value; layersChanged(true); renderTextUI(); } });
+$('textSize').addEventListener('input', () => { const t = curText(); if (t){ t.s = +$('textSize').value; layersChanged(true); } });
+$('textRot').addEventListener('input', () => { const t = curText(); if (t){ t.r = +$('textRot').value; layersChanged(true); } });
+$('dupText').addEventListener('click', () => { const S = surf(), t = curText(); if (!t || S.list.length >= MAXTEXTS) return; S.list.push({ ...t, x:clamp(t.x + 6, 0, 100), y:clamp(t.y + 6, 0, 100) }); selectText(S.list.length - 1); layersChanged(); });
+$('delText').addEventListener('click', () => { const S = surf(); if (!S || selText < 0) return; S.list.splice(selText, 1); selectText(-1); layersChanged(); });
+$('lyUp').addEventListener('click', () => { const S = surf(), i = selText; if (!S || i < 0 || i >= S.list.length - 1) return; [S.list[i], S.list[i+1]] = [S.list[i+1], S.list[i]]; selText = i + 1; layersChanged(); });
+$('lyDown').addEventListener('click', () => { const S = surf(), i = selText; if (!S || i < 1) return; [S.list[i], S.list[i-1]] = [S.list[i-1], S.list[i]]; selText = i - 1; layersChanged(); });
+$('imgZoom').addEventListener('input', () => { const S = surf(); if (S && S.kind === 'label'){ draft.lab[S.side].z = +$('imgZoom').value; saveDraft(); refreshPreview(); } });
+$('imgFill').addEventListener('click', () => { const S = surf(); if (S && S.kind === 'label'){ draft.lab[S.side].z = 1; layersChanged(); } });
+$('imgDel').addEventListener('click', () => { const S = surf(); if (S && S.kind === 'label'){ draft.lab[S.side].img = ''; layersChanged(); } });
+// a label picture is kept small, so links stay short
+$('labIn').addEventListener('change', e => { const f = e.target.files[0], S = surf(); if (!f || !S || S.kind !== 'label') return; const rd = new FileReader();
+  rd.onload = () => { const im = new Image(); im.onload = () => { const P = 240, c = document.createElement('canvas'); c.width = c.height = P; const g = c.getContext('2d'), k = Math.max(P/im.width, P/im.height);
+    g.drawImage(im, (P - im.width*k)/2, (P - im.height*k)/2, im.width*k, im.height*k); draft.lab[S.side].img = c.toDataURL('image/jpeg', .78); draft.lab[S.side].z = 1; layersChanged(); }; im.src = rd.result; };
+  rd.readAsDataURL(f); e.target.value = ''; });
+// handling words on the preview itself
+['txtLayer','labLayer'].forEach(id => {
+  $(id).addEventListener('pointerdown', e => { const S = surf(); if (!S || S.layer !== $(id)) return; const el = e.target.closest('.wtx'), box = S.box.getBoundingClientRect();
+    if (!el){ if (selText >= 0) selectText(-1); return; }
+    e.preventDefault(); const i = +el.dataset.i, t = S.list[i], h = e.target.dataset.h;
+    if (h === 'del'){ S.list.splice(i, 1); selectText(-1); layersChanged(); return; }
+    if (i !== selText) selectText(i);
+    const cx = box.left + t.x/100*box.width, cy = box.top + t.y/100*box.height;
+    tgrab = { i, h:h || 'move', box, cx, cy, ox:e.clientX, oy:e.clientY, x0:t.x, y0:t.y, s0:t.s, r0:t.r, d0:Math.max(8, Math.hypot(e.clientX - cx, e.clientY - cy)), a0:Math.atan2(e.clientY - cy, e.clientX - cx) };
+    $(id).setPointerCapture(e.pointerId); });
+  $(id).addEventListener('pointermove', e => { if (!tgrab) return; const g = tgrab, S = surf(), t = S && S.list[g.i]; if (!t) return;
+    if (g.h === 'move'){ t.x = clamp(g.x0 + (e.clientX - g.ox)/g.box.width*100, 0, 100); t.y = clamp(g.y0 + (e.clientY - g.oy)/g.box.height*100, 0, 100); }
+    else if (g.h === 'size') t.s = clamp(Math.round(g.s0 * Math.hypot(e.clientX - g.cx, e.clientY - g.cy) / g.d0 * 2) / 2, 2, 40);
+    else if (g.h === 'rot') t.r = clamp(Math.round(g.r0 + (Math.atan2(e.clientY - g.cy, e.clientX - g.cx) - g.a0) * 180/Math.PI), -45, 45);
+    renderTextLayer(); });
+  ['pointerup','pointercancel'].forEach(ev => $(id).addEventListener(ev, () => { if (tgrab){ tgrab = null; renderTextUI(); saveDraft(); refreshPreview(); } })); });
+addEventListener('resize', () => { renderTextLayer(); if (current === 'studio') refreshPreview(); });
 
 // the drawing pad: strokes go into draft.draw as points from 0 to 1000
 const DRAW_SIZES = [5, 12, 26, 52], MAX_POINTS = 8000;
@@ -1439,48 +1564,74 @@ $('drawCv').addEventListener('pointermove', e => { if (!pen.cur) return; const [
 [['fName','name'],['fBy','by'],['fTo','to']].forEach(([id,k]) => $(id).addEventListener('input', () => { draft[k] = $(id).value; saveDraft(); refreshPreview(); updateFoot(); }));
 function fillFields(){ $('fName').value = draft.name; $('fBy').value = draft.by; $('fTo').value = draft.to; }
 
-function setFace(f){ face = f; $('recwrap').dataset.mode = f === 'B' ? 'back' : (step === 'vinyl' ? 'vinyl' : 'front'); $('faceBtn').textContent = f === 'B' ? 'Show the front' : 'Turn it over'; }
-$('faceBtn').addEventListener('click', () => { if (drawMode) setDrawMode(false); setFace(face === 'F' ? 'B' : 'F'); sfx.flip(); });
-// THE FLOW: one decision per step, in a straight line. The layout never changes: the record on the bench,
-// the step's choices in the panel beside it (below it on phones), and back and next in the bar along the bottom.
+// THE FLOW, after the Vinylacy configurator: one step per part of the record, each named in the header, in a straight line.
+// The record stays on the bench and moves to show what's being worked on: it comes out of the sleeve and turns for its shape and vinyl,
+// zooms right into its label for the labels, and goes back into the sleeve for the cover. The panel beside it holds the step's choices.
 const needCols = () => (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2];
 const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, dot:1, title:names ? names[i] : c, on:String(draft.d[key]).toUpperCase() === c.toUpperCase() })),
   { v:'*', any:key, sw:draft.d[key], dot:1, title:'Any colour', on:!cols.some(c => c.toUpperCase() === String(draft.d[key]).toUpperCase()) }];
 const setKey = key => v => { draft.d[key] = v; };
+const VCATS = [['classic','Classic',['black','solid','translucent','clear']],['shine','Shine',['metallic','iridescent','smoke','eco']],['mixed','Mixed',['marble','splatter','swirl','clouds']],['pattern','Patterns',['split','stripe','inner','picture']]];
+const catOf = v => (VCATS.find(c => c[2].includes(v)) || VCATS[0])[0];
+const tabs = { labels:'A', sleeve:'F' }; let vcat = null;
+const isWay = w => draft.d.bg === w.bg.toUpperCase() && draft.d.ink === w.ink.toUpperCase() && draft.d.acc === w.acc.toUpperCase();
+const LABEL_NOTES = { solid:'One flat colour, with the title and side printed on it.', split:'Two colours, half and half.', ring:'A plain centre with a ring around it.', art:'A small copy of your cover.', minimal:'Just the words, very quiet.' };
 const FLOW = [
-  { id:'songs', g:'songs', name:'Pick the songs', short:'Songs', sec:'st-songs', lede:'At least 6. Up to 10 makes a 10-inch, more makes a 12-inch LP.',
+  { id:'songs', name:'Pick the songs', short:'Songs', sec:['st-songs'], lede:'At least 6. Up to 10 makes a 10-inch, more makes a 12-inch LP.', mode:'front',
     val:() => { const n = draft.A.length + draft.B.length; return n ? `${plural(n, 'song')}, ${n < MINS ? `${MINS - n} more to press` : recSize(draft) === 12 ? '12-inch LP' : '10-inch'}` : 'None yet'; } },
-  { id:'cover', g:'sleeve', name:'Cover picture', face:'F', lede:'Your sleeve is a picture: a photo, a drawing, a scan, any art. Square works best.',
-    val:() => draft.photo ? (draft.d.filt === 'none' ? 'Your picture' : `Your picture, ${nameOf(FILTERS, draft.d.filt).toLowerCase()}`) : 'Not added yet',
-    rows:[ { items:() => [{ v:'add', l:draft.photo ? 'Change the picture' : '+ Add your picture', on:!draft.photo }], pick:() => $('photoIn').click() },
-           { l:'Filter', show:() => !!draft.photo, tiles:1, items:() => FILTERS.filter(([k]) => FILTER_PICKS.includes(k)).map(([k, l]) => ({ v:k, l, img:sleeveURL(variant({ filt:k, texts:[] }), 120), on:draft.d.filt === k })), pick:setKey('filt') } ] },
-  { id:'words', g:'sleeve', name:'Words', face:'F', sec:'st-words', lede:'Write anything, anywhere on the sleeve. Optional.',
-    val:() => draft.texts.length ? draft.texts.map(t => esc(t.t)).filter(Boolean).slice(0, 3).join(' / ') : 'None' },
-  { id:'vinyl', g:'vinyl', name:'Vinyl', lede:'What the record itself looks like.',
+  { id:'shape', name:'Shape', mode:'disc', lede:() => { const n = draft.A.length + draft.B.length; return `${n >= MINS ? `Your ${n} songs make a ${recSize(draft)}-inch record.` : 'Six to ten songs make a 10-inch, more make a 12-inch.'} Pick its shape.`; },
+    val:() => nameOf(SHAPES, draft.d.shape),
+    rows:[ { tiles:1, spin:1, items:() => SHAPES.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ shape:k }), 120, 'A'), round:1, on:draft.d.shape === k })), pick:setKey('shape') } ],
+    note:() => [nameOf(SHAPES, draft.d.shape), OPT_NOTES.shape[draft.d.shape] || ''] },
+  { id:'vinyl', name:'Vinyl', mode:'disc', lede:'Pick a kind of pressing, then its colours.',
     val:() => nameOf(VINYLS, draft.d.vinyl) + (needCols() >= 1 ? ' ' + chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : ''),
-    rows:[ { tiles:1, items:() => VINYLS.filter(([k]) => VINYL_PICKS.includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ vinyl:k }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:setKey('vinyl') },
-           { l:'Colour', show:() => needCols() >= 1, items:() => colourChips(VPICK, 'v1', VPICK.map(c => VCOLNAMES[VCOLS.indexOf(c)])), pick:setKey('v1') },
-           { l:'Second colour', show:() => needCols() >= 2, items:() => colourChips(VPICK, 'v2', VPICK.map(c => VCOLNAMES[VCOLS.indexOf(c)])), pick:setKey('v2') } ],
+    rows:[ { seg:1, items:() => VCATS.map(([k, l]) => ({ v:k, l, on:(vcat || catOf(draft.d.vinyl)) === k })), pick:v => { vcat = v; }, local:1 },
+           { tiles:1, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ vinyl:k }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:setKey('vinyl') },
+           { l:() => needCols() >= 2 ? 'Main colour' : 'Colour', show:() => needCols() >= 1, spin:1, items:() => colourChips(VCOLS, 'v1', VCOLNAMES), pick:setKey('v1') },
+           { l:'Second colour', show:() => needCols() >= 2, spin:1, items:() => colourChips(VCOLS, 'v2', VCOLNAMES), pick:setKey('v2') } ],
     note:() => [nameOf(VINYLS, draft.d.vinyl), OPT_NOTES.vinyl[draft.d.vinyl] || ''] },
-  { id:'press', g:'press', name:'Ready to press', short:'Press', sec:'st-press', face:'F', lede:'Give it a name, look it over, then press it. Tap any line to change it.', val:() => '' } ];
-// a short list of pressings to choose from; older records may still have any of the others
-const VINYL_PICKS = ['black','solid','translucent','clear','marble','splatter','split','picture'];
-const VPICK = ['#141414','#B3262E','#E89AB5','#2E5DA8','#2F7D4F','#F2C230','#C9A24A','#EDEAE2'];
-const FILTER_PICKS = ['none','bw','sepia','faded','riso','grain'];
-const GROUPNAME = { songs:'Songs', sleeve:'Sleeve', vinyl:'Vinyl', press:'Press' };
+  { id:'labels', name:'Labels', mode:'label', sec:['st-layers'], lede:'The paper circle in the middle, a different one on each side if you like. Pick a style, then add your own words and a picture.',
+    tabs:{ key:'labels', items:[['A','Side A'],['B','Side B']] },
+    val:() => `${nameOf(LABELS, draft.d.label)} ${chip(draft.d.lab)}` + (['A','B'].some(k => draft.lab[k].texts.length || draft.lab[k].img) ? ', your own words' : ''),
+    rows:[ { l:'Style', tiles:1, items:() => LABELS.map(([k, l]) => ({ v:k, l, img:labelURL(variant({ label:k }), tabs.labels, 96), round:1, on:draft.d.label === k })), pick:setKey('label') },
+           { l:'Colour', show:() => !['art','minimal'].includes(draft.d.label), items:() => colourChips(SLEEVE_SWATCHES, 'lab'), pick:setKey('lab') } ],
+    note:() => [nameOf(LABELS, draft.d.label), LABEL_NOTES[draft.d.label] || ''] },
+  { id:'sleeve', name:'Sleeve', mode:'front', lede:() => tabs.sleeve === 'F' ? 'Your cover. Pick what it is, then add your own words on top.' : 'The back of the sleeve: your tracklist, and what goes around it.',
+    tabs:{ key:'sleeve', items:[['F','Front'],['B','Back']] },
+    sec:() => tabs.sleeve !== 'F' ? [] : draft.d.cover === 'draw' ? ['st-draw', 'st-layers'] : ['st-layers'],
+    val:() => `${nameOf(COVERS, draft.d.cover)}${draft.d.cover === 'photo' && draft.photo && draft.d.filt !== 'none' ? ', ' + nameOf(FILTERS, draft.d.filt).toLowerCase() : ''}${draft.texts.length ? ', ' + plural(draft.texts.length, 'bit') + ' of text' : ''}`,
+    rows:[ { l:'Cover', cards:1, show:() => tabs.sleeve === 'F', items:() => COVERS.map(([k, l, desc]) => ({ v:k, l, desc, on:draft.d.cover === k })),
+             pick:v => { draft.d.cover = v; if (v !== 'draw' && drawMode) setDrawMode(false); if (v === 'photo' && !draft.photo) $('photoIn').click(); } },
+           { l:'Picture', show:() => tabs.sleeve === 'F' && draft.d.cover === 'photo', items:() => [{ v:'add', l:draft.photo ? 'Change the picture' : '+ Add your picture', on:!draft.photo },
+               ...(draft.photo ? PHOTOMODES.map(([k, l]) => ({ v:k, l, on:draft.d.pm === k })) : [])], pick:v => { if (v === 'add') return $('photoIn').click(); draft.d.pm = v; } },
+           { l:'Filter', tiles:1, show:() => tabs.sleeve === 'F' && draft.d.cover === 'photo' && !!draft.photo, items:() => FILTERS.map(([k, l]) => ({ v:k, l, img:sleeveURL(variant({ filt:k, texts:[] }), 120), on:draft.d.filt === k })), pick:setKey('filt') },
+           { l:'Colours', show:() => tabs.sleeve === 'F' && (draft.d.cover !== 'photo' || draft.d.pm === 'framed'), items:() => [{ v:'?', l:'Surprise me' }, ...WAYS.map((w, i) => ({ v:String(i), l:w.n, trio:[w.bg, w.ink, w.acc], on:isWay(w) }))],
+             pick:v => { const w = v === '?' ? WAYS[Math.floor(Math.random()*WAYS.length)] : WAYS[+v], old = draft.d.ink;
+               Object.assign(draft.d, { bg:w.bg.toUpperCase(), ink:w.ink.toUpperCase(), acc:w.acc.toUpperCase() }); draft.texts.forEach(t => { if (t.c.toUpperCase() === old) t.c = draft.d.ink; }); } },
+           { l:'Finishing touches', multi:1, show:() => tabs.sleeve === 'F', items:() => FRONT_EXTRAS.map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; } },
+           { l:'On the back', multi:1, show:() => tabs.sleeve === 'B', items:() => BACK_EXTRAS.map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; } } ] },
+  { id:'press', name:'Ready to press', short:'Press', sec:['st-press'], mode:'front', lede:'Give it a name, look it over, then press it. Tap any line to change it.', val:() => '' } ];
 let fstep = 'songs';
 const fIdx = id => FLOW.findIndex(f => f.id === id), cur = () => FLOW[fIdx(fstep)];
-const live = () => FLOW.filter(f => !f.skip || !f.skip());
+const live = () => FLOW;
+const fv = v => typeof v === 'function' ? v() : v;
+$('steps').innerHTML = FLOW.map((f, i) => `${i ? '<i>&middot;</i>' : ''}<button data-g="${f.id}">${f.short || f.name}</button>`).join('');
+// the record's pose for each step; the sleeve turning over is its own pose
+function setFace(f){ face = f; const F = cur(), m = F.mode || 'front';
+  $('recwrap').dataset.mode = m === 'front' && f === 'B' ? 'back' : m; $('studio').dataset.f = F.id;
+  $('faceBtn').hidden = m !== 'front'; $('faceBtn').textContent = f === 'B' ? 'Show the front' : 'Turn it over'; }
+$('faceBtn').addEventListener('click', () => { if (drawMode) setDrawMode(false); const f = face === 'F' ? 'B' : 'F'; if (fstep === 'sleeve'){ tabs.sleeve = f; selText = -1; } setFace(f); sfx.flip(); refreshPreview(); renderDock(true); renderTextLayer(); });
+// a quick turn of the record when its look changes
+function spinRecord(){ const el = $('pVinI'); el.classList.remove('spin'); void el.offsetWidth; el.classList.add('spin'); }
 function goStep(id){
-  if (!FLOW.some(f => f.id === id)) id = (FLOW.find(f => f.g === id) || FLOW[0]).id;
-  const F = FLOW[fIdx(id)];
-  if (drawMode && id !== 'draw') setDrawMode(false);
-  if (id !== 'words') selText = -1;
-  fstep = id; step = F.g; $('allSteps').hidden = true; $('studio').dataset.f = id;
-  document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', p.id === F.sec));
-  document.querySelectorAll('#steps button').forEach(b => b.setAttribute('aria-current', b.dataset.g === F.g ? 'step' : 'false'));
-  if (F.face) face = F.face; if (F.g === 'vinyl') face = 'F';
-  setFace(face); document.querySelector('.dbody').scrollTop = 0;
+  if (!FLOW.some(f => f.id === id)) id = 'songs';
+  const F = FLOW[fIdx(id)], moved = id !== fstep;
+  if (drawMode && id !== 'sleeve') setDrawMode(false);
+  if (moved) selText = -1;
+  fstep = id; step = id; $('allSteps').hidden = true;
+  document.querySelectorAll('#steps button').forEach(b => b.setAttribute('aria-current', b.dataset.g === id ? 'step' : 'false'));
+  setFace(id === 'sleeve' ? tabs.sleeve : 'F');
+  if (moved){ const db = $('dbody'); db.scrollTop = 0; db.classList.remove('enter'); void db.offsetWidth; db.classList.add('enter'); }
   syncControls(); refreshPreview(); renderDock(true); renderTextLayer(); updateFoot();
 }
 document.querySelectorAll('#steps button').forEach(b => b.addEventListener('click', () => { sfx.click(); goStep(b.dataset.g); }));
@@ -1488,28 +1639,38 @@ function move(d){ const L = live(), i = L.findIndex(f => f.id === fstep); const 
 $('prevStep').addEventListener('click', () => move(-1));
 $('nextStep').addEventListener('click', () => move(1));
 let dockTimer;
-const chipHTML = (it, r, tiles) => `<button class="chip${it.dot ? ' dot' : ''}${tiles ? ' tile' : ''}${it.round ? ' rnd' : ''}${it.img ? ' pic' : ''}" data-r="${r}" data-v="${esc(it.v)}" aria-pressed="${!!it.on}"${it.title ? ` title="${esc(it.title)}" aria-label="${esc(it.title)}"` : ''}${it.any ? ` data-any="${it.any}"` : ''}>`
+const chipHTML = (it, r, R) => `<button class="chip${it.dot ? ' dot' : ''}${R.tiles ? ' tile' : ''}${R.cards ? ' cardopt' : ''}${R.seg ? ' segopt' : ''}${it.round ? ' rnd' : ''}${it.img ? ' pic' : ''}" data-r="${r}" data-v="${esc(it.v)}" aria-pressed="${!!it.on}"${it.title ? ` title="${esc(it.title)}" aria-label="${esc(it.title)}"` : ''}${it.any ? ` data-any="${it.any}"` : ''}>`
   + (it.img ? `<img alt="" src="${it.img}">` : it.trio ? `<span class="trio">${it.trio.map(c => `<i style="background:${c}"></i>`).join('')}</span>` : it.sw ? `<i class="sw${it.any ? ' anysw' : ''}" style="--c:${esc(it.sw)}"></i>` : '')
-  + (it.l ? `<span class="cl">${esc(it.l)}</span>` : '') + (it.any ? `<input type="color" value="${esc(String(draft.d[it.any]).toLowerCase())}" aria-label="Any colour">` : '') + `</button>`;
-// the panel and the bar: the step's name, its choices, and back and next
+  + (it.l ? `<span class="cl">${esc(it.l)}</span>` : '') + (it.desc ? `<small>${esc(it.desc)}</small>` : '') + (it.any ? `<input type="color" value="${esc(String(draft.d[it.any]).toLowerCase())}" aria-label="Any colour">` : '') + `</button>`;
+// the panel and the bar: the step's name, its tabs, its choices, back and next
 function renderDock(now){ clearTimeout(dockTimer); if (!now){ dockTimer = setTimeout(() => renderDock(true), 40); return; }
   const F = cur(), L = live(), i = L.findIndex(f => f.id === fstep), n = draft.A.length + draft.B.length;
-  $('dkGroup').textContent = `${GROUPNAME[F.g]} · ${i + 1} of ${L.length}`; $('dkTitle').textContent = F.short || F.name;
+  $('dkGroup').textContent = `Step ${i + 1} of ${L.length}`; $('dkTitle').textContent = F.short || F.name;
   $('dkProg').style.width = ((i + 1) / L.length * 100) + '%';
   $('prevStep').style.visibility = i > 0 ? 'visible' : 'hidden';
-  const last = i === L.length - 1; $('nextStep').hidden = last; $('pressBtn').hidden = !last; $('pressBtn').disabled = n < MINS || !draft.photo;
-  $('stKick').textContent = `${String(i + 1).padStart(2, '0')} / ${GROUPNAME[F.g].toUpperCase()}`; $('stTitle').textContent = F.name;
-  const lede = F.lede; $('stLede').textContent = lede; $('stLede').hidden = !lede;
+  const last = i === L.length - 1; $('nextStep').hidden = last; $('pressBtn').hidden = !last; $('pressBtn').disabled = !canPress();
+  $('stKick').textContent = `${String(i + 1).padStart(2, '0')} / ${(F.short || F.name).toUpperCase()}`; $('stTitle').textContent = F.name;
+  const lede = fv(F.lede); $('stLede').textContent = lede || ''; $('stLede').hidden = !lede;
+  const T = $('stTabs'); T.hidden = !F.tabs;
+  if (F.tabs){ T.innerHTML = F.tabs.items.map(([k, l]) => `<button role="tab" data-k="${k}" aria-selected="${tabs[F.tabs.key] === k}">${l}</button>`).join('');
+    T.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { if (tabs[F.tabs.key] === b.dataset.k) return; sfx.click(); tabs[F.tabs.key] = b.dataset.k; selText = -1;
+      if (F.id === 'sleeve'){ if (drawMode) setDrawMode(false); setFace(b.dataset.k); sfx.flip(); }
+      if (F.id === 'labels'){ const pl = $('pLabel'); pl.classList.remove('flip'); void pl.offsetWidth; pl.classList.add('flip'); }
+      refreshPreview(); renderDock(true); renderTextLayer(); renderTextUI(); })); }
   const box = $('stOpts');
   if (F.rows){ const vis = F.rows.map((R, r) => [R, r]).filter(([R]) => !R.show || R.show());
-    box.innerHTML = vis.map(([R, r]) => `${R.l ? `<p class="minihead">${R.l}</p>` : ''}<div class="chips${R.tiles ? ' tiles' : ''}">${R.items().map(it => chipHTML(it, r, R.tiles)).join('')}</div>`).join('');
+    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); return `${l ? `<p class="minihead">${l}</p>` : ''}<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}">${R.items().map(it => chipHTML(it, r, R)).join('')}</div>`; }).join('');
     box.querySelectorAll('.chip').forEach(b => { const R = F.rows[+b.dataset.r], inp = b.querySelector('input');
-      if (inp){ inp.addEventListener('input', () => { R.pick(inp.value.toUpperCase()); syncControls(); changed(); }); inp.addEventListener('click', e => e.stopPropagation()); }
-      b.addEventListener('click', () => { if (inp) return inp.click(); sfx.click(); R.pick(b.dataset.v); syncControls(); changed(); }); }); }
+      const after = () => { if (R.local){ renderDock(true); return; } if (R.spin) spinRecord(); syncControls(); changed(); };
+      if (inp){ inp.addEventListener('input', () => { R.pick(inp.value.toUpperCase()); after(); }); inp.addEventListener('click', e => e.stopPropagation()); }
+      b.addEventListener('click', () => { if (inp) return inp.click(); sfx.click(); R.pick(b.dataset.v); after(); }); }); }
   else box.innerHTML = '';
+  const secs = fv(F.sec) || []; document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', secs.includes(p.id)));
   const nt = F.note && F.note(); $('stNote').hidden = !nt; if (nt) $('stNote').innerHTML = `<b>${esc(nt[0])}</b> ${esc(nt[1])}`;
-  document.querySelectorAll('.xtra').forEach(x => x.hidden = x.dataset.for !== F.id || (F.id === 'extras' && !draft.d.sticker));
-  if (F.id === 'colours') sleevePickers();
+  $('caption').innerHTML = nt ? `<b>${esc(nt[0])}</b>${esc(nt[1])}` : ''; $('caption').classList.toggle('on', !!nt);
+  const colRow = F.id === 'sleeve' && tabs.sleeve === 'F' && (draft.d.cover !== 'photo' || draft.d.pm === 'framed');
+  document.querySelectorAll('.xtra').forEach(x => x.hidden = !(x.dataset.for === 'colours' ? colRow : x.dataset.for === 'hype' ? F.id === 'sleeve' && tabs.sleeve === 'F' && draft.d.sticker : false));
+  if (colRow) sleevePickers();
   if (!$('allSteps').hidden) renderAllSteps();
 }
 function sleevePickers(){ const el = $('sleevePick');
@@ -1523,8 +1684,9 @@ $('asClose').addEventListener('click', () => $('allSteps').hidden = true);
 $('allSteps').addEventListener('click', e => { if (e.target === $('allSteps')) $('allSteps').hidden = true; });
 $('resetBtn').addEventListener('click', () => { if (hasWork(draft) && !confirm('Start a new record from scratch? You can still carry on with this one from the booth.')) return;
   if (hasWork(draft)){ saveDraft(); lastDraft = draft; } loadDraft(cleanRec(null)); });
-function loadDraft(r){ draft = r; selText = -1; face = 'F'; fillFields(); syncControls(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); goStep('songs'); }
+function loadDraft(r){ draft = r; selText = -1; face = 'F'; tabs.labels = 'A'; tabs.sleeve = 'F'; vcat = null; fillFields(); syncControls(); renderSides(); renderResults(lastResults, lastMsg); refreshPreview(); goStep('songs'); }
 $('resumeBtn').addEventListener('click', () => { lastDraft = cleanRec(null); loadDraft(cleanRec(store.get('sideb-press'))); });
+const canPress = () => draft.A.length + draft.B.length >= MINS && (draft.d.cover !== 'photo' || !!draft.photo);
 function updateFoot(){
   $('resumeBtn').hidden = !(hasWork(lastDraft) && !hasWork(draft));
   const n = draft.A.length + draft.B.length;
@@ -1535,8 +1697,8 @@ const nameOf = (list, v) => (list.find(o => o[0] === v) || list[0])[1];
 const chip = c => `<i class="cchip" style="background:${esc(c)}"></i>`;
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 function renderRecap(){ if (fstep !== 'press') return; const n = draft.A.length + draft.B.length;
-  $('recap').innerHTML = live().filter(f => f.id !== 'press').map(f => `<button class="rrow" data-go="${f.id}"><span class="rl">${f.name}</span><span class="rv">${f.val()}</span><span class="rp" aria-label="Change">&#9998;</span></button>`).join('');
-  const need = [n < MINS ? [`${plural(MINS - n, 'more song')}`, 'songs', 'Add songs'] : null, !draft.photo ? ['a cover picture', 'cover', 'Add a picture'] : null].filter(Boolean);
+  $('recap').innerHTML = live().filter(f => f.id !== 'press').map(f => `<button class="rrow" data-go="${f.id}"><span class="rl">${f.short || f.name}</span><span class="rv">${f.val()}</span><span class="rp" aria-label="Change">&#9998;</span></button>`).join('');
+  const need = [n < MINS ? [`${plural(MINS - n, 'more song')}`, 'songs', 'Add songs'] : null, draft.d.cover === 'photo' && !draft.photo ? ['a cover picture', 'sleeve', 'Add a picture'] : null].filter(Boolean);
   $('pressNeeds').hidden = !need.length; $('pressNeeds').innerHTML = need.length ? `It needs ${need.map(x => x[0]).join(' and ')} before it can be pressed. ` + need.map(x => `<button class="btn sm" data-go="${x[1]}">${x[2]}</button>`).join(' ') : '';
   const side = (sd, list) => `<div><h4><span>SIDE ${sd}</span><span>${list.length}</span></h4><ol>${list.length ? list.map((t, i) => `<li><span class="n">${sd}${i+1}</span><span class="nm">${esc(t.name)}<em> ${esc(t.artist)}</em></span></li>`).join('') : '<li class="empty">No songs yet.</li>'}</ol></div>`;
   $('recapTracks').innerHTML = `<div class="cols">${side('A', draft.A.map(hydrateSong))}${side('B', draft.B.map(hydrateSong))}</div>`;
@@ -1555,7 +1717,7 @@ function b64url(bytes){ let s = ''; for (let i=0;i<bytes.length;i++) s += String
 function unb64url(str){ const s = atob(str.replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(s, c => c.charCodeAt(0)); }
 async function shrinkPhoto(src){ if (!src) return ''; return new Promise(res => { const im = new Image(); im.onload = () => { const S = 360, c = document.createElement('canvas'); c.width = c.height = S; c.getContext('2d').drawImage(im, 0, 0, S, S); res(c.toDataURL('image/jpeg', .72)); }; im.onerror = () => res(''); im.src = src; }); }
 async function encodeRec(r){
-  const json = new TextEncoder().encode(JSON.stringify({ v:4, name:r.name, line:r.line, by:r.by, to:r.to, year:r.year, cat:r.cat, d:r.d, hype:r.hype, draw:r.draw, texts:r.texts, A:r.A, B:r.B, notes:r.notes, photo: await shrinkPhoto(r.photo) }));
+  const json = new TextEncoder().encode(JSON.stringify({ v:4, name:r.name, line:r.line, by:r.by, to:r.to, year:r.year, cat:r.cat, d:r.d, hype:r.hype, draw:r.draw, texts:r.texts, lab:r.lab, A:r.A, B:r.B, notes:r.notes, photo: await shrinkPhoto(r.photo) }));
   if (window.CompressionStream){ const cs = new Blob([json]).stream().pipeThrough(new CompressionStream('deflate-raw')); return 'z' + b64url(new Uint8Array(await new Response(cs).arrayBuffer())); }
   return 'p' + b64url(json);
 }
