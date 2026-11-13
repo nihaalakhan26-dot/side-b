@@ -89,3 +89,7 @@ module.exports = async (req, res) => {
   res.setHeader('Cache-Control', good ? 's-maxage=604800, stale-while-revalidate=2592000' : 's-maxage=300');
   res.status(found.length ? 200 : 502).json({ albums: found });
 };
+
+// scripts/fetch-covers.js reuses the list and the lookup to save the covers into the site itself
+module.exports.SHELF = SHELF;
+module.exports.lookupArtist = lookupArtist;

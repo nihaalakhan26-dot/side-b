@@ -17,7 +17,7 @@ Ideas that were tried and dropped, and why:
 
 - `index.html` is the entire site: HTML, CSS and JavaScript in one file.
 - `api/search.js` is a Vercel function. The site calls `/api/search?q=...` and it asks Apple's iTunes Search API (country `IN`, songs only) and returns track name, artist, album, artwork, preview URL and an Apple Music link. Apple blocks direct browser calls, which is why this function exists.
-- `api/albums.js` is a Vercel function. It holds the list of real albums on the shop's shelves (Ariana Grande, Tame Impala, The Beatles, Mac Miller, Sade and many more), looks up their cover art on iTunes and returns it. The answer is cached for a week. To change what's on the shelves, edit the list at the top of that file.
+- `api/albums.js` holds the list of real albums on the shop's shelves (Ariana Grande, Tame Impala, The Beatles, Mac Miller, Sade and many more) and can look up their cover art on iTunes. The covers themselves are **saved in the site** (`img/covers/`, 200 px) and listed in `index.html` between `/*SHELF*/` and `/*SHELF_END*/`, so the shelves show real covers from the first moment on every device. Waiting on Apple each visit was slow on phones and showed practice covers in the meantime. To change what's on the shelves, edit the list at the top of `api/albums.js`, then run `node scripts/fetch-covers.js` (it needs to reach `itunes.apple.com` and `is1-ssl` to `is5-ssl.mzstatic.com`; the `side-b` cloud environment allows them) and commit `img/covers/` and `index.html`. If the saved list is ever empty, the page falls back to asking the function at `/api/albums`.
 - `api/record.js` is a Vercel function for short links. Pressing a record saves it in Upstash Redis for 30 days and gives a link like `/r/k3x9q2Ab`. The function also serves that page with a link preview (who it's from, the record's name, a picture of the sleeve). It allows 20 records per person per hour.
 - `vercel.json` sends `/r/...` addresses to that function and bundles `index.html` with it.
 - `package.json` only declares Node 18 or newer. There's no build step.
@@ -103,7 +103,7 @@ Avoid: black ink outlines, soft glossy gradients standing in for lighting, objec
 ## Known limits and ideas for later
 
 - Records expire after 30 days. The free Upstash database is archived if nothing touches it for 14 days (restorable from the Upstash console).
-- The shelves show practice covers until `/api/albums` answers, and for good where there's no search function (a local file, the Claude preview).
+- The shelves use the covers saved in `img/covers/`. Practice covers only appear if that saved list is empty.
 - A person browsing the record wall was in the reference images but left out until it can be drawn well.
 - Performance: the turntable redraws only when something changes. Keep it that way.
 

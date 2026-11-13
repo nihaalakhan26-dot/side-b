@@ -1088,14 +1088,18 @@ const coverCache = new Map();
 function albumCover(a){ const k = 'a' + a.id; if (!coverCache.has(k)) coverCache.set(k, drawCover(a, 180).toDataURL('image/jpeg', .85)); return coverCache.get(k); }
 const WALL = (() => { const R = mulberry32(2026), out = []; let pool = []; for (let i=0;i<72;i++){ if (!pool.length) pool = DEMO.map((_,k) => k).sort(() => R() - .5); out.push(DEMO[pool.pop()]); } return out; })();
 const songThumb = s => s.s === 'd' ? albumCover(DEMO[s.al]) : s.c;
-// Every album shown in the shop is a numbered slot. Slots show real albums from Apple once /api/albums answers,
-// and practice covers until then (or for good, where there's no search function).
-let shelf = [];
+// Every album shown in the shop is a numbered slot. The real covers live in the site itself (img/covers/, saved by
+// scripts/fetch-covers.js from the list in api/albums.js), so the shelves are real from the first moment. Only if that
+// list is empty does the shop ask /api/albums, showing practice covers until it answers.
+const SHELF_SAVED = /*SHELF*/[]/*SHELF_END*/;
+const sitePath = p => (/^https?:$/.test(location.protocol) ? '/' : '') + p;
+let shelf = SHELF_SAVED.length ? shuffle(SHELF_SAVED.map(a => ({ t:a.t, a:a.a, art:sitePath(a.img), url:a.url })), 2026) : [];
 function slotAlbum(k){ if (shelf.length){ const a = shelf[k % shelf.length]; return { img:a.art, title:a.t, sub:a.a, url:a.url }; }
   const d = WALL[k % WALL.length]; return { img:albumCover(d), title:d.title, sub:`${d.band}, ${d.year}`, url:'' }; }
 function paintSlots(root = document){ root.querySelectorAll('[data-slot]').forEach(el => { const a = slotAlbum(+el.dataset.slot);
   if (el instanceof SVGImageElement){ if (el.getAttribute('href') !== a.img) el.setAttribute('href', a.img); } else el.style.backgroundImage = `url("${a.img}")`; }); }
 async function loadShelf(){
+  if (shelf.length) return;
   try { const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 12000); const res = await fetch('/api/albums', { signal:ctl.signal }); clearTimeout(to);
     const data = await res.json(), list = (Array.isArray(data.albums) ? data.albums : []).map(a => ({ t:String(a.t || '').slice(0, 120), a:String(a.a || '').slice(0, 80), art:safeURL(a.art), url:safeURL(a.url) })).filter(a => a.t && a.art);
     if (list.length < 12) return;
