@@ -403,6 +403,7 @@ button{cursor:pointer}
 .src{margin:8px 2px 0;font:500 .72rem/1.4 var(--mono);color:var(--ink2)}
 .results{list-style:none;margin:10px 0 0;padding:0;max-height:250px;overflow:auto;
   background:#fffdf7}
+.results:empty{display:none}
 .results li + li{border-top:1px solid rgba(184,69,43,.16)}
 .results li{overflow:hidden}
 .results li{display:flex;align-items:center;gap:10px;height:46px;padding:0 10px}
@@ -1484,7 +1485,7 @@ function renderResults(list, msg = 'Nothing found. Try the artist on its own.'){
     <button class="rbtn" data-play="${i}" aria-label="Listen to ${esc(s.name)}">&#9654;</button>
     <button class="rbtn add" data-add="A" data-i="${i}" ${used || draft.A.length >= MAXSIDE ? 'disabled' : ''} aria-label="Add to side A">A</button>
     <button class="rbtn add" data-add="B" data-i="${i}" ${used || draft.B.length >= MAXSIDE ? 'disabled' : ''} aria-label="Add to side B">B</button></li>`; }).join('')
-    : `<li><span class="tx"><span>${esc(msg)}</span></span></li>`;
+    : msg ? `<li><span class="tx"><span>${esc(msg)}</span></span></li>` : '';
   $('results').querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => addSong(lastResults[+b.dataset.i], b.dataset.add)));
   $('results').querySelectorAll('[data-play]').forEach(b => b.addEventListener('click', () => sample(lastResults[+b.dataset.play], b)));
 }
@@ -1864,6 +1865,8 @@ async function runSearch(){ const my = ++searchSeq; let list, msg;
   if (my === searchSeq) renderResults(list, msg); }
 $('qBtn').addEventListener('click', runSearch);
 $('q').addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+// clearing the search box clears the results too, and a search still on its way is dropped
+$('q').addEventListener('input', () => { if (!$('q').value.trim()){ searchSeq++; renderResults([], ''); } });
 
 // link encoding
 function b64url(bytes){ let s = ''; for (let i=0;i<bytes.length;i++) s += String.fromCharCode(bytes[i]); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
