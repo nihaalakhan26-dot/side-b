@@ -103,7 +103,7 @@ Avoid: black ink outlines, soft glossy gradients standing in for lighting, objec
 ## Known limits and ideas for later
 
 - Records expire after 30 days. The free Upstash database is archived if nothing touches it for 14 days (restorable from the Upstash console).
-- The shelves use the covers saved in `img/covers/`. Practice covers only appear if that saved list is empty.
+- The shelves use the covers saved in `img/covers/`. Practice covers only appear if that saved list is empty. 55 of the 71 albums in the list are saved. The other 16 aren't in Apple's album search in India or the US (Blonde, channel ORANGE, The Dark Side of the Moon, Nevermind, IGOR, Flower Boy, Swimming, Circles, Faces, Awaken My Love!, Freudian, Is This It, Baduizm, Isolation, Punisher, For Emma Forever Ago), so they simply don't appear; swap them for albums Apple has if they're wanted.
 - A person browsing the record wall was in the reference images but left out until it can be drawn well.
 - Performance: the turntable redraws only when something changes. Keep it that way.
 
