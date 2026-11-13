@@ -633,6 +633,70 @@ button{cursor:pointer}
 .stack .lvinyl{position:absolute;left:96px;top:-6px;width:236px;box-shadow:12px 12px 0 rgba(24,30,70,.25)}
 .plantTop{position:absolute;right:-70px;top:-70px;width:300px;height:300px;filter:drop-shadow(18px 20px 0 rgba(24,30,70,.28))}
 @media (max-width:900px){.stack{transform:rotate(-14deg) scale(.6);transform-origin:0 0}.plantTop{width:190px;height:190px;right:-50px;top:-40px}}
+
+/* ============================================================
+   THE BOOTH'S LOOK: the shop at night. The record sits alone on a dark walnut stage under a warm pool of lamplight,
+   the step names and the back and next buttons float over the stage with no bars, and the choices sit on a cream card beside it.
+   ============================================================ */
+#studio{--pw:clamp(410px,38.5vw,530px);--stage:#170e08;--cream:#F1E5CC;--amber:#E7B061;background:var(--stage);grid-template-rows:auto minmax(0,1fr) 0}
+#studio .shead{background:transparent;border:0;padding:12px 22px;padding-top:calc(12px + env(safe-area-inset-top,0px));z-index:7}
+#studio .shead::after{display:none}
+#studio .shead .logo{color:var(--cream);opacity:.92}
+#studio .steps i{color:rgba(241,229,204,.25)}
+#studio .steps button{color:rgba(241,229,204,.5);padding:8px 7px}
+#studio .steps button:hover{color:var(--cream)}
+#studio .steps button[aria-current="step"]{color:var(--cream);font-weight:700;box-shadow:inset 0 -1.5px 0 var(--amber)}
+#studio .steps button.done::after{background:var(--amber)}
+#studio .shead .btn{color:rgba(241,229,204,.8);border-color:rgba(241,229,204,.28);border-radius:999px;background:transparent}
+#studio .shead .btn:hover{color:var(--cream);border-color:rgba(241,229,204,.6)}
+#studio .sbody{grid-template-columns:minmax(0,1fr) var(--pw)}
+/* the stage */
+#studio .bench{background:radial-gradient(ellipse 58% 54% at 50% 44%,rgba(255,196,122,.24),rgba(255,170,96,.07) 52%,transparent 74%),radial-gradient(ellipse 120% 90% at 50% 120%,rgba(70,38,18,.55),transparent 60%),var(--stage);padding-bottom:84px}
+#studio .bench .mat,#studio .bench .prop{display:none}
+#studio .pvin{filter:drop-shadow(0 22px 26px rgba(0,0,0,.6))}
+#studio .pslv .fc{box-shadow:0 26px 44px rgba(0,0,0,.55),0 2px 4px rgba(0,0,0,.4)}
+#studio .benchtop{top:10px;left:16px;right:16px}
+#studio .benchtop .pill{background:rgba(241,229,204,.08)!important;color:rgba(241,229,204,.82);box-shadow:inset 0 0 0 1px rgba(241,229,204,.2);backdrop-filter:blur(6px)}
+#studio .benchtop .pill:hover{background:rgba(241,229,204,.16)!important;color:var(--cream)}
+#studio .caption{left:50%;right:auto;bottom:88px;transform:translate(-50%,8px);max-width:min(440px,80%);padding:0;background:none;box-shadow:none;text-align:center;color:rgba(241,229,204,.62);font-size:.8rem}
+#studio .caption.on{transform:translate(-50%,0)}
+#studio .caption b{color:var(--cream);font:400 1.35rem/1.1 Yellowtail,cursive;margin-bottom:3px}
+#studio .drawbar{bottom:86px}
+/* the card of choices */
+#studio .deck{margin:2px 16px 16px 0;border:0;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(241,229,204,.08)}
+#studio .deck::before{opacity:.14}
+#studio .dbody{padding:24px 26px 30px}
+/* back and next, floating over the stage */
+#studio .dock{position:absolute;left:0;bottom:0;right:calc(var(--pw) + 16px);height:auto;padding:18px 26px calc(20px + env(safe-area-inset-bottom,0px));background:none;border:0;box-shadow:none;gap:16px;pointer-events:none}
+#studio .dock::after{display:none}
+#studio .dock > *{pointer-events:auto}
+#studio .dock .dk-fill{pointer-events:none}
+#studio .dk-back{color:var(--cream);box-shadow:inset 0 0 0 1.5px rgba(241,229,204,.35);background:rgba(23,14,8,.35);backdrop-filter:blur(6px)}
+#studio .dk-back:hover{box-shadow:inset 0 0 0 1.5px rgba(241,229,204,.7)}
+#studio .dk-next{background:var(--cream);color:#231A14;box-shadow:0 8px 24px rgba(0,0,0,.45),0 0 0 6px rgba(241,229,204,.08)}
+#studio .dk-next:hover{filter:none;background:#fff}
+#studio .dk-press{background:var(--amber);border:0;color:#231A14;border-radius:999px;padding:0 26px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+#studio .dk-press:disabled{opacity:.45}
+#studio .dk-name{color:var(--cream)}
+#studio .dk-name small{color:rgba(241,229,204,.5)}
+#studio .dk-name b::after{color:rgba(241,229,204,.5)}
+#studio .dk-prog{top:auto;bottom:10px;left:26px;right:26px;height:2px;border-radius:2px;background:rgba(241,229,204,.12)}
+#studio .dk-prog i{background:var(--amber);border-radius:2px}
+@media (max-width:760px){
+  #studio{grid-template-rows:auto minmax(0,1fr) 0}
+  #studio .shead{padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+  #studio .sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:42% minmax(0,1fr)}
+  #studio .bench{padding-bottom:0}
+  #studio .caption,#studio .drawbar{bottom:8px}
+  #studio .deck{margin:0 8px;border-radius:16px 16px 0 0;box-shadow:0 -12px 34px rgba(0,0,0,.45)}
+  #studio .dbody{padding:18px 16px calc(96px + env(safe-area-inset-bottom,0px))}
+  /* on phones back and next float in a slim dark pill over the bottom of the card */
+  #studio .dock{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:7px 8px 7px 8px;border-radius:999px;background:rgba(23,14,8,.86);backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.4);gap:10px}
+  #studio .dk-back{width:42px;height:42px;background:transparent}
+  #studio .dk-next{width:46px;height:46px;font-size:1.35rem;box-shadow:none}
+  #studio .dk-press{min-height:46px;padding:0 20px}
+  #studio .dk-prog{left:26px;right:26px;bottom:3px;height:2px}
+}
 </style>
 </head>
 <body>
