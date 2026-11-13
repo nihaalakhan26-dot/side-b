@@ -1102,18 +1102,17 @@ async function loadShelf(){
 }
 
 /* ============================================================
-   OUTSIDE: the shop front, drawn in code in true perspective like the interior (after the owner's reference, a modern
-   record and book shop at dusk): a backlit lightbox sign, a canopy with a lit underside, a full-height glass front with the
-   real shop interior seen through it, benches with red cushions, gravel beds, bollard lights and a stone path.
-   Coordinates keep the old picture's frame (1536 by 1024) so the door, the zoom and the doorway line up.
+   OUTSIDE: an old brick record shop on a busy, arty street at golden hour, drawn in code (after the owner's reference):
+   a white bracketed cornice, tall multi-pane windows with giant records on the glass, a classic white board sign, a gooseneck lamp,
+   a round hanging blade sign, a white panelled door covered in gig posters, a bench, a stool with a plant, a poster easel and an
+   autumn tree; a café with string lights on one side and a painted mural wall with wheat-pasted posters and a bike on the other.
+   The ground is in perspective (EP); the shop front faces us at z 0. Coordinates keep the 1536 by 1024 frame so the door lines up.
    ============================================================ */
 const asset = p => (/^https?:$/.test(location.protocol) ? '/' : '') + p;
 const DOOR = { x:696, y:484, w:164, h:376, hinge:860 };
-// the street's own camera: eye height 560, looking straight at the shop front (z 0), z negative towards the viewer
 const EV = { x:778, y:560 }, EF = 1400, EG = 880;
 const EP = (x, y, z) => { const k = EF/(EF + z); return [EV.x + (x - EV.x)*k, EV.y + (y - EV.y)*k]; };
 const epoly = (a, fill, extra='') => `<polygon points="${a.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')}" fill="${fill}"${extra}/>`;
-// a box in the street: the faces you could really see from the eye
 function ebox(x0, x1, y0, y1, zb, zf, c){ let s = '';
   if (c.side && x1 < EV.x) s += epoly([EP(x1,y0,zf), EP(x1,y0,zb), EP(x1,y1,zb), EP(x1,y1,zf)], c.side);
   if (c.side && x0 > EV.x) s += epoly([EP(x0,y0,zf), EP(x0,y0,zb), EP(x0,y1,zb), EP(x0,y1,zf)], c.side);
@@ -1122,115 +1121,149 @@ function ebox(x0, x1, y0, y1, zb, zf, c){ let s = '';
   if (c.front) s += epoly([EP(x0,y0,zf), EP(x1,y0,zf), EP(x1,y1,zf), EP(x0,y1,zf)], c.front);
   return s; }
 const eflat = (z, inner) => { const k = EF/(EF + z); return `<g transform="translate(${EV.x} ${EV.y}) scale(${k.toFixed(4)}) translate(${-EV.x} ${-EV.y})">${inner}</g>`; };
-const edisc = (xc, y, zc, r, fill, extra='') => epoly(Array.from({length:28}, (_,i) => EP(xc + Math.cos(i/28*Math.PI*2)*r, y, zc + Math.sin(i/28*Math.PI*2)*r)), fill, extra);
-// windows onto the real shop: the interior drawing, seen through the glass
-const WINVIEW = { L:'60 60 900 820', R:'960 60 900 820' };
+const WINVIEW = { L:'60 120 900 780', R:'960 120 900 780' };
+// a gig poster: a block of colour with a shape and a few lines of type, slightly askew
+function poster(x, y, w, h, i, rot = 0){ const P = [['#E8C547','#B3252B','#1F3A63'],['#1F3A63','#EDB33A','#F1E5CC'],['#B3252B','#F1E5CC','#1A1A1A'],['#F1E5CC','#2F6238','#B3252B'],['#2F6B66','#F4B6A6','#F1E5CC'],['#1A1A1A','#E89AB5','#EDB33A'],['#D86A2C','#1F3A63','#F1E5CC']][i % 7],
+    words = ['LIVE TONIGHT','NILGIRI WEATHER','SALT LIGHTS','RECORD FAIR','MANGO TAPES','LATE SHOW','OPEN MIC'][i % 7], k = i % 3;
+  return `<g transform="rotate(${rot} ${x + w/2} ${y + h/2})"><rect x="${x + 2}" y="${y + 3}" width="${w}" height="${h}" fill="rgba(0,0,0,.25)"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${P[0]}"/>
+    ${k === 0 ? `<circle cx="${x + w/2}" cy="${y + h*.42}" r="${w*.3}" fill="${P[1]}"/><circle cx="${x + w/2}" cy="${y + h*.42}" r="${w*.1}" fill="${P[0]}"/>` : k === 1 ? `<rect x="${x + w*.14}" y="${y + h*.16}" width="${w*.72}" height="${h*.44}" fill="${P[1]}"/><path d="M${x + w*.14} ${y + h*.6} L${x + w*.5} ${y + h*.28} L${x + w*.86} ${y + h*.6} Z" fill="${P[2]}"/>` : `${[0,1,2,3].map(j => `<rect x="${x + w*.12}" y="${y + h*(.14 + j*.11)}" width="${w*.76}" height="${h*.06}" fill="${j % 2 ? P[2] : P[1]}"/>`).join('')}`}
+    <text x="${x + w/2}" y="${y + h*.8}" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="${(w*.13).toFixed(1)}" fill="${P[2]}" textLength="${(w*.8).toFixed(1)}" lengthAdjust="spacingAndGlyphs">${words}</text>
+    <rect x="${x + w*.25}" y="${y + h*.86}" width="${w*.5}" height="${h*.03}" fill="${P[1]}"/><rect x="${x + w/2 - 6}" y="${y - 3}" width="12" height="7" fill="rgba(240,230,200,.8)"/></g>`; }
+// a record seen face on: grooves, a shine, a label
+const bigDisc = (cx, cy, r, gold) => `<circle cx="${cx + 6}" cy="${cy + 8}" r="${r}" fill="rgba(0,0,0,.28)"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="${gold ? '#C9A24A' : '#141414'}"/>
+  ${Array.from({length:Math.floor(r/7)}, (_, i) => `<circle cx="${cx}" cy="${cy}" r="${r*.36 + i*6}" fill="none" stroke="${gold ? '#A88430' : '#262626'}" stroke-width="1.2"/>`).join('')}
+  <path d="M${cx - r*.7} ${cy - r*.55} A${r*.9} ${r*.9} 0 0 1 ${cx + r*.15} ${cy - r*.88}" stroke="${gold ? '#F3DA8E' : 'rgba(255,255,255,.18)'}" stroke-width="${r*.09}" fill="none"/>
+  <circle cx="${cx}" cy="${cy}" r="${r*.3}" fill="${gold ? '#E9CC74' : '#F1E5CC'}"/><circle cx="${cx}" cy="${cy}" r="${r*.05}" fill="#1a1a1a"/>`;
 function facadeSVG(){
-  const R = mulberry32(31), FR = '#141414', BRICK = '#C9B49A', BRICKD = '#B7A086', RED = '#C4262B', CREAM = '#F6EBD2';
-  const SL = 250, SR = 1310, SIGN = [200, 400], CAN = 446, WT = 470, WB = 806;
+  const R = mulberry32(31), BR = ['#8E3B2A','#94402C','#873726','#9A4630','#823424'], MORT = '#6E2B1E', WHITE = '#EFE9DC', GREEN = '#24352A', CREAM = '#F1E5CC';
+  const SL = 220, SR = 1340, COR = [40, 118], SIGN = [338, 470];
   let s = `<svg id="facade" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMax meet" xmlns="${NS}">
   <defs><clipPath id="doorClip"><rect x="${DOOR.x}" y="${DOOR.y}" width="${DOOR.w}" height="${DOOR.h}"/></clipPath>
     <pattern id="grainP" width="256" height="256" patternUnits="userSpaceOnUse"><image href="${noiseCanvas.toDataURL()}" width="256" height="256"/></pattern>
-    <radialGradient id="oLamp"><stop offset="0" stop-color="#FFE0AA" stop-opacity=".75"/><stop offset=".45" stop-color="#FFB868" stop-opacity=".22"/><stop offset="1" stop-color="#FF9C48" stop-opacity="0"/></radialGradient>
-    <linearGradient id="oSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B3D5E"/><stop offset="1" stop-color="#6D7F9C"/></linearGradient>
-    <linearGradient id="oBox" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6E2"/><stop offset="1" stop-color="#F1E2C2"/></linearGradient>
-    <linearGradient id="oSoffit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9D8B4"/><stop offset="1" stop-color="#FFF3D8"/></linearGradient>
-    <linearGradient id="oGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE6B8" stop-opacity=".22"/><stop offset=".5" stop-color="#FFD9A0" stop-opacity=".05"/><stop offset="1" stop-color="#2a1a10" stop-opacity=".25"/></linearGradient>
-    <linearGradient id="oPool" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC983" stop-opacity=".45"/><stop offset="1" stop-color="#FFC983" stop-opacity="0"/></linearGradient></defs>`;
-  // dusk sky, high up, and bare branches against it
-  s += `<rect x="-3000" y="-2600" width="7536" height="2000" fill="url(#oSky)"/>`;
-  // the neighbours: pale brick to the left, a darker brick block to the right, their windows catching the sky
-  s += `<rect x="-3000" y="-900" width="${3000 + SL}" height="${EG + 900}" fill="${BRICK}"/><rect x="${SR}" y="-900" width="3300" height="${EG + 900}" fill="#7E6A58"/>`;
-  { let b = ''; for (let y = -900, k = 0; y < EG; y += 18, k++){ b += `<rect x="-3000" y="${y}" width="${3000 + SL}" height="1.6" fill="${BRICKD}"/><rect x="${SR}" y="${y}" width="3300" height="1.6" fill="#6C5948"/>`;
-      for (let x = -3000 + (k % 2)*24; x < SL; x += 48) b += `<rect x="${x}" y="${y}" width="1.6" height="18" fill="${BRICKD}"/>`;
-      for (let x = SR + (k % 2)*24; x < SR + 3300; x += 48) b += `<rect x="${x}" y="${y}" width="1.6" height="18" fill="#6C5948"/>`; } s += b; }
-  [[-640, -380], [-640, 120], [-240, 120], [-240, -380], [1460, -380], [1860, -380], [1460, 120], [1860, 120]].forEach(([x, y], i) => s += `<rect x="${x - 8}" y="${y - 8}" width="236" height="236" fill="#1C1E24"/><rect x="${x}" y="${y}" width="220" height="220" fill="${i % 3 ? '#3D4C66' : '#E9C48A'}"/><rect x="${x}" y="${y}" width="220" height="220" fill="#9FB2D0" opacity="${i % 3 ? .3 : 0}"/><rect x="${x + 107}" y="${y}" width="6" height="220" fill="#1C1E24"/><path d="M${x} ${y + 220} L${x + 90} ${y} L${x + 140} ${y} L${x + 50} ${y + 220} Z" fill="#fff" opacity=".07"/>`);
-  // the shop's building: dark charcoal above, with a row of tall dark windows reflecting the dusk
-  s += `<rect x="${SL}" y="-900" width="${SR - SL}" height="${SIGN[0] + 900}" fill="#22252B"/><rect x="${SL}" y="${SIGN[0] - 14}" width="${SR - SL}" height="14" fill="#0E0F12"/>`;
-  [[-760], [-420], [-80]].forEach(([y]) => [0, 1, 2].forEach(c => { const x = SL + 50 + c*((SR - SL - 100)/3), w = (SR - SL - 100)/3 - 26;
-    s += `<rect x="${x}" y="${y}" width="${w}" height="240" fill="#121317"/><rect x="${x + 8}" y="${y + 8}" width="${w - 16}" height="224" fill="#3A4862"/><rect x="${x + 8}" y="${y + 8}" width="${w - 16}" height="224" fill="#8DA2C4" opacity=".22"/>
-      ${Array.from({length:5}, (_, k) => `<path d="M${x + 20 + k*55} ${y + 232} q${10 + k*3} -60 ${-4 + k*4} -150 m${4 - k*4} 80 q20 -20 36 -50" stroke="#2A2F3A" stroke-width="3" fill="none" opacity=".55"/>`).join('')}
-      <rect x="${x + w/2 - 3}" y="${y + 8}" width="6" height="224" fill="#121317"/><path d="M${x + 8} ${y + 232} L${x + w*.45} ${y + 8} L${x + w*.62} ${y + 8} L${x + w*.2} ${y + 232} Z" fill="#fff" opacity=".06"/>`; }));
-  // the brick piers either side of the shop front, a blue house number and a little sconce on each
-  [[SL, SL + 70], [SR - 70, SR]].forEach(([a, b], i) => { s += `<rect x="${a}" y="${SIGN[0]}" width="${b - a}" height="${EG - SIGN[0]}" fill="${BRICK}"/>`;
-    for (let y = SIGN[0], k = 0; y < EG; y += 18, k++){ s += `<rect x="${a}" y="${y}" width="${b - a}" height="1.6" fill="${BRICKD}"/>`; for (let x = a + (k % 2)*24; x < b; x += 48) s += `<rect x="${x}" y="${y}" width="1.6" height="18" fill="${BRICKD}"/>`; }
-    s += `<rect x="${i ? a : b - 6}" y="${SIGN[0]}" width="6" height="${EG - SIGN[0]}" fill="#0E0F12" opacity=".35"/><circle cx="${(a + b)/2}" cy="560" r="70" fill="url(#oLamp)" opacity=".7"/><rect x="${(a + b)/2 - 9}" y="548" width="18" height="26" rx="3" fill="#1C1C1E"/><rect x="${(a + b)/2 - 6}" y="552" width="12" height="6" fill="#FFE7B8"/>`; });
-  s += `<rect x="${SL + 14}" y="474" width="40" height="30" rx="3" fill="#2A57A8"/><rect x="${SL + 16}" y="476" width="36" height="26" rx="2" fill="none" stroke="#fff" stroke-width="1.5"/><text x="${SL + 34}" y="497" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="800" font-size="19" fill="#fff">2</text>`;
-  // THE LIGHTBOX SIGN: a deep box of backlit panels in a fine black grid, with the shop's words in red
-  { const [y0, y1] = SIGN, x0 = SL - 10, x1 = SR + 10, zf = -26;
-    s += ebox(x0, x1, y0, y1, 0, zf, { under:'#1C1C1E', side:'#1C1C1E' });
-    s += eflat(zf, `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="#161616"/><rect x="${x0 + 8}" y="${y0 + 8}" width="${x1 - x0 - 16}" height="${y1 - y0 - 16}" fill="url(#oBox)"/>
-      ${Array.from({length:9}, (_, i) => `<rect x="${x0 + 8 + (i + 1)*(x1 - x0 - 16)/10 - 1}" y="${y0 + 8}" width="2.2" height="${y1 - y0 - 16}" fill="#3a352c" opacity=".55"/>`).join('')}
-      ${Array.from({length:4}, (_, i) => `<rect x="${x0 + 8}" y="${y0 + 8 + (i + 1)*(y1 - y0 - 16)/5 - 1}" width="${x1 - x0 - 16}" height="2.2" fill="#3a352c" opacity=".55"/>`).join('')}
-      <g font-family="Archivo,sans-serif" font-weight="800" font-size="27" letter-spacing="3" fill="${RED}">
-        ${['NEW &amp; SECOND HAND', 'LPs / TAPES / ETC.', 'HOME OF THE PRESSING BOOTH', '&amp; RECORDS BY POST'].map((t, i) => `<text x="${x0 + 34}" y="${y0 + 52 + i*37}">${t}</text>`).join('')}</g>
-      <text x="${x1 - 470}" y="${y0 + 66}" font-family="Archivo,sans-serif" font-weight="800" font-size="26" letter-spacing="6" fill="${RED}">THE</text>
-      <text x="${x1 - 40}" y="${y0 + 150}" text-anchor="end" font-family="Yellowtail,cursive" font-size="150" fill="${RED}">Side B</text>
-      <text x="${x1 - 44}" y="${y0 + 182}" text-anchor="end" font-family="Archivo,sans-serif" font-weight="800" font-size="24" letter-spacing="6" fill="${RED}">RECORD SHOP</text>
-      <ellipse cx="${(x0 + x1)/2}" cy="${(y0 + y1)/2}" rx="${(x1 - x0)*.55}" ry="${(y1 - y0)*.9}" fill="url(#oLamp)" opacity=".35" style="mix-blend-mode:screen"/>`); }
-  // the shop front behind the canopy: the real interior through the glass, the glass, and slim black frames
-  { const xs = [SL + 70, DOOR.x - 12, DOOR.x + DOOR.w + 12, SR - 70];
-    s += `<rect x="${xs[0]}" y="${CAN}" width="${xs[3] - xs[0]}" height="${EG - CAN}" fill="${FR}"/>`;
-    [['L', xs[0] + 10, xs[1] - 6], ['R', xs[2] + 6, xs[3] - 10]].forEach(([k, a, b]) => {
-      s += `<svg x="${a}" y="${WT}" width="${b - a}" height="${WB - WT}" viewBox="${WINVIEW[k]}" preserveAspectRatio="xMidYMid slice"><rect x="0" y="0" width="1920" height="1080" fill="#3a2414"/><use href="#roomArt"/></svg>
-        <rect x="${a}" y="${WT}" width="${b - a}" height="${WB - WT}" fill="url(#oGlass)"/><rect x="${a}" y="${WT}" width="${b - a}" height="${WB - WT}" fill="#FFB866" opacity=".07"/>
-        <path d="M${a + (b - a)*.58} ${WT} L${a + (b - a)*.74} ${WT} L${a + (b - a)*.36} ${WB} L${a + (b - a)*.2} ${WB} Z" fill="#fff" opacity=".06"/><path d="M${a + (b - a)*.8} ${WT} L${a + (b - a)*.84} ${WT} L${a + (b - a)*.46} ${WB} L${a + (b - a)*.42} ${WB} Z" fill="#fff" opacity=".05"/>
-        <rect x="${a}" y="${WT + 56}" width="${b - a}" height="7" fill="${FR}"/><rect x="${a + (b - a)/2 - 3}" y="${WT + 63}" width="6" height="${WB - WT - 63}" fill="${FR}"/>`; });
-    // gold lettering on the glass over the door, as in the reference
-    s += `<rect x="${DOOR.x}" y="${WT}" width="${DOOR.w}" height="${DOOR.y - WT - 6}" fill="#2a1d14"/><text x="${DOOR.x + DOOR.w/2}" y="${DOOR.y - 13}" text-anchor="middle" font-family="DM Serif Display,serif" font-size="17" letter-spacing="3" fill="#E2B866">SIDE B</text>`;
-    // a kick plate under the glass
-    s += `<rect x="${xs[0]}" y="${WB}" width="${xs[3] - xs[0]}" height="${EG - WB}" fill="#101010"/>`; }
-  // the doorway (the shop seen through the open door) and the glass door itself, which swings open
-  s += `<rect x="${DOOR.x}" y="${DOOR.y}" width="${DOOR.w}" height="${DOOR.h}" fill="#3a2414"/><g id="doorway"></g>`;
+    <radialGradient id="oLamp"><stop offset="0" stop-color="#FFE0AA" stop-opacity=".8"/><stop offset=".45" stop-color="#FFB868" stop-opacity=".24"/><stop offset="1" stop-color="#FF9C48" stop-opacity="0"/></radialGradient>
+    <linearGradient id="oSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5B6E96"/><stop offset=".6" stop-color="#C99A8A"/><stop offset="1" stop-color="#F0C48E"/></linearGradient>
+    <linearGradient id="oGlass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE6B8" stop-opacity=".2"/><stop offset="1" stop-color="#2a1a10" stop-opacity=".28"/></linearGradient>
+    <linearGradient id="oUpper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9DB0CF"/><stop offset="1" stop-color="#E6C7A0"/></linearGradient>
+    <linearGradient id="oSun" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD9A0" stop-opacity=".32"/><stop offset="1" stop-color="#FFD9A0" stop-opacity="0"/></linearGradient>
+    <linearGradient id="oPool" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC983" stop-opacity=".4"/><stop offset="1" stop-color="#FFC983" stop-opacity="0"/></linearGradient></defs>`;
+  // golden-hour sky
+  s += `<rect x="-3000" y="-2600" width="7536" height="2700" fill="url(#oSky)"/>`;
+  const brick = (x0, x1, y0, y1, pal = BR, mort = MORT) => { let b = `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="${mort}"/>`;
+    for (let y = y0, k = 0; y < y1; y += 16, k++) for (let x = x0 - (k % 2)*22; x < x1; x += 44){ const a = Math.max(x, x0), w = Math.min(x + 42, x1) - a; if (w > 0) b += `<rect x="${a}" y="${y + 1.5}" width="${w}" height="13.5" fill="${pal[Math.floor(R()*pal.length)]}"/>`; } return b; };
+  // ---- LEFT NEIGHBOUR: a café, cream paint over brick, a green awning, string lights, a mural of a sun on its side wall
+  s += `<rect x="-3000" y="-900" width="${3000 + SL}" height="${EG + 900}" fill="#D9C8A6"/>`;
+  for (let y = -900; y < EG; y += 34) s += `<rect x="-3000" y="${y}" width="${3000 + SL}" height="1.5" fill="#C7B48F"/>`;
+  s += `<rect x="${SL - 12}" y="-900" width="12" height="${EG + 900}" fill="#A8916C" opacity=".6"/>`;
+  s += `<rect x="-640" y="360" width="${SL - 20 + 640}" height="64" fill="#2F6238"/><text x="${(-640 + SL - 20)/2}" y="408" text-anchor="middle" font-family="Yellowtail,cursive" font-size="54" fill="${CREAM}">Nilgiri Coffee</text>`;
+  [[-560, 500], [-280, 500], [0, 500]].forEach(([x, y]) => s += `<rect x="${x - 10}" y="${y - 10}" width="250" height="300" fill="#2A2018"/><rect x="${x}" y="${y}" width="230" height="280" fill="#F2C98A"/><rect x="${x}" y="${y}" width="230" height="280" fill="#7B4A2A" opacity=".25"/>
+    <rect x="${x}" y="${y + 150}" width="230" height="10" fill="#6A4024"/>${[20, 70, 120, 170].map((cx, k) => `<rect x="${x + cx}" y="${y + 116}" width="${18 + k*3}" height="34" fill="${['#F1E5CC','#2F6B66','#B3252B','#EDB33A'][k]}"/>`).join('')}
+    ${[60, 170].map(cx => `<line x1="${x + cx}" y1="${y}" x2="${x + cx}" y2="${y + 50}" stroke="#2A2018" stroke-width="2"/><path d="M${x + cx - 18} ${y + 70} L${x + cx + 18} ${y + 70} L${x + cx + 8} ${y + 50} L${x + cx - 8} ${y + 50} Z" fill="#2A2018"/><circle cx="${x + cx}" cy="${y + 78}" r="34" fill="url(#oLamp)"/>`).join('')}
+    <path d="M${x + 14} ${y + 280} q24 -60 40 0 q20 -70 40 0 Z" fill="#2F6238"/><rect x="${x + 112}" y="${y}" width="6" height="280" fill="#2A2018"/>`);
+  // the café's awning reaching out over the pavement, and its string of lights
+  s += ebox(-660, SL - 30, 440, 462, 0, -150, { under:'#22492A', front:'#2F6238' }) + Array.from({length:12}, (_, i) => { const x = -660 + i*((SL + 630)/12); return epoly([EP(x, 462, -150), EP(x + (SL + 630)/24, 462, -150), EP(x + (SL + 630)/24, 482, -150), EP(x, 482, -150)], i % 2 ? '#F1E5CC' : '#2F6238'); }).join('');
+  { const pts = Array.from({length:12}, (_, i) => { const x = -640 + i*76, sag = Math.sin(i/11*Math.PI)*30; return EP(x, 500 + sag, -150); });
+    s += `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="#2a1a10" stroke-width="1.5"/>` + pts.map(p => `<circle cx="${p[0]}" cy="${p[1] + 8}" r="16" fill="url(#oLamp)"/><circle cx="${p[0]}" cy="${p[1] + 8}" r="4" fill="#FFF1C6"/>`).join(''); }
+  // a café table and two chairs out front
+  { const x = -120, z = -260; s += epoly([EP(x - 40, EG, z - 40), EP(x + 40, EG, z - 40), EP(x + 40, EG, z + 40), EP(x - 40, EG, z + 40)], 'rgba(0,0,0,.18)')
+      + ebox(x - 3, x + 3, 790, EG, z + 3, z - 3, { front:'#1E1E1E', side:'#141414' }) + epoly(Array.from({length:24}, (_, i) => EP(x + Math.cos(i/24*6.28)*44, 790, z + Math.sin(i/24*6.28)*44)), '#2A2A2A')
+      + ebox(x - 4, x + 4, 784, 790, z + 2, z - 2, { front:'#F1E5CC' }) + ebox(x - 80, x - 50, 816, EG, z + 15, z - 15, { front:'#1E1E1E', side:'#141414', top:'#2A2A2A' }) + ebox(x - 80, x - 76, 760, 816, z + 15, z - 15, { front:'#1E1E1E', side:'#141414' }); }
+  // ---- RIGHT NEIGHBOUR: a painted brick wall, a big mural, wheat-pasted posters, a bike leaning on it
+  s += brick(SR, 4536, -900, EG, ['#6E5A4A','#735E4D','#6A5646','#776250'], '#5A4A3C') + `<rect x="${SR}" y="-900" width="14" height="${EG + 900}" fill="#3A2E24" opacity=".5"/>`;
+  { const mx = SR + 140, my = 150; s += `<rect x="${mx}" y="${my}" width="820" height="520" fill="#2F6B66"/><circle cx="${mx + 560}" cy="${my + 210}" r="150" fill="#EDB33A"/>
+      ${[0,1,2,3,4].map(i => `<path d="M${mx} ${my + 330 + i*40} q102 -40 205 0 t205 0 t205 0 t205 0" stroke="${['#F1E5CC','#E89AB5','#B3252B','#F4B6A6','#F1E5CC'][i]}" stroke-width="16" fill="none"/>`).join('')}
+      <text x="${mx + 40}" y="${my + 110}" font-family="Yellowtail,cursive" font-size="96" fill="#F1E5CC">play it loud</text><rect x="${mx}" y="${my}" width="820" height="520" fill="url(#grainP)" opacity=".35" style="mix-blend-mode:multiply"/>`; }
+  [[SR + 150, 690, 0, -3], [SR + 232, 700, 1, 4], [SR + 314, 688, 2, -2], [SR + 396, 702, 3, 3], [SR + 478, 690, 4, -4], [SR + 560, 700, 5, 2]].forEach(([x, y, i, r]) => s += poster(x, y, 74, 104, i, r));
+  { const x = SR + 690, z = -40, p = EP(x, EG, z), sc = EF/(EF + z); s += `<g transform="translate(${p[0]} ${p[1]}) scale(${sc.toFixed(3)})" fill="none" stroke-linecap="round">
+      <circle cx="-70" cy="-48" r="46" stroke="#1A1A1A" stroke-width="6"/><circle cx="70" cy="-48" r="46" stroke="#1A1A1A" stroke-width="6"/><path d="M-70 -48 L-20 -120 L48 -120 L70 -48 M-20 -120 L0 -48 L48 -120 M-26 -134 L-8 -134 M48 -120 L42 -146 L64 -150" stroke="#B3252B" stroke-width="7"/>
+      <path d="M-4 -48 L0 -48" stroke="#1A1A1A" stroke-width="10"/><rect x="38" y="-150" width="40" height="6" fill="#1A1A1A" stroke="none"/></g>`; }
+  // ---- THE SHOP: three storeys of red brick, a white cornice with brackets, the shingled roof edge above
+  s += brick(SL, SR, -900, EG);
+  // upstairs windows with green frames
+  [[-560], [-240]].forEach(([y]) => [0, 1, 2].forEach(c => { const x = SL + 80 + c*350; s += `<rect x="${x - 12}" y="${y - 12}" width="244" height="${236}" fill="${WHITE}"/><rect x="${x}" y="${y}" width="220" height="212" fill="url(#oUpper)"/>
+      <rect x="${x}" y="${y}" width="220" height="212" fill="#F2C98A" opacity="${c === 1 && y === -240 ? .6 : 0}"/><rect x="${x + 107}" y="${y}" width="6" height="212" fill="${GREEN}"/><rect x="${x}" y="${y + 100}" width="220" height="6" fill="${GREEN}"/>
+      <rect x="${x - 18}" y="${y + 212}" width="256" height="14" fill="${WHITE}"/><path d="M${x} ${y + 212} L${x + 80} ${y} L${x + 130} ${y} L${x + 50} ${y + 212} Z" fill="#fff" opacity=".12"/>`; }));
+  s += `<rect x="${SL - 20}" y="-46" width="${SR - SL + 40}" height="20" fill="#3A3A40"/>` + Array.from({length:28}, (_, i) => `<rect x="${SL - 20 + i*42}" y="-46" width="2" height="20" fill="#2A2A30"/>`).join('');
+  s += ebox(SL - 30, SR + 30, COR[0] - 26, COR[0], 0, -40, { front:WHITE, under:'#CFC7B6' }) + `<rect x="${SL - 30}" y="${COR[0] - 20}" width="${SR - SL + 60}" height="5" fill="#D6CEBD"/>`;
+  s += `<rect x="${SL - 10}" y="${COR[0]}" width="${SR - SL + 20}" height="${COR[1] - COR[0]}" fill="${WHITE}"/><rect x="${SL - 10}" y="${COR[1] - 12}" width="${SR - SL + 20}" height="12" fill="#D6CEBD"/>`;
+  for (let x = SL + 10; x < SR; x += 72) s += `<path d="M${x} ${COR[0]} L${x + 30} ${COR[0]} L${x + 30} ${COR[0] + 30} Q${x + 30} ${COR[1] - 20} ${x + 15} ${COR[1] - 12} Q${x} ${COR[1] - 20} ${x} ${COR[0] + 30} Z" fill="#E2DACA"/><rect x="${x + 22}" y="${COR[0]}" width="8" height="${COR[1] - COR[0] - 14}" fill="#C9C0AE"/>`;
+  // the tall transom windows above the sign, with records on the glass: two black ones on the left, a big gold one on the right
+  s += `<rect x="${SL + 40}" y="134" width="${SR - SL - 80}" height="${SIGN[0] - 134 + 6}" fill="${GREEN}"/>`;
+  for (let c = 0; c < 6; c++){ const x = SL + 52 + c*((SR - SL - 104)/6), w = (SR - SL - 104)/6 - 12; s += `<rect x="${x}" y="146" width="${w}" height="${SIGN[0] - 158}" fill="url(#oUpper)"/><rect x="${x}" y="${146 + (SIGN[0] - 158)/2 - 3}" width="${w}" height="6" fill="${GREEN}"/><path d="M${x} ${SIGN[0] - 12} L${x + w*.5} 146 L${x + w*.75} 146 L${x + w*.25} ${SIGN[0] - 12} Z" fill="#fff" opacity=".1"/>`; }
+  s += bigDisc(SL + 170, 244, 78, false) + bigDisc(SL + 300, 244, 78, false) + bigDisc(SR - 190, 222, 110, true);
+  // THE SIGN: a white board in a black frame, music notes drifting off it
+  { const x0 = SL + 80, x1 = SR - 80, [y0, y1] = SIGN;
+    s += ebox(x0, x1, y0, y1, 0, -18, { under:'#1A1A1A' }) + eflat(-18, `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="#1A1A1A"/><rect x="${x0 + 10}" y="${y0 + 10}" width="${x1 - x0 - 20}" height="${y1 - y0 - 20}" fill="#F7F3EA"/>
+      <text x="${x0 + 40}" y="${y0 + 104}" font-family="Yellowtail,cursive" font-size="104" fill="#B3252B" transform="rotate(-4 ${x0 + 40} ${y0 + 100})">Side B</text>
+      <text x="${x0 + 322}" y="${y0 + 92}" font-family="Archivo,sans-serif" font-weight="900" font-size="68" fill="#1A1A1A" textLength="150" lengthAdjust="spacingAndGlyphs">REC</text>
+      ${bigDisc(x0 + 506, y0 + 68, 29, false)}
+      <text x="${x0 + 544}" y="${y0 + 92}" font-family="Archivo,sans-serif" font-weight="900" font-size="68" fill="#1A1A1A" textLength="360" lengthAdjust="spacingAndGlyphs">RD SHOP</text>
+      <text x="${x0 + 324}" y="${y0 + 118}" font-family="Archivo Narrow,sans-serif" font-weight="700" font-size="15" fill="#5A4A3C" textLength="578" lengthAdjust="spacing">NEW &amp; SECOND HAND  /  HOME OF THE PRESSING BOOTH  /  RECORDS BY POST</text>`)
+      + [[x1 - 40, y0 - 22], [x1 - 6, y0 - 44], [x0 + 10, y1 + 16], [x1 - 70, y1 + 20]].map(([x, y], i) => `<g fill="#1A1A1A"><ellipse cx="${x}" cy="${y}" rx="9" ry="7" transform="rotate(-20 ${x} ${y})"/><rect x="${x + 7}" y="${y - 34}" width="3" height="34"/>${i % 2 ? `<path d="M${x + 10} ${y - 34} q16 6 12 22" stroke="#1A1A1A" stroke-width="3" fill="none"/>` : ''}</g>`).join(''); }
+  // a gooseneck barn lamp over the sign's right end, and its light
+  { const x = SR - 40; s += `<ellipse cx="${x - 120}" cy="${SIGN[0] + 60}" rx="260" ry="140" fill="url(#oLamp)" opacity=".7"/><path d="M${x + 20} ${SIGN[0] - 70} q0 -40 -50 -40 q-50 0 -60 30" stroke="#2A2E2A" stroke-width="7" fill="none"/><rect x="${x + 12}" y="${SIGN[0] - 80}" width="18" height="30" rx="3" fill="#2A2E2A"/>
+      <path d="M${x - 118} ${SIGN[0] - 82} L${x - 64} ${SIGN[0] - 82} L${x - 50} ${SIGN[0] - 50} L${x - 132} ${SIGN[0] - 50} Z" fill="#3B423C"/><ellipse cx="${x - 91}" cy="${SIGN[0] - 50}" rx="41" ry="6" fill="#FFF1C6"/>`; }
+  // the shop front at street level: green frames, two big windows onto the shop, posters taped inside
+  s += `<rect x="${SL + 40}" y="${SIGN[1] + 4}" width="${SR - SL - 80}" height="${800 - SIGN[1]}" fill="${GREEN}"/>`;
+  [['L', SL + 56, DOOR.x - 24], ['R', DOOR.x + DOOR.w + 24, SR - 56]].forEach(([k, a, b], wi) => { const y0 = SIGN[1] + 18, y1 = 790;
+    s += `<svg x="${a}" y="${y0}" width="${b - a}" height="${y1 - y0}" viewBox="${WINVIEW[k]}" preserveAspectRatio="xMidYMid slice"><rect x="0" y="0" width="1920" height="1080" fill="#3a2414"/><use href="#roomArt"/></svg>
+      <rect x="${a}" y="${y0}" width="${b - a}" height="${y1 - y0}" fill="url(#oGlass)"/><rect x="${a}" y="${y0}" width="${b - a}" height="${y1 - y0}" fill="#FFB866" opacity=".08"/>`;
+    [0, 1, 2].forEach(c => s += `<rect x="${a + (c + 1)*(b - a)/3 - 4}" y="${y0}" width="8" height="${y1 - y0}" fill="${GREEN}"/>`); s += `<rect x="${a}" y="${y0 + 90}" width="${b - a}" height="8" fill="${GREEN}"/>`;
+    // posters taped to the inside of the glass, along the bottom
+    for (let i = 0; i < 4; i++) s += poster(a + 18 + i*((b - a - 40)/4), 640 + (i % 2)*14, 70, 96, i + wi*4, (i % 2 ? 4 : -3));
+    s += `<path d="M${a + (b - a)*.55} ${y0} L${a + (b - a)*.7} ${y0} L${a + (b - a)*.32} ${y1} L${a + (b - a)*.17} ${y1} Z" fill="#fff" opacity=".07"/>`; });
+  // brick under the windows, and a white sill
+  s += brick(SL + 40, SR - 40, 800, EG) + `<rect x="${SL + 30}" y="794" width="${SR - SL - 60}" height="10" fill="${WHITE}"/>`;
+  // the round blade sign hanging off the left of the building
+  { const x = SL - 40, y = 520; s += `<rect x="${SL - 110}" y="${y - 96}" width="${110}" height="8" fill="#1A1A1A"/><circle cx="${SL - 2}" cy="${y - 92}" r="8" fill="#1A1A1A"/><line x1="${x - 40}" y1="${y - 88}" x2="${x - 40}" y2="${y - 66}" stroke="#1A1A1A" stroke-width="2"/>
+      ${bigDisc(x - 40, y, 66, false)}<circle cx="${x - 40}" cy="${y}" r="44" fill="#F7F3EA"/><text x="${x - 40}" y="${y - 6}" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="15" fill="#1A1A1A">SIDE B</text><text x="${x - 40}" y="${y + 14}" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="13" fill="#B3252B">RECORDS</text>`; }
+  // a poster board on the right pier, crowded with flyers
+  { const x = SR - 32, y = 560; s += `<rect x="${x}" y="${y}" width="140" height="190" fill="#1A1A1A"/>` + [[x + 8, y + 8], [x + 72, y + 10], [x + 6, y + 98], [x + 70, y + 96]].map(([px, py], i) => poster(px, py, 60, 84, i + 3, (i % 2 ? 3 : -2))).join(''); }
+  // the doorway and the door: white, panelled, a little worn, with posters on it
+  s += `<rect x="${DOOR.x - 14}" y="${DOOR.y - 16}" width="${DOOR.w + 28}" height="${EG - DOOR.y + 16}" fill="${GREEN}"/><rect x="${DOOR.x}" y="${DOOR.y}" width="${DOOR.w}" height="${DOOR.h}" fill="#3a2414"/><g id="doorway"></g>`;
   { const dx = DOOR.x, dy = DOOR.y, dw = DOOR.w, dh = DOOR.h;
-    s += `<g id="doorPanel"><rect x="${dx}" y="${dy}" width="${dw}" height="${dh}" fill="#2a1a10" opacity=".18"/><rect x="${dx}" y="${dy}" width="${dw}" height="${dh}" fill="url(#oGlass)"/>
-      <path d="M${dx + dw*.45} ${dy} L${dx + dw*.7} ${dy} L${dx + dw*.25} ${dy + dh} L${dx} ${dy + dh} L${dx} ${dy + dh*.8} Z" fill="#fff" opacity=".07"/>
-      <rect x="${dx}" y="${dy}" width="${dw}" height="10" fill="${FR}"/><rect x="${dx}" y="${dy + dh - 26}" width="${dw}" height="26" fill="${FR}"/><rect x="${dx}" y="${dy}" width="10" height="${dh}" fill="${FR}"/><rect x="${dx + dw - 10}" y="${dy}" width="10" height="${dh}" fill="${FR}"/>
-      <rect x="${dx + 20}" y="${dy + dh*.3}" width="12" height="${dh*.34}" rx="3" fill="#B87A3E"/><rect x="${dx + 23}" y="${dy + dh*.3}" width="3" height="${dh*.34}" fill="#E0A868" opacity=".7"/>
-      <rect x="${dx + dw/2 - 30}" y="${dy + 90}" width="60" height="24" rx="2" fill="${CREAM}"/><text x="${dx + dw/2}" y="${dy + 107}" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="800" font-size="12" letter-spacing="2" fill="${RED}">OPEN</text></g>`; }
-  // THE GROUND, in perspective: paving slabs running out towards us, gravel beds, a stone path to the door
+    s += `<g id="doorPanel"><rect x="${dx}" y="${dy}" width="${dw}" height="${dh}" fill="#EAE4D6"/>
+      ${[[18, 20, dw - 36, 120], [18, 156, dw/2 - 24, 96], [dw/2 + 6, 156, dw/2 - 24, 96], [18, 268, dw/2 - 24, 90], [dw/2 + 6, 268, dw/2 - 24, 90]].map(([x, y, w, h]) => `<rect x="${dx + x}" y="${dy + y}" width="${w}" height="${h}" fill="#D9D2C2"/><rect x="${dx + x + 6}" y="${dy + y + 6}" width="${w - 12}" height="${h - 12}" fill="#E4DDCE"/>`).join('')}
+      <rect x="${dx + 26}" y="${dy + 28}" width="${dw - 52}" height="104" fill="url(#oUpper)" opacity=".8"/><rect x="${dx + 26}" y="${dy + 28}" width="${dw - 52}" height="104" fill="#F2C98A" opacity=".5"/>
+      ${poster(dx + 40, dy + 168, 54, 74, 2, -3)}<rect x="${dx + dw/2 + 14}" y="${dy + 178}" width="46" height="34" fill="${CREAM}"/><text x="${dx + dw/2 + 37}" y="${dy + 200}" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="11" fill="#B3252B">OPEN</text>
+      ${Array.from({length:14}, () => `<rect x="${dx + R()*dw}" y="${dy + R()*dh}" width="${2 + R()*6}" height="${1 + R()*3}" fill="#B9B0A0" opacity=".6"/>`).join('')}
+      <circle cx="${dx + dw - 22}" cy="${dy + 200}" r="7" fill="#B88A3E"/><rect x="${dx + dw - 26}" y="${dy + 210}" width="8" height="18" rx="2" fill="#8A6A2E"/></g>`; }
+  // THE PAVEMENT in perspective: concrete with a brick strip, and the road edge far in front
   const ZN = -1150;
-  s += epoly([EP(-3000, EG, 0), EP(4536, EG, 0), EP(4536, EG, ZN), EP(-3000, EG, ZN)], '#8A8378');
-  for (let z = 0; z > ZN; z -= 46){ const a = EP(-3000, EG, z), b = EP(4536, EG, z); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#6E685E" stroke-width="${(1.2*EF/(EF + z)).toFixed(2)}"/>`; }
-  for (let x = -1400; x < 3000; x += 70){ const a = EP(x, EG, 0), b = EP(x + (R() - .5)*10, EG, ZN); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#6E685E" stroke-width="1.2"/>`; }
-  // the gravel beds in front of the benches, with low shrubs
-  [[SL - 160, DOOR.x - 120], [DOOR.x + DOOR.w + 120, SR + 160]].forEach(([a, b]) => { const z0 = -150, z1 = -470;
-    s += epoly([EP(a, EG, z0), EP(b, EG, z0), EP(b, EG, z1), EP(a, EG, z1)], '#4B4740') + epoly([EP(a, EG - 4, z0), EP(b, EG - 4, z0), EP(b, EG, z0), EP(a, EG, z0)], '#6A655C');
-    for (let k = 0; k < 140; k++){ const p = EP(a + R()*(b - a), EG, z0 - R()*(z0 - z1)); s += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${(1 + R()*1.6).toFixed(1)}" fill="${R() < .5 ? '#5E5A52' : '#3A3732'}"/>`; }
-    for (let k = 0; k < 7; k++){ const x = a + 40 + R()*(b - a - 80), z = z0 - 60 - R()*(z0 - z1 - 120), p = EP(x, EG, z), sc = EF/(EF + z);
-      s += `<ellipse cx="${p[0]}" cy="${p[1] - 26*sc}" rx="${46*sc}" ry="${30*sc}" fill="#2F4A2E"/><ellipse cx="${p[0] - 12*sc}" cy="${p[1] - 34*sc}" rx="${26*sc}" ry="${18*sc}" fill="#46683F"/><ellipse cx="${p[0] + 18*sc}" cy="${p[1] - 22*sc}" rx="${20*sc}" ry="${14*sc}" fill="#3B5C37"/>`; } });
-  // the stone path to the door: big pale slabs
-  for (let z = -20, k = 0; z > ZN; z -= 120, k++){ const w = 140 + k*6; s += epoly([EP(778 - w, EG, z), EP(778 + w, EG, z), EP(778 + w, EG, z - 100), EP(778 - w, EG, z - 100)], k % 2 ? '#B9B3A6' : '#C3BDB0'); }
-  // light from the shop spilling onto the ground
-  s += `<g style="mix-blend-mode:screen">${[[SL + 80, DOOR.x - 14], [DOOR.x, DOOR.x + DOOR.w], [DOOR.x + DOOR.w + 14, SR - 80]].map(([a, b]) => epoly([EP(a, EG, 0), EP(b, EG, 0), EP(b + 40, EG, -380), EP(a - 40, EG, -380)], 'url(#oPool)')).join('')}</g>`;
-  // the benches under the windows: pale frames with red cushions, a small round table beside each
-  [[SL + 92, DOOR.x - 40], [DOOR.x + DOOR.w + 40, SR - 92]].forEach(([a, b], i) => { const zb = -10, zf = -84, y = 790;
-    s += ebox(a, b, y, y + 10, zb, zf, { top:'#E9E4DA', front:'#CFC9BD', side:'#B9B3A7' });
-    [a + 8, b - 18].forEach(x => s += ebox(x, x + 10, y + 10, EG, zb - 4, zf + 4, { front:'#CFC9BD', side:'#B9B3A7' }));
-    s += ebox(a + 6, b - 6, y - 16, y, zb - 4, zf + 6, { top:'#D8463C', front:'#B3302A', side:'#9A2722' });
-    [a + 40, b - 120].forEach((x, j) => s += ebox(x, x + 70, y - 46, y - 16, zb - 2, zb - 22, { front:j ? '#E9DCC0' : RED, top:j ? '#F4ECDD' : '#D8463C', side:j ? '#CFC2A6' : '#9A2722' }));
-    const tx = i ? b + 22 : a - 40, tz = -60; s += edisc(tx, EG, tz, 22, 'rgba(0,0,0,.25)') + ebox(tx - 3, tx + 3, 760, EG, tz + 3, tz - 3, { front:'#E9E4DA', side:'#CFC9BD' }) + edisc(tx, 760, tz, 26, '#F1EDE5') + edisc(tx - 6, 758, tz - 6, 6, '#7FB3C9'); });
-  // glowing bollards along the path
-  [[DOOR.x - 90, -220], [DOOR.x + DOOR.w + 90, -220], [DOOR.x - 110, -440], [DOOR.x + DOOR.w + 110, -440]].forEach(([x, z]) => { const p = EP(x, EG - 90, z), sc = EF/(EF + z);
-    s += edisc(x, EG, z, 70, 'url(#oLamp)', ' opacity=".5"') + ebox(x - 9, x + 9, EG - 92, EG, z + 9, z - 9, { front:'#232323', side:'#161616', top:'#2c2c2c' }) + `<circle cx="${p[0]}" cy="${p[1] + 10*sc}" r="${30*sc}" fill="url(#oLamp)"/><rect x="${p[0] - 8*sc}" y="${p[1] + 4*sc}" width="${16*sc}" height="${8*sc}" fill="#FFE7B8"/>`; });
-  // a chalkboard A-frame on the left of the path
-  { const x = 470, z = -300, p = EP(x, EG, z), sc = EF/(EF + z);
-    s += `<g transform="translate(${p[0]} ${p[1]}) scale(${sc.toFixed(3)})"><ellipse cx="10" cy="0" rx="70" ry="9" fill="rgba(0,0,0,.3)"/><path d="M-56 0 L-44 -170 L44 -170 L56 0" fill="none" stroke="#1C1C1C" stroke-width="9"/><path d="M-46 -12 L-36 -162 L36 -162 L46 -12 Z" fill="#232825"/>
-      <circle cx="0" cy="-138" r="13" fill="none" stroke="${CREAM}" stroke-width="2"/><text x="0" y="-133" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="800" font-size="11" fill="${CREAM}">B</text>
-      <text x="0" y="-102" text-anchor="middle" font-family="Caveat,cursive" font-weight="700" font-size="17" fill="${CREAM}">Make a record</text><text x="0" y="-80" text-anchor="middle" font-family="Caveat,cursive" font-weight="700" font-size="17" fill="${CREAM}">for someone</text>
-      <text x="0" y="-50" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-weight="600" font-size="10" letter-spacing="1" fill="#E2B866">OPEN TILL LATE</text></g>`; }
-  // THE CANOPY over the entrance: a slim black edge and a lit underside, reaching out towards us
-  { const x0 = SL + 70, x1 = SR - 70, y = CAN, zf = -230;
-    s += epoly([EP(x0, y, 0), EP(x1, y, 0), EP(x1, y, zf), EP(x0, y, zf)], 'url(#oSoffit)');
-    for (let k = 1; k < 4; k++){ const a = EP(x0 + k*(x1 - x0)/4, y, 0), b = EP(x0 + k*(x1 - x0)/4, y, zf); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#CDB98F" stroke-width="2"/>`; }
-    [[x0 + 120, -110], [x1 - 120, -110], [(x0 + x1)/2, -110]].forEach(([x, z]) => { const p = EP(x, y, z); s += `<ellipse cx="${p[0]}" cy="${p[1] + 6}" rx="70" ry="16" fill="#FFF8E6" opacity=".9"/><ellipse cx="${p[0]}" cy="${p[1] + 40}" rx="220" ry="120" fill="url(#oLamp)" opacity=".5" style="mix-blend-mode:screen"/>`; });
-    s += epoly([EP(x0, y - 16, zf), EP(x1, y - 16, zf), EP(x1, y, zf), EP(x0, y, zf)], '#1A1A1A') + epoly([EP(x0, y - 16, 0), EP(x0, y - 16, zf), EP(x0, y, zf), EP(x0, y, 0)], '#111') + epoly([EP(x1, y - 16, 0), EP(x1, y - 16, zf), EP(x1, y, zf), EP(x1, y, 0)], '#111'); }
-  // a young tree on the far left, bare branches against the brick
-  { const p = EP(-120, EG, -520), sc = EF/(EF - 520); s += `<g transform="translate(${p[0]} ${p[1]}) scale(${sc.toFixed(3)})" stroke="#2A2420" fill="none" stroke-linecap="round"><path d="M0 0 L4 -420" stroke-width="12"/>
-      ${Array.from({length:14}, (_, k) => { const y = -170 - k*20, d = k % 2 ? 1 : -1, l = 60 + (k*37) % 90; return `<path d="M${2} ${y} q${d*l*.4} -${l*.3} ${d*l} -${l*.6}" stroke-width="${5 - k*.2}"/><path d="M${d*l*.6} ${y - l*.36} q${d*16} -10 ${d*30} -30" stroke-width="2"/>`; }).join('')}</g>`; }
+  s += epoly([EP(-3000, EG, 0), EP(4536, EG, 0), EP(4536, EG, ZN), EP(-3000, EG, ZN)], '#B8AE9E');
+  for (let z = -60; z > ZN; z -= 140){ const a = EP(-3000, EG, z), b = EP(4536, EG, z); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#A39A8A" stroke-width="1.4"/>`; }
+  for (let x = -2000; x < 3600; x += 160){ const a = EP(x, EG, 0), b = EP(x, EG, ZN); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#A39A8A" stroke-width="1.2"/>`; }
+  s += epoly([EP(-3000, EG, -560), EP(4536, EG, -560), EP(4536, EG, -640), EP(-3000, EG, -640)], '#9A5A44');
+  for (let x = -2000; x < 3600; x += 26){ const a = EP(x, EG, -560), b = EP(x, EG, -640); s += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#7E4636" stroke-width="1"/>`; }
+  // the evening sun raking across the front, and light from the shop on the pavement
+  s += `<polygon points="-3000,-900 1600,-900 4536,1400 -3000,1400" fill="url(#oSun)" style="mix-blend-mode:screen"/>`;
+  s += `<g style="mix-blend-mode:screen">${[[SL + 56, DOOR.x - 24], [DOOR.x, DOOR.x + DOOR.w], [DOOR.x + DOOR.w + 24, SR - 56]].map(([a, b]) => epoly([EP(a, EG, 0), EP(b, EG, 0), EP(b + 30, EG, -320), EP(a - 30, EG, -320)], 'url(#oPool)')).join('')}</g>`;
+  // fallen leaves
+  for (let k = 0; k < 60; k++){ const p = EP(-400 + R()*2400, EG, -20 - R()*700); s += `<ellipse cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" rx="${(3 + R()*4).toFixed(1)}" ry="${(2 + R()*2).toFixed(1)}" fill="${['#C4572B','#D88A2C','#B3452B','#E0A848'][Math.floor(R()*4)]}" transform="rotate(${Math.floor(R()*180)} ${p[0].toFixed(1)} ${p[1].toFixed(1)})"/>`; }
+  // a wooden bench under the left window, with a record crate... no: a stack of flyers and a mug on it
+  { const a = SL + 120, b = DOOR.x - 70, zb = -30, zf = -96, y = 806;
+    [a + 14, b - 24].forEach(x => s += ebox(x, x + 10, y, EG, zb, zf, { front:'#1E1E1E', side:'#141414' }) + ebox(x - 4, x + 14, y + 4, y + 10, zb, zf, { front:'#1E1E1E', side:'#141414', top:'#2A2A2A' }));
+    [0, 1, 2].forEach(k => s += ebox(a, b, y - 4 - k*0, y + 2, zb - 4 - k*22, zb - 22 - k*22, { top:k % 2 ? '#C98A4E' : '#B87A42', front:'#9A6A3A', side:'#8A5A2C' }));
+    [0, 1].forEach(k => s += ebox(a, b, 726 + k*24, 742 + k*24, zb, zb - 8, { front:'#B87A42', top:'#C98A4E', side:'#8A5A2C' }));
+    [a + 14, b - 24].forEach(x => s += ebox(x, x + 8, 726, y, zb, zb - 8, { front:'#1E1E1E', side:'#141414' }));
+    s += ebox(a + 60, a + 110, y - 14, y - 4, zb - 30, zb - 70, { top:'#F1E5CC', front:'#E2D6BC', side:'#CFC2A6' }) + ebox(b - 70, b - 54, y - 26, y - 4, zb - 44, zb - 58, { front:'#2F6B66', top:'#3E7A75', side:'#265753' }); }
+  // a green stool by the door with a potted plant on it
+  { const x = DOOR.x + DOOR.w + 50, z = -70, y = 780; [[-16, -16], [16, -16], [-16, 16], [16, 16]].forEach(([dx2, dz]) => s += ebox(x + dx2 - 3, x + dx2 + 3, y, EG, z + dz + 3, z + dz - 3, { front:'#3E7A45', side:'#2F6238' }));
+    s += ebox(x - 24, x + 24, y - 8, y, z + 24, z - 24, { top:'#4E8A55', front:'#3E7A45', side:'#2F6238' });
+    const p = EP(x, y - 8, z), sc = EF/(EF + z); s += `<g transform="translate(${p[0]} ${p[1]}) scale(${sc.toFixed(3)})"><path d="M-20 0 L20 0 L16 -34 L-16 -34 Z" fill="#C4572B"/><rect x="-22" y="-40" width="44" height="8" fill="#B84E22"/>
+      ${[[-30,-96,-30],[0,-120,0],[30,-98,30],[-14,-140,-12],[16,-138,14]].map(([lx, ly, a], i) => `<path d="M0 -40 Q${lx*.3} ${ly*.6} ${lx} ${ly}" stroke="#24502C" stroke-width="3" fill="none"/><ellipse cx="${lx}" cy="${ly}" rx="13" ry="22" transform="rotate(${a} ${lx} ${ly})" fill="${i % 2 ? '#3E7A45' : '#2F6238'}"/>`).join('')}</g>`; }
+  // a sandwich board easel covered in a collage of posters
+  { const x = DOOR.x + DOOR.w + 190, z = -170, p = EP(x, EG, z), sc = EF/(EF + z);
+    s += `<g transform="translate(${p[0]} ${p[1]}) scale(${sc.toFixed(3)})"><ellipse cx="10" cy="2" rx="90" ry="10" fill="rgba(0,0,0,.22)"/><path d="M-70 0 L-58 -250 M70 0 L58 -250" stroke="#7A3A22" stroke-width="10"/>
+      <rect x="-66" y="-250" width="132" height="200" fill="#8A4A2C"/><rect x="-58" y="-242" width="116" height="184" fill="#1A1A1A"/>
+      ${[[-56, -240, 0, -4], [0, -238, 1, 3], [-54, -180, 4, 2], [2, -176, 5, -3], [-30, -124, 6, 1]].map(([px, py, i, r]) => poster(px, py, 54, 70, i, r)).join('')}</g>`; }
+  // an autumn tree on the left, in front of the café
+  { const x = -230, z = -380, p = EP(x, EG, z), sc = EF/(EF + z);
+    s += `<g transform="translate(${p[0]} ${p[1]}) scale(${sc.toFixed(3)})"><ellipse cx="0" cy="2" rx="60" ry="12" fill="rgba(0,0,0,.22)"/><rect x="-40" y="-6" width="80" height="10" fill="#6A5A48"/>
+      <path d="M-10 0 C-14 -200 -4 -340 -30 -520 M-12 -300 C40 -360 80 -400 120 -460 M-20 -380 C-70 -430 -110 -470 -150 -500 M-26 -460 C0 -520 30 -560 60 -600" stroke="#3A2A1E" stroke-width="16" fill="none" stroke-linecap="round"/>
+      ${Array.from({length:140}, () => { const a = R()*Math.PI*2, d = Math.sqrt(R()), cx = -10 + Math.cos(a)*200*d, cy = -520 + Math.sin(a)*170*d; return `<ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${(10 + R()*10).toFixed(0)}" ry="${(7 + R()*7).toFixed(0)}" fill="${['#D86A2C','#E0A848','#C4572B','#B3452B','#E8C060','#9A6A2C'][Math.floor(R()*6)]}" transform="rotate(${Math.floor(R()*180)} ${cx.toFixed(0)} ${cy.toFixed(0)})"/>`; }).join('')}</g>`; }
   // the print: grain over everything, and a soft fall-off to the edges
   s += `<rect x="-3000" y="-2600" width="7536" height="5200" fill="url(#grainP)" opacity=".26" style="mix-blend-mode:overlay"/>
-    <defs><radialGradient id="oVig" gradientUnits="userSpaceOnUse" cx="778" cy="560" r="1450"><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#05060c" stop-opacity=".6"/></radialGradient></defs><rect x="-3000" y="-2600" width="7536" height="5200" fill="url(#oVig)" style="pointer-events:none"/>
+    <defs><radialGradient id="oVig" gradientUnits="userSpaceOnUse" cx="778" cy="560" r="1500"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#140a06" stop-opacity=".5"/></radialGradient></defs><rect x="-3000" y="-2600" width="7536" height="5200" fill="url(#oVig)" style="pointer-events:none"/>
     <rect id="doorHit" x="${DOOR.x - 10}" y="${DOOR.y - 10}" width="${DOOR.w + 20}" height="${DOOR.h + 20}" fill="transparent"/></svg>`;
   return s;
 }
@@ -2863,7 +2896,7 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   loadShelf();
   $('outsideInner').innerHTML = facadeSVG(); paintSlots($('outsideInner'));
   // the whole shop front shows on every screen, and the street carries on past it
-  window.fitFacade = () => { const f = $('facade'); if (f) f.setAttribute('viewBox', innerWidth/innerHeight < .8 ? '226 0 1108 1024' : '0 0 1536 1024'); }; window.fitFacade();
+  window.fitFacade = () => { const f = $('facade'); if (f) f.setAttribute('viewBox', innerWidth/innerHeight < .8 ? '180 0 1196 1024' : '0 0 1536 1024'); }; window.fitFacade();
   $('doorHit').setAttribute('tabindex','0'); $('doorHit').setAttribute('role','button'); $('doorHit').setAttribute('aria-label','Go inside');
   $('doorHit').addEventListener('click', enterShop); $('doorHit').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); enterShop(); } });
   buildShop(); fillDoorway(); buildDeck(); syncDeckUI(); setPitch(0);
