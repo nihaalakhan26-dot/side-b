@@ -10,6 +10,17 @@ const { SHELF, lookupArtist } = require('../api/albums.js');
 const ROOT = path.join(__dirname, '..'), DIR = path.join(ROOT, 'img', 'covers'), SIZE = 200;
 const slug = s => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
 
+// Apple turns away searches that come too fast (about 20 a minute), so space them out and retry the ones it refuses
+const realFetch = global.fetch; let lastSearch = 0;
+global.fetch = async (url, opts) => {
+  if (!String(url).includes('itunes.apple.com')) return realFetch(url, opts);
+  for (let attempt = 0; ; attempt++){
+    const wait = lastSearch + 3200 - Date.now(); if (wait > 0) await new Promise(r => setTimeout(r, wait)); lastSearch = Date.now();
+    const { signal, ...rest } = opts || {}; const r = await realFetch(url, rest);
+    if (r.ok || attempt >= 3 || ![403, 429, 500, 502, 503].includes(r.status)) return r;
+    console.log('Apple asked to slow down (' + r.status + '), waiting...'); await new Promise(res => setTimeout(res, 30000));
+  }
+};
 const norm = s => String(s || '').toLowerCase().replace(/\s*[([].*?[)\]]/g, '').replace(/\s+-\s+(ep|single)$/, '').replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim();
 async function findAlbum(artist, title, country){
   try {
@@ -25,7 +36,7 @@ async function findAlbum(artist, title, country){
 (async () => {
   fs.mkdirSync(DIR, { recursive: true });
   const found = [], queue = SHELF.slice();
-  await Promise.all(Array.from({ length: 4 }, async () => {
+  await Promise.all(Array.from({ length: 1 }, async () => {
     while (queue.length){ const [artist, titles] = queue.shift(); found.push(...await lookupArtist(artist, titles)); }
   }));
   const order = SHELF.flatMap(([a, ts]) => ts.map(t => a + '|' + t));
