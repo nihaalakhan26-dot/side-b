@@ -116,7 +116,7 @@ button{cursor:pointer}
 .chip input[type=color]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:50%;bottom:0}
 .trio{display:flex}.trio i{width:16px;height:24px;margin-left:-4px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.2)}.trio i:first-child{margin-left:0;width:20px}
 /* picture choices are tiles: a picture over the name */
-.chips.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px}
+.chips.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .chip.tile{flex-direction:column;justify-content:flex-start;gap:6px;padding:8px 6px 9px;border-radius:4px;min-height:0;text-align:center;font-size:.74rem}
 .chip.tile img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.25)}
 .chip.tile.rnd img{border-radius:50%;box-shadow:none}
@@ -259,6 +259,19 @@ button{cursor:pointer}
 @media (max-width:760px){.drawbar{left:6px;right:6px;bottom:6px;transform:none;max-width:none;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:5px 6px;gap:5px;scrollbar-width:none}.drawbar::-webkit-scrollbar{display:none}.drawbar .dtools,.drawbar .dots.small{flex-wrap:nowrap}.drawbar .dots.small button,.drawbar .dots.small .pick{width:22px;height:22px;flex:none}.drawbar .sizes button{width:26px;height:26px}.dbtn{padding:6px 9px;font-size:.7rem;flex:none}}
 .minihead{display:block;margin:16px 0 8px;font:600 .66rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--burg)}
 #stOpts > .minihead:first-child{margin-top:4px}
+/* even spacing in the panel: every group of choices sits the same distance from the next */
+#stOpts > .chips{margin-bottom:6px}
+#stOpts > .chips.segrow{margin:4px 0 16px}
+#stOpts > .minihead{margin:22px 0 10px}
+.segs{margin:4px 0 14px}
+#stLede{margin:.35rem 0 1.1rem}
+.chip.tile{padding:10px 8px 11px;gap:8px}
+.chip.tile .cl{font:600 .72rem/1.25 var(--mono);color:var(--ink2)}
+.chip.tile[aria-pressed="true"] .cl{color:var(--ink)}
+.optnote{margin:18px 0 0}
+.step.on{margin-top:18px}
+.step.on > .minihead:first-child{margin-top:0}
+.addrow{margin-top:0}
 .shead{position:relative;display:flex;align-items:center;gap:14px;padding:10px 18px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:#EDE2CA;border-bottom:3px double var(--faded)}
 .shead::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.3;pointer-events:none}
 .shead .logo{font-family:'Yellowtail',cursive;color:var(--burg);font-size:1.9rem;line-height:1;transform:rotate(-3deg)}
@@ -723,7 +736,7 @@ button{cursor:pointer}
     <div class="dk-prog"><i id="dkProg"></i></div>
   </div>
   <div class="allsteps" id="allSteps" hidden><div class="as-card"><div class="as-head"><b>Your record</b><button class="btn ghost sm" id="asClose">Close</button></div><div id="asList"></div></div></div>
-  <input type="file" id="photoIn" accept="image/*" hidden><input type="file" id="labIn" accept="image/*" hidden>
+  <input type="file" id="photoIn" accept="image/*" hidden><input type="file" id="labIn" accept="image/*" hidden><input type="file" id="pdIn" accept="image/*" hidden>
 </section>
 
 <div id="share" role="dialog" aria-modal="true" aria-labelledby="shareH">
@@ -1078,7 +1091,7 @@ const OPT_NOTES = {
     metallic:'A pearly sheen that catches the light.', iridescent:'Shifts colour as it turns, like oil on water.', marble:'Two colours folded together, so no two come out the same.',
     splatter:'Flecks of a second colour flicked across the first.', swirl:'Two colours spun into a spiral.', clouds:'Soft clouds of a second colour drifting through.',
     split:'One colour on each half, meeting in a straight line.', stripe:'Bands of two colours across the record.', inner:'One colour in the middle, ringed by another.',
-    smoke:'Wisps of smoke through clear vinyl.', eco:'Pressed from leftover vinyl, so every one is a surprise.', picture:'Your cover picture pressed right into the record.' },
+    smoke:'Wisps of smoke through clear vinyl.', eco:'Pressed from leftover vinyl, so every one is a surprise.', picture:'Any picture you like, pressed right into the record. Upload one, or use your cover.' },
   shape:{ round:'Plays from edge to edge.', heart:'Cut into a heart. The grooves stop short of the curves, so each side plays a little less.', star:'Cut into a star. The smallest playing area of all.',
     hex:'Six flat sides. Plays nearly to the edge.', oct:'Eight flat sides. Plays nearly to the edge.' },
   label:{ solid:'One flat colour with the title.', split:'Two colours, half and half.', ring:'A plain centre with a ring around it.', art:'A small copy of your cover in the middle.', minimal:'Just the words, very quiet.' } };
@@ -1244,8 +1257,9 @@ function drawVinyl(r, size, side){
     case 'eco': g.fillStyle = '#3d3431'; g.fillRect(0,0,size,size); g.lineCap = 'round';
       for (let k=0;k<70;k++){ g.strokeStyle = VCOLS[1 + Math.floor(R()*(VCOLS.length-1))]; g.globalAlpha = .25 + R()*.45; g.lineWidth = size*(.004 + R()*.03); g.beginPath(); const x = R()*size, y = R()*size, a = R()*7, l = size*(.05 + R()*.25);
         g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a+1)*l*.6, y + Math.sin(a+1)*l*.6, x + Math.cos(a)*l, y + Math.sin(a)*l); g.stroke(); } g.globalAlpha = 1; break;
-    case 'picture': { g.fillStyle = '#111'; g.fillRect(0,0,size,size); const im = r.photo ? photoImage(r.photo) : null;
-      if (!(im && drawPhoto(g, im, 0, 0, size, size))) g.drawImage(drawSleeve(r, 512), 0, 0, size, size); break; }
+    case 'picture': { g.fillStyle = '#111'; g.fillRect(0,0,size,size); const src = r.pdisc || ((r.d.cover || 'photo') === 'photo' ? r.photo : ''), im = src ? photoImage(src) : null;
+      if (!(im && drawPhoto(g, im, 0, 0, size, size))){ g.fillStyle = '#DCD3C1'; g.fillRect(0,0,size,size); g.fillStyle = 'rgba(35,26,20,.55)'; g.textAlign = 'center';
+        g.font = `700 ${size*.05}px Archivo, sans-serif`; g.fillText('YOUR PICTURE', h, h*.42); g.fillText('GOES HERE', h, h*.42 + size*.06); } break; }
   }
   // depth: soft radial falloff, lead-in band, grooves, lead-out, edge bevel
   if (type !== 'picture'){ const dk = g.createRadialGradient(h,h,h*.3,h,h,h*1.05); dk.addColorStop(0,'rgba(0,0,0,.02)'); dk.addColorStop(1, isClear ? 'rgba(0,0,0,.12)' : 'rgba(0,0,0,.32)'); g.fillStyle = dk; g.fillRect(0,0,size,size); }
@@ -1296,7 +1310,7 @@ const imgCache = new Map(), IMG_CACHE_MAX = 120;
 function cached(k, make){ let v = imgCache.get(k); if (v !== undefined){ imgCache.delete(k); imgCache.set(k, v); return v; }
   v = make(); imgCache.set(k, v); while (imgCache.size > IMG_CACHE_MAX) imgCache.delete(imgCache.keys().next().value); return v; }
 const hashStr = str => { let h = 5381; for (let i=0;i<str.length;i++) h = (h*33 ^ str.charCodeAt(i)) >>> 0; return h.toString(36); };
-const designKey = r => JSON.stringify([r.d, r.name, r.line, r.by, r.to, r.cat, r.photo ? r.photo.length + r.photo.slice(-24) : '', hashStr(JSON.stringify([r.draw, r.texts, r.hype, r.lab], (k, v) => k === 'img' && v ? v.length + v.slice(-24) : v))]);
+const designKey = r => JSON.stringify([r.d, r.name, r.line, r.by, r.to, r.cat, r.photo ? r.photo.length + r.photo.slice(-24) : '', hashStr(JSON.stringify([r.draw, r.texts, r.hype, r.lab, r.pdisc ? r.pdisc.length + r.pdisc.slice(-24) : ''], (k, v) => k === 'img' && v ? v.length + v.slice(-24) : v))]);
 function sleeveURL(r, size){ return cached('s' + size + designKey(r), () => drawSleeve(r, size).toDataURL('image/jpeg', .9)); }
 function vinylURL(r, size, side){ return cached('v' + size + side + designKey(r), () => drawVinyl(r, size, side).toDataURL('image/png')); }
 const recSize = r => (r.A.length + r.B.length) > 10 ? 12 : 10;
@@ -1326,7 +1340,7 @@ function renderNotes(container, r, face, editable){
    STUDIO (builder)
    ============================================================ */
 const MINS = 6, MAXSIDE = 12;
-const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'',
+const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'', pdisc:'',
   d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', cover:'photo', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:false, pm:'full', vinyl:'black', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2' },
   hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[], lab:{ A:{ texts:[], img:'', z:1, st:'solid' }, B:{ texts:[], img:'', z:1, st:'solid' } }, A:[], B:[], notes:[] });
 // a record can come from anyone's link, so check every field before it is drawn or played
@@ -1368,7 +1382,7 @@ function cleanRec(r){
       stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:false,
       pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl === 'splatter' ? 'marble' : d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
       shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab) },
-    hype, draw, texts, lab, A:side(r.A), B:side(r.B),
+    hype, draw, texts, lab, pdisc:img(r.pdisc), A:side(r.A), B:side(r.B),
     notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:hex(n.c, Number.isInteger(n.c) && NOTECOLS[n.c] ? NOTECOLS[n.c] : NOTECOLS[0]),
       x:num(n.x, -6, 70, 30), y:num(n.y, -6, 82, 30), r:num(n.r, -15, 15, 0), f:n.f === 'B' ? 'B' : 'F' })) };
 }
@@ -1578,6 +1592,11 @@ $('labIn').addEventListener('change', e => { const f = e.target.files[0], S = su
   rd.onload = () => { const im = new Image(); im.onload = () => { const P = 240, c = document.createElement('canvas'); c.width = c.height = P; const g = c.getContext('2d'), k = Math.max(P/im.width, P/im.height);
     g.drawImage(im, (P - im.width*k)/2, (P - im.height*k)/2, im.width*k, im.height*k); draft.lab[S.side].img = c.toDataURL('image/jpeg', .78); draft.lab[S.side].z = 1; layersChanged(); }; im.src = rd.result; };
   rd.readAsDataURL(f); e.target.value = ''; });
+// the picture printed on a picture disc, kept small so links stay short
+$('pdIn').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
+  rd.onload = () => { const im = new Image(); im.onload = () => { const P = 300, c = document.createElement('canvas'); c.width = c.height = P; const g = c.getContext('2d'), k = Math.max(P/im.width, P/im.height);
+    g.drawImage(im, (P - im.width*k)/2, (P - im.height*k)/2, im.width*k, im.height*k); draft.pdisc = c.toDataURL('image/jpeg', .76); draft.d.vinyl = 'picture'; spinRecord(); changed(); }; im.src = rd.result; };
+  rd.readAsDataURL(f); e.target.value = ''; });
 // handling words on the preview itself
 ['txtLayer','labLayer'].forEach(id => {
   $(id).addEventListener('pointerdown', e => { const S = surf(); if (!S || S.layer !== $(id)) return; const el = e.target.closest('.wtx'), box = S.box.getBoundingClientRect(); if (el && el.classList.contains('editing')) return;
@@ -1650,8 +1669,11 @@ const FLOW = [
     note:() => [nameOf(SHAPES, draft.d.shape), OPT_NOTES.shape[draft.d.shape] || ''] },
   { id:'vinyl', name:'Vinyl', mode:'disc', lede:'Pick a kind of pressing, then its colours.',
     val:() => nameOf(VINYLS, draft.d.vinyl) + (needCols() >= 1 ? ' ' + chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : ''),
-    rows:[ { seg:1, items:() => VCATS.map(([k, l]) => ({ v:k, l, on:(vcat || catOf(draft.d.vinyl)) === k })), pick:v => { vcat = v; }, local:1 },
+    rows:[ { seg:1, items:() => VCATS.map(([k, l]) => ({ v:k, l, on:(vcat || catOf(draft.d.vinyl)) === k })), pick:v => { vcat = v; const c = VCATS.find(c => c[0] === v)[2]; if (c.length === 1 && draft.d.vinyl !== c[0]){ draft.d.vinyl = c[0]; return true; } }, local:1 },
            { tiles:1, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ vinyl:k }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:setKey('vinyl') },
+           { l:'Your picture', show:() => draft.d.vinyl === 'picture', items:() => [{ v:'up', l:draft.pdisc ? 'Change the picture' : '+ Upload a picture', on:!draft.pdisc && !(draft.photo && draft.d.cover === 'photo') },
+               ...(draft.photo && draft.d.cover === 'photo' ? [{ v:'cover', l:'Use my cover picture', on:!draft.pdisc }] : [])],
+             pick:v => { if (v === 'up'){ $('pdIn').click(); return; } draft.pdisc = ''; } },
            { l:() => needCols() >= 2 ? 'Main colour' : 'Colour', show:() => needCols() >= 1, spin:1, items:() => colourChips(VCOLS, 'v1', VCOLNAMES), pick:setKey('v1') },
            { l:'Second colour', show:() => needCols() >= 2, spin:1, items:() => colourChips(VCOLS, 'v2', VCOLNAMES), pick:setKey('v2') } ],
     note:() => [nameOf(VINYLS, draft.d.vinyl), OPT_NOTES.vinyl[draft.d.vinyl] || ''] },
@@ -1724,11 +1746,11 @@ function renderDock(now){ clearTimeout(dockTimer); if (!now){ dockTimer = setTim
       refreshPreview(); renderDock(true); renderTextLayer(); renderTextUI(); })); }
   const box = $('stOpts');
   if (F.rows){ const vis = F.rows.map((R, r) => [R, r]).filter(([R]) => !R.show || R.show());
-    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); return `${l ? `<p class="minihead">${l}</p>` : ''}<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}">${R.items().map(it => chipHTML(it, r, R)).join('')}</div>`; }).join('');
+    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); return `${l ? `<p class="minihead">${l}</p>` : ''}${(its => `<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}"${R.tiles ? ` style="grid-template-columns:repeat(${Math.max(3, Math.ceil(its.length/Math.ceil(its.length/4)))},minmax(0,1fr))"` : ''}>${its.map(it => chipHTML(it, r, R)).join('')}</div>`)(R.items())}`; }).join('');
     box.querySelectorAll('.chip').forEach(b => { const R = F.rows[+b.dataset.r], inp = b.querySelector('input');
-      const after = () => { if (R.local){ renderDock(true); return; } if (R.spin) spinRecord(); syncControls(); changed(); };
+      const after = res => { if (R.local && !res){ renderDock(true); return; } if (R.spin || res) spinRecord(); syncControls(); changed(); };
       if (inp){ inp.addEventListener('input', () => { R.pick(inp.value.toUpperCase()); after(); }); inp.addEventListener('click', e => e.stopPropagation()); }
-      b.addEventListener('click', () => { if (inp) return inp.click(); sfx.click(); R.pick(b.dataset.v); after(); }); }); }
+      b.addEventListener('click', () => { if (inp) return inp.click(); sfx.click(); after(R.pick(b.dataset.v)); }); }); }
   else box.innerHTML = '';
   const secs = fv(F.sec) || []; document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', secs.includes(p.id)));
   const nt = F.note && F.note(); $('stNote').hidden = !nt; if (nt) $('stNote').innerHTML = `<b>${esc(nt[0])}</b> ${esc(nt[1])}`;
@@ -1784,7 +1806,7 @@ function b64url(bytes){ let s = ''; for (let i=0;i<bytes.length;i++) s += String
 function unb64url(str){ const s = atob(str.replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(s, c => c.charCodeAt(0)); }
 async function shrinkPhoto(src){ if (!src) return ''; return new Promise(res => { const im = new Image(); im.onload = () => { const S = 360, c = document.createElement('canvas'); c.width = c.height = S; c.getContext('2d').drawImage(im, 0, 0, S, S); res(c.toDataURL('image/jpeg', .72)); }; im.onerror = () => res(''); im.src = src; }); }
 async function encodeRec(r){
-  const json = new TextEncoder().encode(JSON.stringify({ v:4, name:r.name, line:r.line, by:r.by, to:r.to, year:r.year, cat:r.cat, d:r.d, hype:r.hype, draw:r.draw, texts:r.texts, lab:r.lab, A:r.A, B:r.B, notes:r.notes, photo: await shrinkPhoto(r.photo) }));
+  const json = new TextEncoder().encode(JSON.stringify({ v:4, name:r.name, line:r.line, by:r.by, to:r.to, year:r.year, cat:r.cat, d:r.d, hype:r.hype, draw:r.draw, texts:r.texts, lab:r.lab, pdisc:r.pdisc, A:r.A, B:r.B, notes:r.notes, photo: await shrinkPhoto(r.photo) }));
   if (window.CompressionStream){ const cs = new Blob([json]).stream().pipeThrough(new CompressionStream('deflate-raw')); return 'z' + b64url(new Uint8Array(await new Response(cs).arrayBuffer())); }
   return 'p' + b64url(json);
 }
@@ -2271,7 +2293,7 @@ function buildGift(r){
   if (recv.photo) photoImage(recv.photo);
   $('gTo').textContent = r.to ? `For ${r.to},` : 'For you,'; $('gFrom').textContent = r.by ? `from ${r.by}` : '';
   $('bagTo').textContent = r.to ? `For ${r.to}` : 'For you'; const n = recv.songsA.length + recv.songsB.length; $('bagSub').textContent = `${recSize(recv)}-INCH, ${n} SONGS`;
-  ['A','B'].forEach(k => { if (recv.lab && recv.lab[k] && recv.lab[k].img) photoImage(recv.lab[k].img); }); giftArt();
+  ['A','B'].forEach(k => { if (recv.lab && recv.lab[k] && recv.lab[k].img) photoImage(recv.lab[k].img); }); if (recv.pdisc) photoImage(recv.pdisc); giftArt();
   $('gRec').classList.remove('gone'); $('bag').classList.remove('open'); $('backEdit').classList.toggle('on', fromMaker); $('replyBtn').classList.toggle('on', !fromMaker);
   unloadDeck(); setCover(true);
 }
