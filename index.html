@@ -271,7 +271,43 @@ button{cursor:pointer}
 .optnote{margin:18px 0 0}
 .step.on{margin-top:18px}
 .step.on > .minihead:first-child{margin-top:0}
-.addrow{margin-top:0}
+/* one rhythm for every step: 22px above each group's heading, 10px between a heading and its choices, nothing touching */
+.dbody .minihead{margin:22px 0 10px}
+#stOpts > .minihead:first-child,.step.on > .minihead:first-child{margin-top:4px}
+.xtra{margin-top:22px}
+.xtra > .minihead:first-child{margin-top:0}
+.hyperow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.hyperow input{width:100%;box-sizing:border-box;padding:9px 10px;border:0;border-radius:6px;background:#FBF5E8;box-shadow:0 0 0 1px rgba(43,37,34,.25);font:500 .8rem/1.2 Archivo,sans-serif}
+.hyperow input:focus{outline:none;box-shadow:0 0 0 2px var(--ink)}
+@media (max-width:760px){.hyperow{grid-template-columns:1fr 1fr}.hyperow input:nth-child(2){grid-column:1 / -1;grid-row:1}}
+.addrow{margin-top:0;gap:10px}
+.addbtn{padding:14px 8px}
+.imgpad{margin-top:12px;padding:12px;border-radius:8px;background:#FBF5E8;box-shadow:0 0 0 1px rgba(43,37,34,.2)}
+.imgpad .stepper{margin-bottom:10px;box-shadow:none;padding:0;background:none}
+.textpad{margin-top:12px;padding:16px;border-radius:8px;background:#FFFCF5;box-shadow:0 0 0 1px rgba(43,37,34,.2)}
+.textpad > .minihead:first-child,.textpad > label.minihead:first-child{margin-top:0}
+.textpad textarea{border-radius:6px;border:0;box-shadow:0 0 0 1px rgba(43,37,34,.25)}
+.textpad .minihead{margin:18px 0 8px}
+.steprow{margin:12px 0 0}
+.layerops{gap:8px}
+.layerops button{padding:10px 8px}
+.layers{gap:8px}
+#textHint{margin:10px 0 0;font:400 .78rem/1.45 Archivo,sans-serif;color:var(--ink2)}
+#textHint:empty{display:none}
+.chips.cards{gap:10px}
+.chip.cardopt{padding:12px 14px}
+.chip.cardopt img{width:72px;height:72px;margin-bottom:4px}
+#st-songs .src{margin:8px 2px 12px}
+#st-songs .src:empty{display:none}
+#st-songs .results{margin:0 0 16px}
+#st-songs .tracksheet{margin-top:0}
+#st-press .credit + .hintline{margin:10px 2px 18px;font:400 .78rem/1.45 Archivo,sans-serif;color:var(--ink2)}
+#st-press .needs{margin:0 0 14px}
+#st-press .recap{margin-bottom:16px}
+.dbody{padding-bottom:36px}
+#studio .step.on{margin-top:26px}
+#studio .step.on > .minihead:first-child{margin-top:0}
+#studio[data-f="songs"] .step.on,#studio[data-f="press"] .step.on{margin-top:6px}
 .shead{position:relative;display:flex;align-items:center;gap:14px;padding:10px 18px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:#EDE2CA;border-bottom:3px double var(--faded)}
 .shead::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.3;pointer-events:none}
 .shead .logo{font-family:'Yellowtail',cursive;color:var(--burg);font-size:1.9rem;line-height:1;transform:rotate(-3deg)}
@@ -763,8 +799,9 @@ button{cursor:pointer}
         </section>
         <!-- LAYERS: words and a picture, on the sleeve front or on a label -->
         <section class="step" id="st-layers">
+          <p class="minihead">Your words and pictures</p>
           <div class="addrow"><button class="addbtn" id="addText"><b>T</b>Add text</button><button class="addbtn" id="addImg"><b>&#9638;</b><span id="addImgL">Add image</span></button></div>
-          <div class="imgpad" id="imgPad" hidden><div class="stepper"><span>Picture size</span><button id="imgLess" aria-label="Smaller">&minus;</button><output id="imgZoomV"></output><button id="imgMore" aria-label="Bigger">+</button></div><div class="pad"><button class="btn ghost sm" id="imgFill">Fill the label</button><button class="btn ghost sm" id="imgDel">Remove the picture</button></div></div>
+          <div class="imgpad" id="imgPad" hidden><div class="stepper"><span>Picture size</span><button id="imgLess" aria-label="Smaller">&minus;</button><output id="imgZoomV"></output><button id="imgMore" aria-label="Bigger">+</button></div><div class="layerops"><button id="imgFill">Fill the label</button><button id="imgDel" class="danger">Remove the picture</button></div></div>
           <button class="editwords" id="labEdit" hidden>Change the printed words <small>or double-click them on the label</small></button>
           <div class="textpad" id="textPad" hidden>
             <label class="minihead" for="textIn">Text <small class="dblhint">or double-click it on the preview</small></label>
@@ -774,7 +811,7 @@ button{cursor:pointer}
             <p class="minihead">Colour</p><div class="chips" id="textInks"></div>
             <p class="minihead">Layer</p><div class="layerops"><button id="lyUp">Bring forward</button><button id="lyDown">Send backward</button><button id="dupText">Duplicate</button><button id="delText" class="danger">Delete</button></div>
           </div>
-          <p class="minihead">Layers</p>
+          <p class="minihead" id="layersHead">Layers</p>
           <div class="layers" id="layerList"></div>
           <p class="hintline" id="textHint"></p>
         </section>
@@ -1607,7 +1644,7 @@ function renderTextUI(){ const S = surf(); if (!S) return;
     fonts.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const t = surf() && surf().list[selText]; if (t){ t.f = +b.dataset.i; layersChanged(); } })); }
   fonts.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === t.f));
   const inks = $('textInks'), v = t.c.toUpperCase(), listed = INKS.some(c => c.toUpperCase() === v);
-  inks.innerHTML = INKS.map(c => `<button class="chip dot" data-c="${c}" aria-pressed="${c.toUpperCase() === v}" aria-label="Colour ${c}"><i class="sw" style="--c:${c}"></i></button>`).join('')
+  inks.setAttribute('style', dotCols(INKS.length + 1)); inks.innerHTML = INKS.map(c => `<button class="chip dot" data-c="${c}" aria-pressed="${c.toUpperCase() === v}" aria-label="Colour ${c}"><i class="sw" style="--c:${c}"></i></button>`).join('')
     + `<label class="chip dot" aria-pressed="${!listed}" title="Any colour"><i class="sw anysw" style="--c:${t.c}"></i><input type="color" value="${t.c.toLowerCase()}" aria-label="Any colour"></label>`;
   inks.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { const t = surf().list[selText]; if (t){ t.c = b.dataset.c.toUpperCase(); layersChanged(); } }));
   inks.querySelector('input').addEventListener('input', e => { const t = surf().list[selText]; if (t){ t.c = e.target.value.toUpperCase(); layersChanged(true); } });
@@ -1720,6 +1757,8 @@ const needCols = () => (VINYLS.find(v => v[0] === draft.d.vinyl) || [0,0,0])[2];
 const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, dot:1, title:names ? names[i] : c, on:String(draft.d[key]).toUpperCase() === c.toUpperCase() })),
   { v:'*', any:key, sw:draft.d[key], dot:1, title:'Any colour', on:!cols.some(c => c.toUpperCase() === String(draft.d[key]).toUpperCase()) }];
 const setKey = key => v => { draft.d[key] = v; };
+// colour dots sit in even rows, never more than 7 across
+const dotCols = n => `display:grid;justify-content:start;grid-template-columns:repeat(${Math.ceil(n/Math.ceil(n/7))},40px)`;
 const VCATS = [['classic','Classic',['black','solid','split','inner','swirl','translucent']],['premium','Premium',['metallic','iridescent','smoke','marble','clear','eco']],['picture','Picture disc',['picture']]];
 const catOf = v => (VCATS.find(c => c[2].includes(v)) || VCATS[0])[0];
 const tabs = { labels:'A', sleeve:'F' }; let vcat = null;
@@ -1811,7 +1850,7 @@ function renderDock(now){ clearTimeout(dockTimer); if (!now){ dockTimer = setTim
       refreshPreview(); renderDock(true); renderTextLayer(); renderTextUI(); })); }
   const box = $('stOpts');
   if (F.rows){ const vis = F.rows.map((R, r) => [R, r]).filter(([R]) => !R.show || R.show());
-    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); return `${l ? `<p class="minihead">${l}</p>` : ''}${(its => `<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}"${R.tiles ? ` style="grid-template-columns:repeat(${Math.max(3, Math.ceil(its.length/Math.ceil(its.length/4)))},minmax(0,1fr))"` : ''}>${its.map(it => chipHTML(it, r, R)).join('')}</div>`)(R.items())}`; }).join('');
+    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); return `${l ? `<p class="minihead">${l}</p>` : ''}${(its => `<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}"${R.tiles ? ` style="grid-template-columns:repeat(${Math.max(3, Math.ceil(its.length/Math.ceil(its.length/4)))},minmax(0,1fr))"` : R.cards ? ` style="grid-template-columns:repeat(${Math.min(3, its.length)},minmax(0,1fr))"` : its.every(it => it.dot) ? ` style="${dotCols(its.length)}"` : ''}>${its.map(it => chipHTML(it, r, R)).join('')}</div>`)(R.items())}`; }).join('');
     box.querySelectorAll('.chip').forEach(b => { const R = F.rows[+b.dataset.r], inp = b.querySelector('input');
       const after = res => { if (R.local && !res){ renderDock(true); return; } if (R.spin || res) spinRecord(); syncControls(); changed(); };
       if (inp){ inp.addEventListener('input', () => { R.pick(inp.value.toUpperCase()); after(); }); inp.addEventListener('click', e => e.stopPropagation()); }
