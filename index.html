@@ -114,6 +114,13 @@ button{cursor:pointer}
 .chip[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--ink);background:#fff}
 .chip:disabled{opacity:.4}
 .chip.dot{padding:0;width:40px;justify-content:center}
+.amtrow{display:flex;align-items:center;gap:12px;font:600 .74rem/1 Archivo Narrow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.amtrow input{flex:1;min-width:0;height:34px;margin:0;background:none;-webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y}
+.amtrow input::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:rgba(43,37,34,.2)}
+.amtrow input::-moz-range-track{height:6px;border-radius:3px;background:rgba(43,37,34,.2)}
+.amtrow input::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-10px;border-radius:50%;background:var(--ink);border:3px solid #FBF5E8;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.amtrow input::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #FBF5E8;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+[style*="minmax(0,1fr)"] > .chip.dot{width:100%;min-height:0;aspect-ratio:1}[style*="minmax(0,1fr)"] > .chip.dot .sw{width:64%;height:64%}
 .chip .sw{width:24px;height:24px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);flex:none}
 .chip .anysw{background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)}
 .chip[aria-pressed="true"] .anysw{background:var(--c)}
@@ -261,7 +268,27 @@ button{cursor:pointer}
 .drawbar .sizes button{width:30px;height:30px}
 .dtip{font-size:.72rem;color:var(--ink2)}
 .dtip:empty{display:none}
-@media (max-width:760px){.drawbar{left:6px;right:6px;bottom:6px;transform:none;max-width:none;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:5px 6px;gap:5px;scrollbar-width:none}.drawbar::-webkit-scrollbar{display:none}.drawbar .dtools,.drawbar .dots.small{flex-wrap:nowrap}.drawbar .dots.small button,.drawbar .dots.small .pick{width:22px;height:22px;flex:none}.drawbar .sizes button{width:26px;height:26px}.dbtn{padding:6px 9px;font-size:.7rem;flex:none}}
+@media (max-width:760px){.drawbar{left:50%;right:auto;bottom:6px;padding:6px}.drawbar .dtip{display:none}.drawbar .dbtn.main{padding:12px 20px;font-size:.88rem}}
+.dbtn:disabled{opacity:.35;cursor:default}
+/* on phones, drawing opens a full-screen pad: the sleeve as big as the screen allows, Undo, Clear and Done along the top,
+   every colour, brush size and the eraser below it, nothing hidden off the edge */
+.drawsheet{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));background:radial-gradient(120% 70% at 50% 42%,#3A2A1E,#140D09 72%);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;animation:dsIn .22s ease-out}
+.drawsheet[hidden]{display:none}
+@keyframes dsIn{from{opacity:0;transform:translateY(14px)}}
+.dsTop{width:100%;max-width:520px;display:flex;align-items:center;gap:8px}
+.dsTop .dbtn{padding:12px 16px;font-size:.9rem;background:rgba(239,230,210,.12);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(239,230,210,.28)}
+.dsTop .dbtn.done{margin-left:auto;background:var(--cream);color:var(--ink);box-shadow:none;padding:12px 22px}
+.dsBoard{position:relative;flex:none;width:min(calc(100vw - 24px),calc(100dvh - 290px),520px);aspect-ratio:1;margin:auto 0;background:#F3ECDD center/cover no-repeat;border-radius:2px;box-shadow:0 18px 44px rgba(0,0,0,.6)}
+.dsBoard .drawlayer{display:block}
+.dsTools{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px;border-radius:16px;background:var(--cream);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.dsTools .dots.small{display:grid;grid-template-columns:repeat(7,minmax(0,36px));gap:8px;justify-content:center;width:100%;padding:3px}
+.dsTools .dots.small button,.dsTools .dots.small .pick{width:100%;height:auto;aspect-ratio:1}
+.dsRow{display:flex;align-items:center;justify-content:center;gap:10px}
+.dsTools .sizes{gap:8px}.dsTools .sizes button{width:42px;height:42px;border-radius:10px}
+.dsTools .dbtn{padding:13px 16px;font-size:.86rem;background:#FBF6EA;box-shadow:0 0 0 1px var(--line)}
+.dsTools .dbtn[aria-pressed="true"]{background:var(--ink);color:var(--cream);box-shadow:none}
+.dsTools .dtip{text-align:center}
+body.sheeton{overflow:hidden}
 .minihead{display:block;margin:16px 0 8px;font:600 .66rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--burg)}
 #stOpts > .minihead:first-child{margin-top:4px}
 /* even spacing in the panel: every group of choices sits the same distance from the next */
@@ -787,6 +814,7 @@ button{cursor:pointer}
       </div>
       <p class="caption" id="caption"></p>
       <div class="drawbar" id="drawBar" hidden><button class="dbtn main" id="drawBtn" aria-pressed="false">Draw</button><span class="dtools" id="drawTools" style="display:none"><span class="dots small" id="drawInks"></span><span class="sizes" id="drawSizes"></span><button class="dbtn" id="drawErase" aria-pressed="false">Eraser</button><button class="dbtn" id="drawUndo">Undo</button><button class="dbtn" id="drawWipe">Clear</button></span><span class="dtip" id="drawTip"></span></div>
+      <div class="drawsheet" id="drawSheet" hidden role="dialog" aria-label="Draw on your sleeve"><div class="dsTop" id="dsTop"><button class="dbtn done" id="dsDone">Done</button></div><div class="dsBoard" id="dsBoard"></div><div class="dsTools" id="dsTools"><div class="dsRow" id="dsRow"></div></div></div>
       <div class="benchtop"><button class="pill ghostpill" id="resetBtn">&#8634; Start over</button><span class="spacer"></span><button class="pill" id="faceBtn">Turn it over</button></div>
     </div>
     <aside class="deck" id="deck">
@@ -1088,14 +1116,18 @@ const coverCache = new Map();
 function albumCover(a){ const k = 'a' + a.id; if (!coverCache.has(k)) coverCache.set(k, drawCover(a, 180).toDataURL('image/jpeg', .85)); return coverCache.get(k); }
 const WALL = (() => { const R = mulberry32(2026), out = []; let pool = []; for (let i=0;i<72;i++){ if (!pool.length) pool = DEMO.map((_,k) => k).sort(() => R() - .5); out.push(DEMO[pool.pop()]); } return out; })();
 const songThumb = s => s.s === 'd' ? albumCover(DEMO[s.al]) : s.c;
-// Every album shown in the shop is a numbered slot. Slots show real albums from Apple once /api/albums answers,
-// and practice covers until then (or for good, where there's no search function).
-let shelf = [];
+// Every album shown in the shop is a numbered slot. The real covers live in the site itself (img/covers/, saved by
+// scripts/fetch-covers.js from the list in api/albums.js), so the shelves are real from the first moment. Only if that
+// list is empty does the shop ask /api/albums, showing practice covers until it answers.
+const SHELF_SAVED = /*SHELF*/[{"t":"Positions","a":"Ariana Grande","img":"img/covers/ariana-grande-positions.jpg","url":"https://music.apple.com/in/album/positions/1537486662?uo=4"},{"t":"Sweetener","a":"Ariana Grande","img":"img/covers/ariana-grande-sweetener.jpg","url":"https://music.apple.com/in/album/sweetener/1399202900?uo=4"},{"t":"thank u, next","a":"Ariana Grande","img":"img/covers/ariana-grande-thank-u-next.jpg","url":"https://music.apple.com/in/album/thank-u-next/1450333975?uo=4"},{"t":"eternal sunshine","a":"Ariana Grande","img":"img/covers/ariana-grande-eternal-sunshine.jpg","url":"https://music.apple.com/in/album/eternal-sunshine/1725913366?uo=4"},{"t":"Currents","a":"Tame Impala","img":"img/covers/tame-impala-currents.jpg","url":"https://music.apple.com/in/album/currents-b-sides-remixes-ep/1440875696?uo=4"},{"t":"Lonerism","a":"Tame Impala","img":"img/covers/tame-impala-lonerism.jpg","url":"https://music.apple.com/in/album/lonerism/1440825369?uo=4"},{"t":"The Slow Rush","a":"Tame Impala","img":"img/covers/tame-impala-the-slow-rush.jpg","url":"https://music.apple.com/in/album/the-slow-rush/1497230760?uo=4"},{"t":"InnerSpeaker","a":"Tame Impala","img":"img/covers/tame-impala-innerspeaker.jpg","url":"https://music.apple.com/in/album/innerspeaker/1439752048?uo=4"},{"t":"Abbey Road","a":"The Beatles","img":"img/covers/the-beatles-abbey-road.jpg","url":"https://music.apple.com/in/album/abbey-road-remastered/1441164426?uo=4"},{"t":"Revolver","a":"The Beatles","img":"img/covers/the-beatles-revolver.jpg","url":"https://music.apple.com/in/album/revolver/1441164670?uo=4"},{"t":"Rubber Soul","a":"The Beatles","img":"img/covers/the-beatles-rubber-soul.jpg","url":"https://music.apple.com/in/album/rubber-soul/1441164359?uo=4"},{"t":"Let It Be","a":"The Beatles","img":"img/covers/the-beatles-let-it-be.jpg","url":"https://music.apple.com/in/album/let-it-be/1441164495?uo=4"},{"t":"Sgt. Pepper's Lonely Hearts Club Band","a":"The Beatles","img":"img/covers/the-beatles-sgt-pepper-s-lonely-hearts-club-band.jpg","url":"https://music.apple.com/in/album/sgt-peppers-lonely-hearts-club-band/1441164604?uo=4"},{"t":"The Divine Feminine","a":"Mac Miller","img":"img/covers/mac-miller-the-divine-feminine.jpg","url":"https://music.apple.com/in/album/the-divine-feminine/1147227630?uo=4"},{"t":"Diamond Life","a":"Sade","img":"img/covers/sade-diamond-life.jpg","url":"https://music.apple.com/in/album/diamond-life/211429791?uo=4"},{"t":"Love Deluxe","a":"Sade","img":"img/covers/sade-love-deluxe.jpg","url":"https://music.apple.com/in/album/love-deluxe/158796559?uo=4"},{"t":"Promise","a":"Sade","img":"img/covers/sade-promise.jpg","url":"https://music.apple.com/in/album/promise/211677347?uo=4"},{"t":"Lovers Rock","a":"Sade","img":"img/covers/sade-lovers-rock.jpg","url":"https://music.apple.com/in/album/lovers-rock/193532145?uo=4"},{"t":"Back to Black","a":"Amy Winehouse","img":"img/covers/amy-winehouse-back-to-black.jpg","url":"https://music.apple.com/in/album/back-to-black/1440856219?uo=4"},{"t":"Frank","a":"Amy Winehouse","img":"img/covers/amy-winehouse-frank.jpg","url":"https://music.apple.com/in/album/frank/1442611379?uo=4"},{"t":"Rumours","a":"Fleetwood Mac","img":"img/covers/fleetwood-mac-rumours.jpg","url":"https://music.apple.com/in/album/rumours/594061854?uo=4"},{"t":"Thriller","a":"Michael Jackson","img":"img/covers/michael-jackson-thriller.jpg","url":"https://music.apple.com/in/album/thriller/269572838?uo=4"},{"t":"Off the Wall","a":"Michael Jackson","img":"img/covers/michael-jackson-off-the-wall.jpg","url":"https://music.apple.com/in/album/off-the-wall/186166282?uo=4"},{"t":"Starboy","a":"The Weeknd","img":"img/covers/the-weeknd-starboy.jpg","url":"https://music.apple.com/in/album/starboy/1440870373?uo=4"},{"t":"After Hours","a":"The Weeknd","img":"img/covers/the-weeknd-after-hours.jpg","url":"https://music.apple.com/in/album/after-hours/1499385848?uo=4"},{"t":"good kid, m.A.A.d city","a":"Kendrick Lamar","img":"img/covers/kendrick-lamar-good-kid-m-a-a-d-city.jpg","url":"https://music.apple.com/in/album/good-kid-m-a-a-d-city-deluxe-version/1440860389?uo=4"},{"t":"To Pimp a Butterfly","a":"Kendrick Lamar","img":"img/covers/kendrick-lamar-to-pimp-a-butterfly.jpg","url":"https://music.apple.com/in/album/to-pimp-a-butterfly/1440871877?uo=4"},{"t":"SOS","a":"SZA","img":"img/covers/sza-sos.jpg","url":"https://music.apple.com/in/album/sos/1658650093?uo=4"},{"t":"Ctrl","a":"SZA","img":"img/covers/sza-ctrl.jpg","url":"https://music.apple.com/in/album/ctrl/1239977075?uo=4"},{"t":"Random Access Memories","a":"Daft Punk","img":"img/covers/daft-punk-random-access-memories.jpg","url":"https://music.apple.com/in/album/random-access-memories/617154241?uo=4"},{"t":"Discovery","a":"Daft Punk","img":"img/covers/daft-punk-discovery.jpg","url":"https://music.apple.com/in/album/discovery/697194953?uo=4"},{"t":"AM","a":"Arctic Monkeys","img":"img/covers/arctic-monkeys-am.jpg","url":"https://music.apple.com/in/album/am/663097964?uo=4"},{"t":"In Rainbows","a":"Radiohead","img":"img/covers/radiohead-in-rainbows.jpg","url":"https://music.apple.com/in/album/in-rainbows/1109714933?uo=4"},{"t":"OK Computer","a":"Radiohead","img":"img/covers/radiohead-ok-computer.jpg","url":"https://music.apple.com/in/album/ok-computer/1097861387?uo=4"},{"t":"Songs in the Key of Life","a":"Stevie Wonder","img":"img/covers/stevie-wonder-songs-in-the-key-of-life.jpg","url":"https://music.apple.com/in/album/songs-in-the-key-of-life/1440788438?uo=4"},{"t":"What's Going On","a":"Marvin Gaye","img":"img/covers/marvin-gaye-what-s-going-on.jpg","url":"https://music.apple.com/in/album/whats-going-on/1538081586?uo=4"},{"t":"Purple Rain","a":"Prince","img":"img/covers/prince-purple-rain.jpg","url":"https://music.apple.com/in/album/purple-rain/1746833068?uo=4"},{"t":"Happier Than Ever","a":"Billie Eilish","img":"img/covers/billie-eilish-happier-than-ever.jpg","url":"https://music.apple.com/in/album/happier-than-ever/1564530526?uo=4"},{"t":"Harry's House","a":"Harry Styles","img":"img/covers/harry-styles-harry-s-house.jpg","url":"https://music.apple.com/in/album/harrys-house/1615584999?uo=4"},{"t":"Fine Line","a":"Harry Styles","img":"img/covers/harry-styles-fine-line.jpg","url":"https://music.apple.com/in/album/fine-line/1485802965?uo=4"},{"t":"Born to Die","a":"Lana Del Rey","img":"img/covers/lana-del-rey-born-to-die.jpg","url":"https://music.apple.com/in/album/born-to-die/1779781213?uo=4"},{"t":"folklore","a":"Taylor Swift","img":"img/covers/taylor-swift-folklore.jpg","url":"https://music.apple.com/in/album/folklore/1524793738?uo=4"},{"t":"Gemini Rights","a":"Steve Lacy","img":"img/covers/steve-lacy-gemini-rights.jpg","url":"https://music.apple.com/in/album/gemini-rights/6788150539?uo=4"},{"t":"A Night at the Opera","a":"Queen","img":"img/covers/queen-a-night-at-the-opera.jpg","url":"https://music.apple.com/in/album/a-night-at-the-opera/6781023399?uo=4"},{"t":"The Rise and Fall of Ziggy Stardust and the Spiders from Mars","a":"David Bowie","img":"img/covers/david-bowie-the-rise-and-fall-of-ziggy-stardust-and-the-spid.jpg","url":"https://music.apple.com/in/album/the-rise-and-fall-of-ziggy-stardust-and-the/1039796877?uo=4"},{"t":"The Miseducation of Lauryn Hill","a":"Lauryn Hill","img":"img/covers/lauryn-hill-the-miseducation-of-lauryn-hill.jpg","url":"https://music.apple.com/in/album/the-miseducation-of-lauryn-hill/1276760743?uo=4"},{"t":"Come Away With Me","a":"Norah Jones","img":"img/covers/norah-jones-come-away-with-me.jpg","url":"https://music.apple.com/in/album/come-away-with-me-remastered/1624173298?uo=4"},{"t":"Demon Days","a":"Gorillaz","img":"img/covers/gorillaz-demon-days.jpg","url":"https://music.apple.com/in/album/demon-days/850571319?uo=4"},{"t":"Bloom","a":"Beach House","img":"img/covers/beach-house-bloom.jpg","url":"https://music.apple.com/in/album/bloom/1247719362?uo=4"},{"t":"Future Nostalgia","a":"Dua Lipa","img":"img/covers/dua-lipa-future-nostalgia.jpg","url":"https://music.apple.com/in/album/future-nostalgia-single/1489975831?uo=4"},{"t":"Legend","a":"Bob Marley & The Wailers","img":"img/covers/bob-marley-the-wailers-legend.jpg","url":"https://music.apple.com/in/album/legend-the-best-of-bob-marley-the-wailers/1469575763?uo=4"},{"t":"Salad Days","a":"Mac DeMarco","img":"img/covers/mac-demarco-salad-days.jpg","url":"https://music.apple.com/in/album/salad-days/6789834398?uo=4"},{"t":"Planet Her","a":"Doja Cat","img":"img/covers/doja-cat-planet-her.jpg","url":"https://music.apple.com/in/album/planet-her/1573475827?uo=4"},{"t":"Parachutes","a":"Coldplay","img":"img/covers/coldplay-parachutes.jpg","url":"https://music.apple.com/in/album/parachutes/1122782080?uo=4"},{"t":"cold/mess","a":"Prateek Kuhad","img":"img/covers/prateek-kuhad-cold-mess.jpg","url":"https://music.apple.com/in/album/cold-mess/1534546275?uo=4"}]/*SHELF_END*/;
+const sitePath = p => (/^https?:$/.test(location.protocol) ? '/' : '') + p;
+let shelf = SHELF_SAVED.length ? shuffle(SHELF_SAVED.map(a => ({ t:a.t, a:a.a, art:sitePath(a.img), url:a.url })), 2026) : [];
 function slotAlbum(k){ if (shelf.length){ const a = shelf[k % shelf.length]; return { img:a.art, title:a.t, sub:a.a, url:a.url }; }
   const d = WALL[k % WALL.length]; return { img:albumCover(d), title:d.title, sub:`${d.band}, ${d.year}`, url:'' }; }
 function paintSlots(root = document){ root.querySelectorAll('[data-slot]').forEach(el => { const a = slotAlbum(+el.dataset.slot);
   if (el instanceof SVGImageElement){ if (el.getAttribute('href') !== a.img) el.setAttribute('href', a.img); } else el.style.backgroundImage = `url("${a.img}")`; }); }
 async function loadShelf(){
+  if (shelf.length) return;
   try { const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 12000); const res = await fetch('/api/albums', { signal:ctl.signal }); clearTimeout(to);
     const data = await res.json(), list = (Array.isArray(data.albums) ? data.albums : []).map(a => ({ t:String(a.t || '').slice(0, 120), a:String(a.a || '').slice(0, 80), art:safeURL(a.art), url:safeURL(a.url) })).filter(a => a.t && a.art);
     if (list.length < 12) return;
@@ -1318,7 +1350,7 @@ const COVERS = [['photo','Upload a picture','A photo, a painting, a scan, any ar
 const OPT_NOTES = {
   vinyl:{ black:'The classic. Deep, glossy and quiet.', solid:'One solid colour of your choosing.', translucent:'Tinted and see-through. Hold it up to the light.', clear:'Clear as glass, as if there is nothing there.',
     metallic:'A pearly sheen that catches the light.', iridescent:'Shifts colour as it turns, like oil on water.', marble:'Two colours folded together, so no two come out the same.',
-    splatter:'Flecks of a second colour flicked across the first.', swirl:'Two colours spun into a spiral.', clouds:'Soft clouds of a second colour drifting through.',
+    splatter:'A second colour flung outwards across the first.', swirl:'Two colours spun into a spiral.', clouds:'Soft clouds of a second colour drifting through.',
     split:'One colour on each half, meeting in a straight line.', stripe:'Bands of two colours across the record.', inner:'One colour in the middle, ringed by another.',
     smoke:'Wisps of smoke through clear vinyl.', eco:'Pressed from leftover vinyl, so every one is a surprise.', picture:'Any picture you like, pressed right into the record. Upload one, or use your cover.' },
   shape:{ round:'Plays from edge to edge.', heart:'Cut into a heart. The grooves stop short of the curves, so each side plays a little less.', star:'Cut into a star. The smallest playing area of all.',
@@ -1451,61 +1483,152 @@ function shapePath(g, shape, h, size){
   else if (shape === 'oct') poly(8, h*.99, Math.PI/8);
   else g.arc(h, h, h*.995, 0, 7);
 }
-function drawVinyl(r, size, side){
-  const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d'), d = r.d, h = size/2, R = mulberry32(99 + parseInt(hashStr(d.v1 + d.v2), 36) % 10000 + (d.vinyl||'').length);
-  const c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2', type = d.vinyl, shape = d.shape || 'round', playR = h*(PLAY[shape] || .97);
-  const hexA = (hx, a) => { const n = parseInt(hx.slice(1),16); return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`; };
-  const isClear = type === 'clear' || type === 'translucent';
-  g.save(); shapePath(g, shape, h, size); g.clip();
-  switch (type){
-    case 'black': g.fillStyle = '#121212'; g.fillRect(0,0,size,size); break;
-    case 'solid': g.fillStyle = c1; g.fillRect(0,0,size,size); break;
-    case 'translucent': g.fillStyle = hexA(c1, .66); g.fillRect(0,0,size,size); break;
-    case 'clear': g.fillStyle = 'rgba(238,238,232,.2)'; g.fillRect(0,0,size,size); break;
-    case 'metallic': { const mg = g.createLinearGradient(0,0,size,size); mg.addColorStop(0, c1); mg.addColorStop(.3, '#ffffff'); mg.addColorStop(.42, c1); mg.addColorStop(.7, hexA('#000000',.6)); mg.addColorStop(.85, c1); mg.addColorStop(1, '#ffffff');
-      g.fillStyle = c1; g.fillRect(0,0,size,size); g.globalAlpha = .55; g.fillStyle = mg; g.fillRect(0,0,size,size); g.globalAlpha = 1;
-      if (g.createConicGradient){ const cg = g.createConicGradient(.3, h, h); [[0,.5],[.1,0],[.25,.35],[.4,0],[.5,.5],[.6,0],[.75,.35],[.9,0],[1,.5]].forEach(([o,a]) => cg.addColorStop(o, `rgba(255,255,255,${a})`)); g.fillStyle = cg; g.globalCompositeOperation = 'overlay'; g.fillRect(0,0,size,size); g.globalCompositeOperation = 'source-over'; } break; }
-    case 'iridescent': g.fillStyle = '#E8E3EA'; g.fillRect(0,0,size,size);
-      if (g.createConicGradient){ const cg = g.createConicGradient(0, h, h); ['#ffd1dc','#d6f5ff','#e7ffd6','#fff1c9','#e5d6ff','#ffd1dc'].forEach((col,i,a) => cg.addColorStop(i/(a.length-1), col)); g.globalAlpha = .75; g.fillStyle = cg; g.fillRect(0,0,size,size);
-        const cg2 = g.createConicGradient(2, h, h); ['rgba(255,255,255,.6)','rgba(255,255,255,0)','rgba(160,200,255,.4)','rgba(255,255,255,0)','rgba(255,180,220,.4)','rgba(255,255,255,.6)'].forEach((col,i,a) => cg2.addColorStop(i/(a.length-1), col)); g.fillStyle = cg2; g.fillRect(0,0,size,size); g.globalAlpha = 1; } break;
-    case 'marble': g.fillStyle = c1; g.fillRect(0,0,size,size); g.lineCap = 'round';
-      for (let k=0;k<34;k++){ g.strokeStyle = k%5 === 0 ? '#F4EFE6' : c2; g.globalAlpha = .35 + R()*.4; g.lineWidth = size*(.006 + R()*.045); g.beginPath(); let x = R()*size, y = R()*size; g.moveTo(x,y);
-        for (let st=0;st<7;st++){ x += (R()-.5)*size*.45; y += (R()-.5)*size*.45; g.quadraticCurveTo(x + (R()-.5)*size*.3, y + (R()-.5)*size*.3, x, y); } g.stroke(); } g.globalAlpha = 1; break;
-    case 'splatter': g.fillStyle = c1; g.fillRect(0,0,size,size); [c2, '#111', '#F7EEDB'].forEach(col => { g.fillStyle = col;
-      for (let k=0;k<60;k++){ g.globalAlpha = .92; const x = R()*size, y = R()*size, rr = size*(R() < .12 ? .016 + R()*.026 : .003 + R()*.009); g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill();
-        if (rr > size*.014) for (let q=0;q<5;q++){ const a = R()*7, dd = rr*(1.4 + R()*2); g.beginPath(); g.arc(x + Math.cos(a)*dd, y + Math.sin(a)*dd, rr*(.12 + R()*.2), 0, 7); g.fill(); } } }); g.globalAlpha = 1; break;
-    case 'swirl': g.fillStyle = c1; g.fillRect(0,0,size,size); g.lineCap = 'round';
-      for (let arm=0; arm<4; arm++){ g.strokeStyle = arm % 2 ? '#F4EFE6' : c2; g.globalAlpha = arm % 2 ? .35 : .7; g.lineWidth = size*(arm % 2 ? .012 : .04); g.beginPath();
-        for (let t=0; t<14; t+=.04){ const rr = h*.3 + t*h*.05, a = t*.9 + arm*1.57; const x = h + Math.cos(a)*rr, y = h + Math.sin(a)*rr; t ? g.lineTo(x,y) : g.moveTo(x,y); } g.stroke(); } g.globalAlpha = 1; break;
-    case 'clouds': g.fillStyle = c1; g.fillRect(0,0,size,size); g.filter = `blur(${size*.025}px)`;
-      for (let k=0;k<22;k++){ g.fillStyle = hexA(c2, .35 + R()*.3); g.beginPath(); g.ellipse(R()*size, R()*size, size*(.06 + R()*.12), size*(.04 + R()*.08), R()*3, 0, 7); g.fill(); } g.filter = 'none'; break;
-    case 'split': g.fillStyle = c1; g.fillRect(0,0,h,size); g.fillStyle = c2; g.fillRect(h,0,h,size); break;
-    case 'stripe': g.fillStyle = c1; g.fillRect(0,0,size,size); g.fillStyle = c2; g.fillRect(0, h - size*.14, size, size*.28); g.fillStyle = '#F4EFE6'; g.fillRect(0, h - size*.15, size, size*.012); g.fillRect(0, h + size*.138, size, size*.012); break;
-    case 'inner': g.fillStyle = c1; g.fillRect(0,0,size,size); { const gr = g.createRadialGradient(h,h,h*.4,h,h,h*.72); gr.addColorStop(0, c2); gr.addColorStop(.8, c2); gr.addColorStop(1, hexA(c2, 0)); g.fillStyle = gr; g.beginPath(); g.arc(h,h,h*.72,0,7); g.fill(); } break;
-    case 'smoke': g.fillStyle = c1; g.fillRect(0,0,size,size); g.filter = `blur(${size*.02}px)`; for (let k=0;k<16;k++){ g.fillStyle = hexA(k % 3 ? c2 : '#F7EEDB', .35); g.beginPath(); g.ellipse(R()*size, R()*size, size*(.08 + R()*.16), size*(.03 + R()*.06), R()*3, 0, 7); g.fill(); } g.filter = 'none'; break;
-    case 'eco': g.fillStyle = '#3d3431'; g.fillRect(0,0,size,size); g.lineCap = 'round';
-      for (let k=0;k<70;k++){ g.strokeStyle = VCOLS[1 + Math.floor(R()*(VCOLS.length-1))]; g.globalAlpha = .25 + R()*.45; g.lineWidth = size*(.004 + R()*.03); g.beginPath(); const x = R()*size, y = R()*size, a = R()*7, l = size*(.05 + R()*.25);
-        g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a+1)*l*.6, y + Math.sin(a+1)*l*.6, x + Math.cos(a)*l, y + Math.sin(a)*l); g.stroke(); } g.globalAlpha = 1; break;
-    case 'picture': { g.fillStyle = '#111'; g.fillRect(0,0,size,size); const src = r.pdisc || ((r.d.cover || 'photo') === 'photo' ? r.photo : ''), im = src ? photoImage(src) : null;
-      if (!(im && drawPhoto(g, im, 0, 0, size, size))){ g.fillStyle = '#DCD3C1'; g.fillRect(0,0,size,size); g.fillStyle = 'rgba(35,26,20,.55)'; g.textAlign = 'center';
-        g.font = `700 ${size*.05}px Archivo, sans-serif`; g.fillText('YOUR PICTURE', h, h*.42); g.fillText('GOES HERE', h, h*.42 + size*.06); } break; }
+// ---- THE RECORD ITSELF, drawn to look like the real thing.
+// Each finish gets its own material, worked out point by point with noise (vinylBase): marbling that flows, a swirl that
+// spirals, metal flake, pearl, smoke hanging in clear plastic. Over that go the things every record has (drawVinyl): hundreds
+// of fine grooves, smooth gaps between the songs, the dead wax round the label, lamplight caught in two bright wedges across
+// the grooves, a bevelled edge, and a paper label with its pressing ring and spindle hole.
+function makeNoise(seed){ const rnd = mulberry32(seed), P = new Uint8Array(512), G = new Float32Array(256), perm = Array.from({ length:256 }, (_, i) => i);
+  for (let i = 255; i > 0; i--){ const j = Math.floor(rnd()*(i + 1)); [perm[i], perm[j]] = [perm[j], perm[i]]; }
+  for (let i = 0; i < 512; i++) P[i] = perm[i & 255]; for (let i = 0; i < 256; i++) G[i] = rnd();
+  const n2 = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf*xf*(3 - 2*xf), v = yf*yf*(3 - 2*yf), y0 = P[yi & 255], y1 = P[(yi + 1) & 255];
+    const a = G[P[(xi & 255) + y0]], b = G[P[((xi + 1) & 255) + y0]], c = G[P[(xi & 255) + y1]], d = G[P[((xi + 1) & 255) + y1]]; return a + (b - a)*u + (c - a)*v + (a - b - c + d)*u*v; };
+  const fbm = (x, y, oct=4) => { let s = 0, a = .5, f = 1, t = 0; for (let i = 0; i < oct; i++){ s += a*n2(x*f + i*17.3, y*f - i*9.1); t += a; f *= 2.03; a *= .5; } return s/t; };
+  return { n2, fbm, rnd }; }
+const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a)/(b - a))); return t*t*(3 - 2*t); };
+const hexRGB = hx => { const n = parseInt(String(hx || '#141414').slice(1), 16) || 0; return [n >> 16, (n >> 8) & 255, n & 255]; };
+// the material of the record, before grooves and light. Returns a canvas N across.
+function vinylBase(r, N, seed){
+  const amt = typeof r.d.amt === 'number' ? Math.min(2, Math.max(0, r.d.amt)) : 1, lv = a => { const i = Math.min(1, Math.floor(amt)), f = amt - i; return a[i] + (a[i + 1] - a[i])*f; }, c = document.createElement('canvas'); c.width = c.height = N; const g = c.getContext('2d'), d = r.d, type = d.vinyl, c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2', h = N/2, R = mulberry32(seed);
+  const hexA = (hx, a) => { const [x, y, z] = hexRGB(hx); return `rgba(${x},${y},${z},${a})`; };
+  if (type === 'picture'){ g.fillStyle = '#111'; g.fillRect(0, 0, N, N); const src = r.pdisc || ((d.cover || 'photo') === 'photo' ? r.photo : ''), im = src ? photoImage(src) : null;
+    if (!(im && drawPhoto(g, im, 0, 0, N, N))){ g.fillStyle = '#DCD3C1'; g.fillRect(0, 0, N, N); g.fillStyle = 'rgba(35,26,20,.55)'; g.textAlign = 'center';
+      g.font = `700 ${N*.05}px Archivo, sans-serif`; g.fillText('YOUR PICTURE', h, h*.42); g.fillText('GOES HERE', h, h*.42 + N*.06); } return c; }
+  // finishes from older records, kept as they were pressed
+  if (type === 'splatter' || type === 'clouds' || type === 'stripe'){ g.fillStyle = c1; g.fillRect(0, 0, N, N);
+    if (type === 'splatter'){ const R0 = R, drop = (col, k, R = R0) => { const a = R()*6.283, d0 = h*(.2 + Math.pow(R(), .7)*.85), big = R() < .2, w = N*(big ? .008 + R()*.014 : .002 + R()*.005), len = w*(1.2 + R()*(big ? 5 : 2.5));
+        g.fillStyle = col; g.save(); g.translate(h + Math.cos(a)*d0, h + Math.sin(a)*d0); g.rotate(a + (R() - .5)*.5); g.beginPath(); g.ellipse(0, 0, len, w, 0, 0, 7); g.fill();
+        if (big){ g.beginPath(); g.ellipse(len*1.1, (R() - .5)*w, len*.45, w*.5, 0, 0, 7); g.fill(); for (let q = 0; q < 4; q++){ g.beginPath(); g.arc(len*(1.4 + R()*1.6), (R() - .5)*w*4, w*(.15 + R()*.3), 0, 7); g.fill(); } } g.restore(); };
+      for (let k = 0; k < lv([80, 230, 520]); k++) drop(c2, k); const third = lum(c1) > .5 ? '#141414' : '#F7EEDB', R3 = mulberry32(seed + 7); for (let k = 0; k < lv([24, 70, 150]); k++) drop(third, k, R3); }
+    else if (type === 'clouds'){ g.filter = `blur(${N*.025}px)`; for (let k = 0; k < 22; k++){ g.fillStyle = hexA(c2, .35 + R()*.3); g.beginPath(); g.ellipse(R()*N, R()*N, N*(.06 + R()*.12), N*(.04 + R()*.08), R()*3, 0, 7); g.fill(); } g.filter = 'none'; }
+    else { g.fillStyle = c2; g.fillRect(0, h - N*.14, N, N*.28); g.fillStyle = '#F4EFE6'; g.fillRect(0, h - N*.15, N, N*.012); g.fillRect(0, h + N*.138, N, N*.012); }
+    return c; }
+  if (type === 'eco'){ g.fillStyle = '#2A2422'; g.fillRect(0, 0, N, N); const cols = VCOLS.slice(1);
+    for (let k = 0; k < 9; k++){ g.fillStyle = hexA(cols[Math.floor(R()*cols.length)], .16); g.beginPath(); g.ellipse(R()*N, R()*N, N*(.12 + R()*.2), N*(.06 + R()*.1), R()*3, 0, 7); g.fill(); }
+    for (let k = 0; k < lv([200, 620, 1300]); k++){ const x = R()*N, y = R()*N, big = R() < .14, rr = N*(big ? .011 + R()*.016 : .003 + R()*.008), pts = 5 + Math.floor(R()*3), a0 = R()*7;
+      g.fillStyle = hexA(cols[Math.floor(R()*cols.length)], .8 + R()*.2); g.beginPath();
+      for (let q = 0; q < pts; q++){ const a = a0 + q/pts*6.283, d2 = rr*(.55 + R()*.6), X = x + Math.cos(a)*d2*(1 + (big ? .5 : 0)), Y = y + Math.sin(a)*d2; q ? g.lineTo(X, Y) : g.moveTo(X, Y); } g.closePath(); g.fill(); }
+    return c; }
+  const { n2, fbm } = makeNoise(seed), A = hexRGB(c1), B = hexRGB(c2), W = [246, 240, 228], img = g.createImageData(N, N), px = img.data;
+  const pal = type === 'eco' ? [1, 2, 3].map(() => hexRGB(VCOLS[1 + Math.floor(R()*(VCOLS.length - 1))])) : null;
+  let o = 0;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++, o += 4){
+    const nx = (x + .5)/N*2 - 1, ny = (y + .5)/N*2 - 1, rad = Math.hypot(nx, ny), ang = Math.atan2(ny, nx); let cr, cg, cb, ca = 255, t;
+    const mix = (P, Q, k) => { cr = P[0] + (Q[0] - P[0])*k; cg = P[1] + (Q[1] - P[1])*k; cb = P[2] + (Q[2] - P[2])*k; };
+    const add = (Q, k) => { cr += (Q[0] - cr)*k; cg += (Q[1] - cg)*k; cb += (Q[2] - cb)*k; };
+    switch (type){
+      case 'black': { const v = 13 + n2(nx*3, ny*3)*5; cr = cg = v; cb = v + 1; break; }
+      case 'solid': { const v = .96 + fbm(nx*2.2, ny*2.2, 3)*.08; cr = A[0]*v; cg = A[1]*v; cb = A[2]*v; break; }
+      case 'translucent': { const v = 1.04 + fbm(nx*1.8, ny*1.8, 3)*.14, m = (A[0] + A[1] + A[2])/3, sat = c => Math.max(0, Math.min(255, (m + (c - m)*1.4)*v + 18)); cr = sat(A[0]); cg = sat(A[1]); cb = sat(A[2]); ca = 104 + fbm(nx*1.4 + 9, ny*1.4, 3)*26; break; }
+      case 'clear': { const v = 232 + fbm(nx*1.5, ny*1.5, 3)*16; cr = v; cg = v + 2; cb = v - 2; ca = 30 + fbm(nx*1.2 + 4, ny*1.2, 3)*22; break; }
+      case 'split': { const w = (fbm(ny*2.4 + 3, 3.3, 4) - .5)*.2 + (fbm(ny*9 + 1, 8.1, 3) - .5)*.05; t = sstep(-.018, .018, nx - w); mix(A, B, t);
+        // a little of each colour dragged into the other where the two halves met in the press
+        const drag = sstep(.62, .8, fbm(nx*5 + 20, ny*1.3, 4))*sstep(.3, 0, Math.abs(nx - w)); add(t > .5 ? A : B, drag*.75); break; }
+      case 'inner': { const e = lv([.5, .6, .78]) + (fbm(Math.cos(ang)*.9 + 4, Math.sin(ang)*.9 + 4, 3) - .5)*.16;
+        t = 1 - sstep(e - .12, e + .07, rad + (fbm(Math.cos(ang)*5 + rad*.8, Math.sin(ang)*5, 3) - .5)*.04); mix(A, B, t*t*(3 - 2*t)); break; }
+      // swirl: a bold pinwheel, three broad arms of each colour winding out from the label
+      case 'swirl': { const q = fbm(nx*1.6 + 5, ny*1.6, 3), u = ang + 2.3*Math.log(rad + .09) + (q - .5)*1.1, band = Math.sin(3*u)*.5 + .5;
+        t = sstep(.4, .6, band + (fbm(Math.cos(u)*4 + rad*3, Math.sin(u)*4 - rad*3, 3) - .5)*.22); mix(A, B, t); break; }
+      // marbled: one colour, with thin veins of the other running through it like stone
+      case 'marble': { const q1 = fbm(nx*1.4 + 3, ny*1.4 + 7, 4), q2 = fbm(nx*1.4 - 5, ny*1.4 + 2, 4), m1 = fbm(nx*1.7 + 2.6*q1, ny*1.7 + 2.6*q2, 5), m2 = fbm(nx*3.6 - 2.2*q2 + 9, ny*3.6 + 2.2*q1, 4);
+        const r1 = 1 - Math.abs(2*m1 - 1), r2 = 1 - Math.abs(2*m2 - 1), lo = lv([.95, .9, .86]), vein = Math.max(sstep(lo, lo + .085, r1), sstep(lo + lv([.03, .03, -.02]), lo + .09, r2)*lv([.3, .7, 1]));
+        mix(A, B, .1*q1 + sstep(.72, .95, r1)*lv([.08, .16, .26])); add(B, vein); break; }
+      // smoke: clear plastic with a few soft clouds drifting in it
+      case 'smoke': { const q1 = fbm(nx*.9 + 2, ny*.9 + 5, 3), q2 = fbm(nx*.9 - 7, ny*.9 + 1, 3), v = fbm(nx*1.05 + 2.2*q1, ny*1.05 + 2.2*q2, 4);
+        { const sh = lv([-.08, 0, .1]); t = sstep(.4 - sh, .64 - sh, v); } mix(A, B, t); ca = 70 + t*185; break; }
+      case 'metallic': { const br = .62 + .5*Math.pow(Math.abs(Math.cos(ang - .8)), 3) + (fbm(Math.cos(ang)*14, Math.sin(ang)*14 + rad*.6, 3) - .5)*.35, fl = n2(x*1.9 + 40, y*1.9);
+        cr = A[0]*br; cg = A[1]*br; cb = A[2]*br; if (fl > .78) add([255, 252, 244], (fl - .78)*2.6*br); else if (fl < .2) { const k = 1 - (.2 - fl)*1.4; cr *= k; cg *= k; cb *= k; } break; }
+      case 'iridescent': { const hu = ang/6.2832*2 + rad*1.15 + fbm(nx*1.8, ny*1.8, 4)*.9, k = 6.2832;
+        cr = 255*(.8 + .2*Math.cos(k*hu)); cg = 255*(.82 + .18*Math.cos(k*(hu + .33))); cb = 255*(.86 + .14*Math.cos(k*(hu + .67))); const fl = n2(x*1.7, y*1.7 + 30); if (fl > .82) add([255, 255, 255], (fl - .82)*3); break; }
+      default: cr = A[0]; cg = A[1]; cb = A[2];
+    }
+    px[o] = cr; px[o + 1] = cg; px[o + 2] = cb; px[o + 3] = ca;
   }
-  // depth: soft radial falloff, lead-in band, grooves, lead-out, edge bevel
-  if (type !== 'picture'){ const dk = g.createRadialGradient(h,h,h*.3,h,h,h*1.05); dk.addColorStop(0,'rgba(0,0,0,.02)'); dk.addColorStop(1, isClear ? 'rgba(0,0,0,.12)' : 'rgba(0,0,0,.32)'); g.fillStyle = dk; g.fillRect(0,0,size,size); }
-  const lrIn = h*.38;
-  for (let rr = lrIn*1.14; rr < playR*.97; rr += size*(.012 + R()*.012)){
-    const a = (type === 'black' ? .12 : isClear ? .14 : .16) + R()*.06; g.strokeStyle = type === 'black' || type === 'eco' ? `rgba(255,255,255,${a})` : `rgba(0,0,0,${a})`;
-    g.lineWidth = size*.0024; g.beginPath(); g.arc(h, h, rr, 0, 7); g.stroke(); }
-  g.strokeStyle = type === 'black' ? 'rgba(255,255,255,.07)' : 'rgba(255,255,255,.18)'; g.lineWidth = size*.012; g.beginPath(); g.arc(h, h, playR*.99, 0, 7); g.stroke();
-  g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = size*.006; g.beginPath(); g.arc(h, h, lrIn*1.1, 0, 7); g.stroke();
-  if (g.createConicGradient){ const sh = g.createConicGradient(.6, h, h), st = type === 'black' ? .16 : isClear ? .22 : .14;
-    [[0,st*1.4],[.05,st*1.4],[.0501,0],[.5,0],[.5001,st*1.4],[.55,st*1.4],[.5501,0],[1,0]].forEach(([o,a]) => sh.addColorStop(o, `rgba(255,255,255,${a})`)); g.fillStyle = sh; g.fillRect(0,0,size,size); }
+  g.putImageData(img, 0, 0); return c;
+}
+function drawVinyl(r, size, side){
+  const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d'), d = r.d, h = size/2, seed = 99 + parseInt(hashStr((d.v1 || '') + (d.v2 || '')), 36) % 10000 + (d.vinyl || '').length, R = mulberry32(seed);
+  const type = d.vinyl, shape = d.shape || 'round', playR = h*(PLAY[shape] || .97), c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2';
+  const see = type === 'clear' ? 2 : type === 'translucent' || type === 'smoke' ? 1 : 0;                       // how see-through the plastic is
+  const two = (VINYLS.find(v => v[0] === type) || [0, 0, 0])[2] === 2;
+  const L = type === 'black' ? 0 : type === 'eco' ? .2 : type === 'picture' ? .45 : type === 'iridescent' || type === 'clear' ? .9 : two ? (lum(c1) + lum(c2))/2 : lum(c1), dark = L < .4;
+  const labR = h*.33, grIn = h*.44, grOut = playR*.975, step = Math.max(.6, size/720*.85);
+  const layer = () => { const k = document.createElement('canvas'); k.width = k.height = size; return [k, k.getContext('2d')]; };
+  const ring = (G, rr, w, col) => { G.strokeStyle = col; G.lineWidth = w; G.beginPath(); G.arc(h, h, rr, 0, 7); G.stroke(); };
+  // light caught across the grooves: bright wedges towards the lamp and away from it, fainter ones between
+  const lobes = (G, list, col) => { const cg = G.createConicGradient(0, h, h); for (let i = 0; i <= 120; i++){ const f = i/120; let a = 0;
+      for (const [at, wd, st] of list){ let dd = Math.abs(f - at); dd = Math.min(dd, 1 - dd); a += st*Math.exp(-(dd*dd)/(wd*wd)); } cg.addColorStop(f, col(Math.min(1, a), f)); } G.fillStyle = cg; G.fillRect(0, 0, size, size); };
+  const white = a => `rgba(255,255,255,${a.toFixed(3)})`;
+
+  g.save(); shapePath(g, shape, h, size); g.clip();
+  g.imageSmoothingQuality = 'high'; g.drawImage(vinylBase(r, Math.min(size, 420), seed), 0, 0, size, size);
+  // the material's own fine grain: metal flake and pearl sparkle most, plain vinyl only a little
+  g.globalCompositeOperation = 'overlay'; g.globalAlpha = type === 'metallic' ? .5 : type === 'iridescent' ? .25 : type === 'picture' ? .05 : .07; g.fillStyle = g.createPattern(noiseCanvas, 'repeat'); g.fillRect(0, 0, size, size);
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  // the lamp is up and to the left, so the far side of the record sits a little darker
+  { const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(0, 'rgba(255,255,255,0)'); lg.addColorStop(.5, 'rgba(0,0,0,0)'); lg.addColorStop(1, `rgba(0,0,0,${see ? .06 : .13})`); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
+  // ---- the grooves: one fine ring after another, each catching the light a little differently, with a smooth gap between songs
+  const n = Math.max(1, Math.min(12, ((r[side] || r.A || []).length) || 5)), gaps = [];
+  { let acc = 0; const w = Array.from({ length:n }, () => .7 + R()*.6), tot = w.reduce((a, b) => a + b, 0); for (let i = 0; i < n - 1; i++){ acc += w[i]; gaps.push(grOut - (grOut - grIn)*acc/tot); } }
+  const kB = dark ? .2 : see ? .16 : .15, kW = type === 'metallic' ? .12 : dark ? .06 : see ? .1 : .04, [mk, M] = layer();
+  for (let rr = grIn; rr < grOut; rr += step){ const v = R(), wob = R();
+    if (v < .5) ring(g, rr, step*1.05, `rgba(0,0,0,${((.5 - v)*kB).toFixed(3)})`); else ring(g, rr, step*1.05, white((v - .5)*kW));
+    ring(M, rr, step*1.25, white(.5 + wob*.5)); }
+  // bands a few grooves wide where the music is louder or quieter
+  for (let k = 0; k < 26; k++){ const rr = grIn + R()*(grOut - grIn), w = size*(.004 + R()*.018); ring(g, rr, w, R() < .5 ? `rgba(0,0,0,${(.03 + R()*.05).toFixed(3)})` : white(.02 + R()*(dark ? .035 : .05))); ring(M, rr, w, `rgba(0,0,0,${(R()*.3).toFixed(2)})`); }
+  for (const rr of gaps){ const w = size*.005; ring(g, rr, w, dark ? 'rgba(0,0,0,.42)' : 'rgba(255,255,255,.08)'); ring(g, rr - w*.6, size*.001, `rgba(0,0,0,${dark ? .3 : .16})`); ring(g, rr + w*.6, size*.001, white(dark ? .14 : .26));
+    M.globalCompositeOperation = 'destination-out'; ring(M, rr, w, 'rgba(0,0,0,.75)'); M.globalCompositeOperation = 'source-over'; }
+  // the dead wax round the label: smooth, a shade apart from the grooves, with the run-out groove curling into its locked ring
+  g.fillStyle = dark ? 'rgba(255,255,255,.025)' : 'rgba(0,0,0,.04)'; g.beginPath(); g.arc(h, h, grIn, 0, 7); g.arc(h, h, labR, 0, 7, true); g.fill();
+  ring(g, grIn, size*.002, 'rgba(0,0,0,.3)'); ring(g, h*.385, size*.0016, dark ? white(.16) : 'rgba(0,0,0,.22)'); ring(g, h*.38, size*.001, dark ? 'rgba(0,0,0,.5)' : white(.3));
+  g.strokeStyle = dark ? white(.1) : 'rgba(0,0,0,.14)'; g.lineWidth = size*.0013; g.beginPath(); for (let a = 0; a < 6.3; a += .05){ const rr = grIn - (grIn - h*.385)*a/6.3, x = h + Math.cos(a + 1)*rr, y = h + Math.sin(a + 1)*rr; a ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
+  // the smooth lead-in before the first song, and the raised bead near the edge
+  ring(g, grOut, size*.0018, 'rgba(0,0,0,.3)'); if (shape === 'round'){ ring(g, h*.982, size*.006, dark ? white(.04) : white(.07)); ring(g, h*.976, size*.0012, 'rgba(0,0,0,.25)'); }
+  else { ring(g, playR*.99, size*.004, dark ? white(.07) : white(.18)); ring(g, playR, size*.0014, 'rgba(0,0,0,.3)'); }
+  // ---- the light. In the grooves it gathers into wedges, broken into streaks by the grooves themselves
+  { const [hl, H] = layer(), strong = type === 'metallic' ? .6 : type === 'black' ? .26 : see === 2 ? .3 : see ? .2 : type === 'iridescent' ? .22 : dark ? .22 : .16;
+    lobes(H, [[.625, .04, .8], [.625, .013, .7], [.125, .034, .65], [.125, .011, .5], [.375, .05, .14], [.875, .05, .11], [.558, .01, .3], [.69, .008, .22], [.19, .008, .2]], a => white(a*strong));
+    if (dark || type === 'metallic' || type === 'iridescent'){ H.globalCompositeOperation = 'lighter';                                       // the faint rainbow you see either side of the glare on dark vinyl
+      lobes(H, [[.625, .07, 1], [.125, .065, .85]], (a, f) => `hsla(${(f*2160 + 200) % 360},90%,64%,${(a*(1 - a)*(type === 'iridescent' ? .3 : type === 'metallic' ? .16 : .05)).toFixed(3)})`); H.globalCompositeOperation = 'source-over'; }
+    H.globalCompositeOperation = 'destination-in'; H.drawImage(mk, 0, 0); H.globalCompositeOperation = 'source-over';
+    g.globalCompositeOperation = dark ? 'screen' : 'soft-light'; g.drawImage(hl, 0, 0); if (!dark){ g.globalCompositeOperation = 'screen'; g.globalAlpha = type === 'metallic' ? .35 : see ? .14 : .08; g.drawImage(hl, 0, 0); g.globalAlpha = 1; }
+    if (type === 'metallic'){ g.globalCompositeOperation = 'overlay'; g.drawImage(hl, 0, 0); }
+    g.globalCompositeOperation = 'source-over'; }
+  // on the smooth parts (dead wax, lead-in, the plain border of a shaped record) the light is one soft sheen
+  { const [sm, S] = layer(); lobes(S, [[.625, .09, 1], [.125, .08, .6]], a => white(a*(type === 'metallic' ? .22 : dark ? .06 : .05)));
+    const lg = S.createLinearGradient(0, 0, size, size); lg.addColorStop(.18, white(0)); lg.addColorStop(.3, white(type === 'metallic' ? .14 : dark ? .03 : .03)); lg.addColorStop(.42, white(0)); lg.addColorStop(.68, white(0)); lg.addColorStop(.74, white(.012)); lg.addColorStop(.8, white(0)); S.fillStyle = lg; S.fillRect(0, 0, size, size);
+    S.globalCompositeOperation = 'destination-out'; S.beginPath(); S.arc(h, h, grOut, 0, 7); S.arc(h, h, grIn, 0, 7, true); S.fill('evenodd'); S.globalCompositeOperation = 'source-over';
+    g.globalCompositeOperation = 'screen'; g.drawImage(sm, 0, 0); g.globalCompositeOperation = 'source-over'; }
+  // see-through records gather light at the rim and glow there
+  if (see){ const rg = g.createRadialGradient(h, h, h*.7, h, h, h); rg.addColorStop(0, white(0)); rg.addColorStop(.86, white(.03)); rg.addColorStop(1, white(see === 2 ? .24 : .14)); g.globalCompositeOperation = 'screen'; g.fillStyle = rg; g.fillRect(0, 0, size, size); g.globalCompositeOperation = 'source-over'; }
+  // a picture disc is a print under clear plastic: one more glassy sheen over everything
+  if (type === 'picture'){ const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(.2, white(0)); lg.addColorStop(.33, white(.08)); lg.addColorStop(.46, white(0)); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
+  // ---- the edge: cut and bevelled, bright where it faces the lamp and dark where it turns away
+  { const eg = g.createLinearGradient(size*.15, size*.15, size*.85, size*.85); eg.addColorStop(0, white(type === 'metallic' ? .55 : see ? .4 : dark ? .2 : .22)); eg.addColorStop(.4, white(see ? .12 : .02)); eg.addColorStop(.6, `rgba(0,0,0,${see ? .1 : .2})`); eg.addColorStop(1, `rgba(0,0,0,${see ? .3 : .55})`);
+    shapePath(g, shape, h, size); g.lineJoin = 'round'; g.lineWidth = size*.02; g.strokeStyle = eg; g.stroke(); g.lineWidth = size*.005; g.strokeStyle = `rgba(0,0,0,${see ? .25 : .5})`; g.stroke(); }
   g.restore(); g.save();
-  shapePath(g, shape, h, size); g.lineWidth = size*.016; g.strokeStyle = '#1b1714'; g.stroke();
-  g.beginPath(); g.arc(h, h, h, 0, 7); g.clip();
-  paintLabel(g, r, side, h, h*.33, size);
-  g.fillStyle = '#0a0a0a'; g.beginPath(); g.arc(h, h, size*.012, 0, 7); g.fill();
-  g.restore(); return c;
+  // ---- the label: paper pressed into the record, with its pressing ring, a little shadow at its rim, and the spindle hole
+  g.beginPath(); g.arc(h, h, labR, 0, 7); g.clip();
+  paintLabel(g, r, side, h, labR, size);
+  g.globalCompositeOperation = 'overlay'; g.globalAlpha = .3; g.fillStyle = g.createPattern(noiseCanvas, 'repeat'); g.fillRect(h - labR, h - labR, labR*2, labR*2); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  { const lg = g.createLinearGradient(h - labR, h - labR, h + labR, h + labR); lg.addColorStop(0, white(.12)); lg.addColorStop(.5, white(0)); lg.addColorStop(1, 'rgba(0,0,0,.14)'); g.fillStyle = lg; g.fillRect(h - labR, h - labR, labR*2, labR*2); }
+  ring(g, labR*.56, size*.0022, 'rgba(0,0,0,.16)'); ring(g, labR*.56 + size*.002, size*.0016, white(.22));
+  ring(g, labR - size*.003, size*.006, 'rgba(0,0,0,.22)');
+  g.restore();
+  ring(g, labR + size*.0012, size*.0018, dark ? white(.14) : 'rgba(0,0,0,.2)');
+  g.fillStyle = '#070606'; g.beginPath(); g.arc(h, h, size*.0118, 0, 7); g.fill();
+  g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = size*.003; g.beginPath(); g.arc(h, h, size*.0135, 3.3, 5.5); g.stroke(); g.strokeStyle = white(.5); g.beginPath(); g.arc(h, h, size*.0135, .2, 2.3); g.stroke();
+  return c;
 }
 // the paper label in the middle of a record, centred at (h, h) with radius lr; size is the whole record's size, for the lettering
 function paintLabel(g, r, side, h, lr, size){ const L = { bg:r.d.lab, ink:inkOn(r.d.lab), acc:r.d.acc }, LS0 = r.lab && r.lab[side], d = LS0 && LS0.st ? { ...r.d, label:LS0.st } : r.d;
@@ -1529,7 +1652,7 @@ function paintLabel(g, r, side, h, lr, size){ const L = { bg:r.d.lab, ink:inkOn(
     g.font = `500 ${size*.015}px "IBM Plex Mono", monospace`; g.fillText((r.by ? `PRESSED BY ${r.by}` : 'SIDE B RECORDS').toUpperCase(), h, h + lr*.72);
     if (d.label === 'split'){ g.fillStyle = L.ink; } g.font = `500 ${size*.014}px "IBM Plex Mono", monospace`; g.fillText(r.cat || '', h, h - lr*.66);
   }
-  g.strokeStyle = '#1b1714'; g.lineWidth = size*.008; g.beginPath(); g.arc(h, h, lr, 0, 7); g.stroke();
+  g.strokeStyle = 'rgba(20,14,10,.3)'; g.lineWidth = size*.004; g.beginPath(); g.arc(h, h, lr, 0, 7); g.stroke();
 }
 // a label on its own, filling the picture: for editing it, and for the label tiles
 function labelURL(r, side, px){ return cached('l' + px + side + designKey(r), () => { const c = document.createElement('canvas'); c.width = c.height = px; const g = c.getContext('2d');
@@ -1570,7 +1693,7 @@ function renderNotes(container, r, face, editable){
    ============================================================ */
 const MINS = 6, MAXSIDE = 12;
 const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'', pdisc:'',
-  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', cover:'photo', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:false, pm:'full', vinyl:'black', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2' },
+  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', cover:'photo', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:false, pm:'full', vinyl:'black', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2', amt:1 },
   hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[], lab:{ A:{ texts:[], img:'', z:1, st:'solid' }, B:{ texts:[], img:'', z:1, st:'solid' } }, A:[], B:[], notes:[] });
 // a record can come from anyone's link, so check every field before it is drawn or played
 const MEDIA_HOSTS = /(^|\.)(apple\.com|mzstatic\.com)$/;
@@ -1609,8 +1732,8 @@ function cleanRec(r){
     d:{ bg:hex(d.bg, old ? old.bg : b.d.bg), ink:hex(d.ink, old ? old.ink : b.d.ink), acc:hex(d.acc, old ? old.acc : b.d.acc), filt:pick(filt, FILTERS, b.d.filt), lay:pick(d.lay, LAYOUTS, ot ? ot[1] : b.d.lay), font:pick(d.font, TITLE_FONTS, ot ? ot[0] : b.d.font), ts:num(d.ts, .6, 1.5, d.type === 'minimal' ? .6 : 1),
       showTitle:!fresh && d.type !== 'none' && d.showTitle !== false, showLine:!fresh && d.showLine !== false, showCredit:!fresh && d.showCredit !== false, credits:d.credits !== false, obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
       stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:false,
-      pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl === 'splatter' ? 'marble' : d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
-      shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab) },
+      pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
+      shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab), amt:typeof d.amt === 'number' && d.amt >= 0 && d.amt <= 2 ? Math.round(d.amt*20)/20 : 1 },
     hype, draw, texts, lab, pdisc:img(r.pdisc), A:side(r.A), B:side(r.B),
     notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:hex(n.c, Number.isInteger(n.c) && NOTECOLS[n.c] ? NOTECOLS[n.c] : NOTECOLS[0]),
       x:num(n.x, -6, 70, 30), y:num(n.y, -6, 82, 30), r:num(n.r, -15, 15, 0), f:n.f === 'B' ? 'B' : 'F' })) };
@@ -1681,7 +1804,7 @@ function changed(){ saveDraft(); renderSides(); renderResults(lastResults, lastM
 let prevTimer;
 function refreshPreview(){ clearTimeout(prevTimer); prevTimer = setTimeout(() => {
   const S = surf(), big = recSize(draft) === 12, pw = big ? .62 : .55, top = big ? .02 : .055, side = fstep === 'labels' ? tabs.labels : 'A';
-  $('pFront').style.backgroundImage = `url(${sleeveURL(drawMode ? { ...draft, draw:[] } : S && S.kind === 'sleeve' ? { ...draft, texts:[] } : draft, 720)})`; if (drawMode) drawLive();
+  $('pFront').style.backgroundImage = `url(${sleeveURL(drawMode ? { ...draft, draw:[] } : S && S.kind === 'sleeve' ? { ...draft, texts:[] } : draft, 720)})`; if (sheetOpen) $('dsBoard').style.backgroundImage = $('pFront').style.backgroundImage; if (drawMode) drawLive();
   const v = $('pVin'); v.style.width = pw*100 + '%'; v.style.top = top*100 + '%'; $('pVinI').style.backgroundImage = `url(${vinylURL(draft, 720, side)})`;
   // how far to move and scale the record to centre it on the bench, and to fill the bench with its label
   const cx = .24 + pw/2, cy = top/1.5 + pw/2;
@@ -1851,21 +1974,36 @@ const pointsUsed = () => draft.draw.reduce((t, st) => t + st.p.length, 0);
 function drawLive(){ const cv = $('drawCv'), g = cv.getContext('2d'); g.clearRect(0, 0, cv.width, cv.height); paintStrokes(g, pen.cur ? [...draft.draw, pen.cur] : draft.draw, cv.width); }
 function syncPen(){ colourRow($('drawInks'), INKS, () => pen.erase ? '' : pen.ink, c => { pen.ink = c; pen.erase = false; syncPen(); });
   $('drawSizes').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.w === pen.w)); $('drawErase').setAttribute('aria-pressed', pen.erase); }
-let drawMode = false;
+let drawMode = false, cleared = null;
+// Undo also brings back a drawing that was cleared by mistake
+const syncUndo = () => { $('drawUndo').disabled = !draft.draw.length && !cleared; $('drawWipe').disabled = !draft.draw.length; };
+// on phones the pad opens full screen; the bench's own canvas and tools move into it, and back again after
+const phoneDraw = () => matchMedia('(max-width:760px)').matches;
+let sheetOpen = false;
+function openSheet(){ if (sheetOpen) return; sheetOpen = true;
+  if ($('drawSheet').parentNode !== document.body) document.body.appendChild($('drawSheet'));
+  $('dsTop').prepend($('drawUndo'), $('drawWipe')); $('dsBoard').appendChild($('drawCv'));
+  $('dsTools').prepend($('drawInks')); $('dsRow').append($('drawSizes'), $('drawErase')); $('dsTools').append($('drawTip'));
+  $('dsBoard').style.backgroundImage = $('pFront').style.backgroundImage; $('drawSheet').hidden = false; document.body.classList.add('sheeton'); }
+function closeSheet(){ if (!sheetOpen) return; sheetOpen = false;
+  $('drawTools').append($('drawInks'), $('drawSizes'), $('drawErase'), $('drawUndo'), $('drawWipe')); $('drawBar').append($('drawTip'));
+  $('pFront').appendChild($('drawCv')); $('drawSheet').hidden = true; document.body.classList.remove('sheeton'); }
+$('dsDone').addEventListener('click', () => setDrawMode(false));
 function sizeDrawLayer(){ const cv = $('drawCv'), r = cv.getBoundingClientRect(), px = Math.round(r.width*(devicePixelRatio || 1)); if (px && cv.width !== px) cv.width = cv.height = px; }
 function setDrawMode(on){
   drawMode = on; $('recwrap').classList.toggle('drawing', on); $('drawTools').style.display = on ? 'flex' : 'none';
-  $('drawBtn').textContent = on ? 'Drawing' : 'Draw'; $('drawBtn').setAttribute('aria-pressed', on);
+  if (on && phoneDraw()) openSheet(); else closeSheet();
+  $('drawBtn').textContent = on ? 'Drawing' : draft.draw.length ? 'Keep drawing' : 'Draw on the sleeve'; $('drawBtn').setAttribute('aria-pressed', on);
   if (on){ if (face !== 'F') setFace('F'); if (!$('drawSizes').children.length){ $('drawSizes').innerHTML = DRAW_SIZES.map((w, i) => `<button data-w="${w}" aria-label="Brush size ${i+1}"><i style="width:${4 + i*5}px;height:${4 + i*5}px"></i></button>`).join('');
       $('drawSizes').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { pen.w = +b.dataset.w; syncPen(); })); }
-    $('drawTip').textContent = ''; syncPen(); requestAnimationFrame(() => { sizeDrawLayer(); drawLive(); }); }
+    $('drawTip').textContent = ''; syncPen(); syncUndo(); requestAnimationFrame(() => { sizeDrawLayer(); drawLive(); }); }
   else { pen.cur = null; $('drawTip').textContent = 'Drawing is off, so you can move your words.'; }
   refreshPreview(); }
 $('drawBtn').addEventListener('click', () => setDrawMode(!drawMode));
-$('drawWipe').addEventListener('click', () => { draft.draw = []; drawLive(); changed(); });
+$('drawWipe').addEventListener('click', () => { if (!draft.draw.length) return; cleared = draft.draw; draft.draw = []; $('drawTip').textContent = 'Cleared. Undo brings it back.'; drawLive(); syncUndo(); changed(); });
 $('drawErase').addEventListener('click', () => { pen.erase = !pen.erase; syncPen(); });
-$('drawUndo').addEventListener('click', () => { draft.draw.pop(); drawLive(); changed(); });
-addEventListener('resize', () => { if (drawMode){ sizeDrawLayer(); drawLive(); } });
+$('drawUndo').addEventListener('click', () => { if (draft.draw.length) draft.draw.pop(); else if (cleared){ draft.draw = cleared; cleared = null; } $('drawTip').textContent = ''; drawLive(); syncUndo(); changed(); });
+addEventListener('resize', () => { if (drawMode){ if (phoneDraw() !== sheetOpen){ phoneDraw() ? openSheet() : closeSheet(); } sizeDrawLayer(); drawLive(); } });
 let drawRaf = 0;
 const penAt = e => { const b = $('drawCv').getBoundingClientRect(); return [Math.round(clamp((e.clientX - b.left)/b.width*1000, 0, 1000)), Math.round(clamp((e.clientY - b.top)/b.height*1000, 0, 1000))]; };
 $('drawCv').addEventListener('pointerdown', e => { e.preventDefault(); if (pointsUsed() >= MAX_POINTS || draft.draw.length >= 300){ $('drawTip').textContent = "That's as much drawing as one sleeve can hold."; return; }
@@ -1873,7 +2011,7 @@ $('drawCv').addEventListener('pointerdown', e => { e.preventDefault(); if (point
 $('drawCv').addEventListener('pointermove', e => { if (!pen.cur) return; const [x, y] = penAt(e), p = pen.cur.p;
   if (Math.hypot(x - p[p.length-2], y - p[p.length-1]) < 4 || pointsUsed() + p.length >= MAX_POINTS) return; p.push(x, y);
   if (!drawRaf) drawRaf = requestAnimationFrame(() => { drawRaf = 0; drawLive(); }); });
-['pointerup','pointercancel'].forEach(ev => $('drawCv').addEventListener(ev, () => { if (!pen.cur) return; draft.draw.push(pen.cur); pen.cur = null; drawLive(); changed(); }));
+['pointerup','pointercancel'].forEach(ev => $('drawCv').addEventListener(ev, () => { if (!pen.cur) return; draft.draw.push(pen.cur); pen.cur = null; cleared = null; $('drawTip').textContent = ''; drawLive(); syncUndo(); changed(); }));
 [['fName','name'],['fBy','by'],['fTo','to']].forEach(([id,k]) => $(id).addEventListener('input', () => { draft[k] = $(id).value; saveDraft(); refreshPreview(); updateFoot(); }));
 function fillFields(){ $('fName').value = draft.name; $('fBy').value = draft.by; $('fTo').value = draft.to; }
 
@@ -1885,8 +2023,11 @@ const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, d
   { v:'*', any:key, sw:draft.d[key], dot:1, title:'Any colour', on:!cols.some(c => c.toUpperCase() === String(draft.d[key]).toUpperCase()) }];
 const setKey = key => v => { draft.d[key] = v; };
 // colour dots sit in even rows, never more than 7 across
-const dotCols = n => `display:grid;justify-content:start;grid-template-columns:repeat(${Math.ceil(n/Math.ceil(n/7))},40px)`;
-const VCATS = [['classic','Classic',['black','solid','split','inner','swirl','translucent']],['premium','Premium',['metallic','iridescent','smoke','marble','clear','eco']],['picture','Picture disc',['picture']]];
+const dotCols = n => `display:grid;gap:10px;grid-template-columns:repeat(${Math.ceil(n/Math.ceil(n/8))},minmax(0,1fr))`;
+const VDEF = { solid:{ v1:'#B3262E' }, split:{ v1:'#2E5DA8', v2:'#EDEAE2' }, inner:{ v1:'#141414', v2:'#E8742A' }, swirl:{ v1:'#6B3FA0', v2:'#E89AB5' }, translucent:{ v1:'#2F7D4F' },
+  metallic:{ v1:'#C9A24A' }, smoke:{ v1:'#EDEAE2', v2:'#141414' }, marble:{ v1:'#2F6B66', v2:'#EDEAE2' }, splatter:{ v1:'#F2C230', v2:'#B3262E' } };
+const AMOUNT = { marble:'How much veining', smoke:'How much smoke', eco:'How many chips', splatter:'How much splatter', inner:'How big the centre colour' };
+const VCATS = [['classic','Classic',['black','solid','split','inner','swirl','translucent']],['premium','Premium',['metallic','iridescent','smoke','marble','splatter','clear','eco']],['picture','Picture disc',['picture']]];
 const catOf = v => (VCATS.find(c => c[2].includes(v)) || VCATS[0])[0];
 const tabs = { labels:'A', sleeve:'F' }; let vcat = null;
 const isWay = w => draft.d.bg === w.bg.toUpperCase() && draft.d.ink === w.ink.toUpperCase() && draft.d.acc === w.acc.toUpperCase();
@@ -1896,15 +2037,16 @@ const LABEL_NOTES = { solid:'One flat colour, with the title and side printed on
 const FLOW = [
   { id:'shape', name:'Shape', mode:'disc', lede:'Pick the shape of your record. Its size follows the songs you add later: up to 10 makes a 10-inch, more makes a 12-inch LP.',
     val:() => nameOf(SHAPES, draft.d.shape),
-    rows:[ { tiles:1, spin:1, items:() => SHAPES.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ shape:k }), 120, 'A'), round:1, on:draft.d.shape === k })), pick:setKey('shape') } ],
+    rows:[ { tiles:1, spin:1, items:() => SHAPES.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ shape:k, vinyl:'black' }), 120, 'A'), round:1, on:draft.d.shape === k })), pick:setKey('shape') } ],
     note:() => [nameOf(SHAPES, draft.d.shape), OPT_NOTES.shape[draft.d.shape] || ''] },
   { id:'vinyl', name:'Vinyl', mode:'disc', lede:'Pick a kind of pressing, then its colours.',
     val:() => nameOf(VINYLS, draft.d.vinyl) + (needCols() >= 1 ? ' ' + chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : ''),
     rows:[ { seg:1, items:() => VCATS.map(([k, l]) => ({ v:k, l, on:(vcat || catOf(draft.d.vinyl)) === k })), pick:v => { vcat = v; const c = VCATS.find(c => c[0] === v)[2]; if (c.length === 1 && draft.d.vinyl !== c[0]){ draft.d.vinyl = c[0]; return true; } }, local:1 },
-           { tiles:1, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ vinyl:k }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:setKey('vinyl') },
+           { tiles:1, cols:3, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant(draft.d.vinyl === k ? { vinyl:k } : { vinyl:k, ...VDEF[k] }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:v => { if (draft.d.vinyl !== v) Object.assign(draft.d, VDEF[v] || {}); draft.d.vinyl = v; } },
            { l:'Your picture', show:() => draft.d.vinyl === 'picture', items:() => [{ v:'up', l:draft.pdisc ? 'Change the picture' : '+ Upload a picture', on:!draft.pdisc && !(draft.photo && draft.d.cover === 'photo') },
                ...(draft.photo && draft.d.cover === 'photo' ? [{ v:'cover', l:'Use my cover picture', on:!draft.pdisc }] : [])],
              pick:v => { if (v === 'up'){ $('pdIn').click(); return; } draft.pdisc = ''; } },
+           { l:() => AMOUNT[draft.d.vinyl], slider:1, show:() => !!AMOUNT[draft.d.vinyl], get:() => draft.d.amt ?? 1, pick:v => { draft.d.amt = v; }, items:() => [] },
            { l:() => needCols() >= 2 ? 'Main colour' : 'Colour', show:() => needCols() >= 1, spin:1, items:() => colourChips(VCOLS, 'v1', VCOLNAMES), pick:setKey('v1') },
            { l:'Second colour', show:() => needCols() >= 2, spin:1, items:() => colourChips(VCOLS, 'v2', VCOLNAMES), pick:setKey('v2') } ],
     note:() => [nameOf(VINYLS, draft.d.vinyl), OPT_NOTES.vinyl[draft.d.vinyl] || ''] },
@@ -1981,7 +2123,8 @@ const chipHTML = (it, r, R) => `<button class="chip${it.dot ? ' dot' : ''}${R.ti
   + (it.img ? `<img alt="" src="${it.img}">` : it.trio ? `<span class="trio">${it.trio.map(c => `<i style="background:${c}"></i>`).join('')}</span>` : it.sw ? `<i class="sw${it.any ? ' anysw' : ''}" style="--c:${esc(it.sw)}"></i>` : '')
   + (it.l ? `<span class="cl">${esc(it.l)}</span>` : '') + (it.desc ? `<small>${esc(it.desc)}</small>` : '') + (it.any ? `<input type="color" value="${esc(String(draft.d[it.any]).toLowerCase())}" aria-label="Any colour">` : '') + `</button>`;
 // the panel and the bar: the step's name, its tabs, its choices, back and next
-function renderDock(now){ clearTimeout(dockTimer); if (!now){ dockTimer = setTimeout(() => renderDock(true), 40); return; }
+let sliding = false;
+function renderDock(now){ if (sliding) return; clearTimeout(dockTimer); if (!now){ dockTimer = setTimeout(() => renderDock(true), 40); return; }
   const F = cur(), L = live(), i = L.findIndex(f => f.id === fstep), n = draft.A.length + draft.B.length;
   $('dkGroup').textContent = `Step ${i + 1} of ${L.length}`; $('dkTitle').textContent = F.short || F.name;
   $('dkProg').style.width = ((i + 1) / L.length * 100) + '%';
@@ -1997,7 +2140,9 @@ function renderDock(now){ clearTimeout(dockTimer); if (!now){ dockTimer = setTim
       refreshPreview(); renderDock(true); renderTextLayer(); renderTextUI(); })); }
   const box = $('stOpts');
   if (F.rows){ const vis = F.rows.map((R, r) => [R, r]).filter(([R]) => !R.show || R.show());
-    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); return `${l ? `<p class="minihead">${l}</p>` : ''}${(its => `<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}"${R.tiles ? ` style="grid-template-columns:repeat(${Math.max(3, Math.ceil(its.length/Math.ceil(its.length/4)))},minmax(0,1fr))"` : R.cards ? ` style="grid-template-columns:repeat(${Math.min(3, its.length)},minmax(0,1fr))"` : its.every(it => it.dot) ? ` style="${dotCols(its.length)}"` : ''}>${its.map(it => chipHTML(it, r, R)).join('')}</div>`)(R.items())}`; }).join('');
+    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); if (R.slider) return `${l ? `<p class="minihead">${l}</p>` : ''}<div class="amtrow"><span>Less</span><input type="range" class="amt" data-r="${r}" min="0" max="2" step="0.05" value="${R.get()}" aria-label="${esc(l || 'Amount')}"><span>More</span></div>`; return `${l ? `<p class="minihead">${l}</p>` : ''}${(its => `<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}"${R.tiles ? ` style="grid-template-columns:repeat(${R.cols || Math.max(3, Math.ceil(its.length/Math.ceil(its.length/4)))},minmax(0,1fr))"` : R.cards ? ` style="grid-template-columns:repeat(${Math.min(3, its.length)},minmax(0,1fr))"` : its.every(it => it.dot) ? ` style="${dotCols(its.length)}"` : ''}>${its.map(it => chipHTML(it, r, R)).join('')}</div>`)(R.items())}`; }).join('');
+    // a slider redraws the record as it moves, and only rebuilds the panel once it's let go, so the drag isn't cut short
+    box.querySelectorAll('input.amt').forEach(inp => { const R = F.rows[+inp.dataset.r]; inp.addEventListener('input', () => { sliding = true; R.pick(+inp.value); saveDraft(); refreshPreview(); }); inp.addEventListener('change', () => { sliding = false; syncControls(); changed(); }); });
     box.querySelectorAll('.chip').forEach(b => { const R = F.rows[+b.dataset.r], inp = b.querySelector('input');
       const after = res => { if (R.local && !res){ renderDock(true); return; } if (R.spin || res) spinRecord(); syncControls(); changed(); };
       if (inp){ inp.addEventListener('input', () => { R.pick(inp.value.toUpperCase()); after(); }); inp.addEventListener('click', e => e.stopPropagation()); }
