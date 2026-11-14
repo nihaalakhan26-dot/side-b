@@ -1493,7 +1493,7 @@ const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a)/(b - a)))
 const hexRGB = hx => { const n = parseInt(String(hx || '#141414').slice(1), 16) || 0; return [n >> 16, (n >> 8) & 255, n & 255]; };
 // the material of the record, before grooves and light. Returns a canvas N across.
 function vinylBase(r, N, seed){
-  const c = document.createElement('canvas'); c.width = c.height = N; const g = c.getContext('2d'), d = r.d, type = d.vinyl, c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2', h = N/2, R = mulberry32(seed);
+  const amt = [0, 1, 2].includes(r.d.amt) ? r.d.amt : 1, c = document.createElement('canvas'); c.width = c.height = N; const g = c.getContext('2d'), d = r.d, type = d.vinyl, c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2', h = N/2, R = mulberry32(seed);
   const hexA = (hx, a) => { const [x, y, z] = hexRGB(hx); return `rgba(${x},${y},${z},${a})`; };
   if (type === 'picture'){ g.fillStyle = '#111'; g.fillRect(0, 0, N, N); const src = r.pdisc || ((d.cover || 'photo') === 'photo' ? r.photo : ''), im = src ? photoImage(src) : null;
     if (!(im && drawPhoto(g, im, 0, 0, N, N))){ g.fillStyle = '#DCD3C1'; g.fillRect(0, 0, N, N); g.fillStyle = 'rgba(35,26,20,.55)'; g.textAlign = 'center';
@@ -1503,13 +1503,13 @@ function vinylBase(r, N, seed){
     if (type === 'splatter'){ const drop = (col, k) => { const a = R()*6.283, d0 = h*(.2 + Math.pow(R(), .7)*.85), big = R() < .2, w = N*(big ? .008 + R()*.014 : .002 + R()*.005), len = w*(1.2 + R()*(big ? 5 : 2.5));
         g.fillStyle = col; g.save(); g.translate(h + Math.cos(a)*d0, h + Math.sin(a)*d0); g.rotate(a + (R() - .5)*.5); g.beginPath(); g.ellipse(0, 0, len, w, 0, 0, 7); g.fill();
         if (big){ g.beginPath(); g.ellipse(len*1.1, (R() - .5)*w, len*.45, w*.5, 0, 0, 7); g.fill(); for (let q = 0; q < 4; q++){ g.beginPath(); g.arc(len*(1.4 + R()*1.6), (R() - .5)*w*4, w*(.15 + R()*.3), 0, 7); g.fill(); } } g.restore(); };
-      for (let k = 0; k < 230; k++) drop(c2, k); const third = lum(c1) > .5 ? '#141414' : '#F7EEDB'; for (let k = 0; k < 70; k++) drop(third, k); }
+      for (let k = 0; k < [80, 230, 520][amt]; k++) drop(c2, k); const third = lum(c1) > .5 ? '#141414' : '#F7EEDB'; for (let k = 0; k < [24, 70, 150][amt]; k++) drop(third, k); }
     else if (type === 'clouds'){ g.filter = `blur(${N*.025}px)`; for (let k = 0; k < 22; k++){ g.fillStyle = hexA(c2, .35 + R()*.3); g.beginPath(); g.ellipse(R()*N, R()*N, N*(.06 + R()*.12), N*(.04 + R()*.08), R()*3, 0, 7); g.fill(); } g.filter = 'none'; }
     else { g.fillStyle = c2; g.fillRect(0, h - N*.14, N, N*.28); g.fillStyle = '#F4EFE6'; g.fillRect(0, h - N*.15, N, N*.012); g.fillRect(0, h + N*.138, N, N*.012); }
     return c; }
   if (type === 'eco'){ g.fillStyle = '#2A2422'; g.fillRect(0, 0, N, N); const cols = VCOLS.slice(1);
     for (let k = 0; k < 9; k++){ g.fillStyle = hexA(cols[Math.floor(R()*cols.length)], .16); g.beginPath(); g.ellipse(R()*N, R()*N, N*(.12 + R()*.2), N*(.06 + R()*.1), R()*3, 0, 7); g.fill(); }
-    for (let k = 0; k < 620; k++){ const x = R()*N, y = R()*N, big = R() < .14, rr = N*(big ? .011 + R()*.016 : .003 + R()*.008), pts = 5 + Math.floor(R()*3), a0 = R()*7;
+    for (let k = 0; k < [200, 620, 1300][amt]; k++){ const x = R()*N, y = R()*N, big = R() < .14, rr = N*(big ? .011 + R()*.016 : .003 + R()*.008), pts = 5 + Math.floor(R()*3), a0 = R()*7;
       g.fillStyle = hexA(cols[Math.floor(R()*cols.length)], .8 + R()*.2); g.beginPath();
       for (let q = 0; q < pts; q++){ const a = a0 + q/pts*6.283, d2 = rr*(.55 + R()*.6), X = x + Math.cos(a)*d2*(1 + (big ? .5 : 0)), Y = y + Math.sin(a)*d2; q ? g.lineTo(X, Y) : g.moveTo(X, Y); } g.closePath(); g.fill(); }
     return c; }
@@ -1528,18 +1528,18 @@ function vinylBase(r, N, seed){
       case 'split': { const w = (fbm(ny*2.4 + 3, 3.3, 4) - .5)*.2 + (fbm(ny*9 + 1, 8.1, 3) - .5)*.05; t = sstep(-.018, .018, nx - w); mix(A, B, t);
         // a little of each colour dragged into the other where the two halves met in the press
         const drag = sstep(.62, .8, fbm(nx*5 + 20, ny*1.3, 4))*sstep(.3, 0, Math.abs(nx - w)); add(t > .5 ? A : B, drag*.75); break; }
-      case 'inner': { const e = .6 + (fbm(Math.cos(ang)*.9 + 4, Math.sin(ang)*.9 + 4, 3) - .5)*.16;
+      case 'inner': { const e = [.5, .6, .78][amt] + (fbm(Math.cos(ang)*.9 + 4, Math.sin(ang)*.9 + 4, 3) - .5)*.16;
         t = 1 - sstep(e - .12, e + .07, rad + (fbm(Math.cos(ang)*5 + rad*.8, Math.sin(ang)*5, 3) - .5)*.04); mix(A, B, t*t*(3 - 2*t)); break; }
       // swirl: a bold pinwheel, three broad arms of each colour winding out from the label
       case 'swirl': { const q = fbm(nx*1.6 + 5, ny*1.6, 3), u = ang + 2.3*Math.log(rad + .09) + (q - .5)*1.1, band = Math.sin(3*u)*.5 + .5;
         t = sstep(.4, .6, band + (fbm(Math.cos(u)*4 + rad*3, Math.sin(u)*4 - rad*3, 3) - .5)*.22); mix(A, B, t); break; }
       // marbled: one colour, with thin veins of the other running through it like stone
       case 'marble': { const q1 = fbm(nx*1.4 + 3, ny*1.4 + 7, 4), q2 = fbm(nx*1.4 - 5, ny*1.4 + 2, 4), m1 = fbm(nx*1.7 + 2.6*q1, ny*1.7 + 2.6*q2, 5), m2 = fbm(nx*3.6 - 2.2*q2 + 9, ny*3.6 + 2.2*q1, 4);
-        const r1 = 1 - Math.abs(2*m1 - 1), r2 = 1 - Math.abs(2*m2 - 1), vein = Math.max(sstep(.9, .985, r1), sstep(.93, .99, r2)*.7);
-        mix(A, B, .1*q1 + sstep(.72, .95, r1)*.16); add(B, vein); break; }
+        const r1 = 1 - Math.abs(2*m1 - 1), r2 = 1 - Math.abs(2*m2 - 1), lo = [.95, .9, .86][amt], vein = Math.max(sstep(lo, lo + .085, r1), sstep(lo + [.03, .03, -.02][amt], lo + .09, r2)*[.3, .7, 1][amt]);
+        mix(A, B, .1*q1 + sstep(.72, .95, r1)*[.08, .16, .26][amt]); add(B, vein); break; }
       // smoke: clear plastic with a few soft clouds drifting in it
       case 'smoke': { const q1 = fbm(nx*.9 + 2, ny*.9 + 5, 3), q2 = fbm(nx*.9 - 7, ny*.9 + 1, 3), v = fbm(nx*1.05 + 2.2*q1, ny*1.05 + 2.2*q2, 4);
-        t = sstep(.4, .64, v); mix(A, B, t); ca = 70 + t*185; break; }
+        { const sh = [-.08, 0, .1][amt]; t = sstep(.4 - sh, .64 - sh, v); } mix(A, B, t); ca = 70 + t*185; break; }
       case 'metallic': { const br = .62 + .5*Math.pow(Math.abs(Math.cos(ang - .8)), 3) + (fbm(Math.cos(ang)*14, Math.sin(ang)*14 + rad*.6, 3) - .5)*.35, fl = n2(x*1.9 + 40, y*1.9);
         cr = A[0]*br; cg = A[1]*br; cb = A[2]*br; if (fl > .78) add([255, 252, 244], (fl - .78)*2.6*br); else if (fl < .2) { const k = 1 - (.2 - fl)*1.4; cr *= k; cg *= k; cb *= k; } break; }
       case 'iridescent': { const hu = ang/6.2832*2 + rad*1.15 + fbm(nx*1.8, ny*1.8, 4)*.9, k = 6.2832;
@@ -1687,7 +1687,7 @@ function renderNotes(container, r, face, editable){
    ============================================================ */
 const MINS = 6, MAXSIDE = 12;
 const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'', pdisc:'',
-  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', cover:'photo', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:false, pm:'full', vinyl:'black', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2' },
+  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', cover:'photo', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:false, pm:'full', vinyl:'black', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2', amt:1 },
   hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[], lab:{ A:{ texts:[], img:'', z:1, st:'solid' }, B:{ texts:[], img:'', z:1, st:'solid' } }, A:[], B:[], notes:[] });
 // a record can come from anyone's link, so check every field before it is drawn or played
 const MEDIA_HOSTS = /(^|\.)(apple\.com|mzstatic\.com)$/;
@@ -1727,7 +1727,7 @@ function cleanRec(r){
       showTitle:!fresh && d.type !== 'none' && d.showTitle !== false, showLine:!fresh && d.showLine !== false, showCredit:!fresh && d.showCredit !== false, credits:d.credits !== false, obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
       stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:false,
       pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
-      shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab) },
+      shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab), amt:[0, 1, 2].includes(d.amt) ? d.amt : 1 },
     hype, draw, texts, lab, pdisc:img(r.pdisc), A:side(r.A), B:side(r.B),
     notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:hex(n.c, Number.isInteger(n.c) && NOTECOLS[n.c] ? NOTECOLS[n.c] : NOTECOLS[0]),
       x:num(n.x, -6, 70, 30), y:num(n.y, -6, 82, 30), r:num(n.r, -15, 15, 0), f:n.f === 'B' ? 'B' : 'F' })) };
@@ -2020,6 +2020,7 @@ const setKey = key => v => { draft.d[key] = v; };
 const dotCols = n => `display:grid;gap:10px;grid-template-columns:repeat(${Math.ceil(n/Math.ceil(n/8))},minmax(0,1fr))`;
 const VDEF = { solid:{ v1:'#B3262E' }, split:{ v1:'#2E5DA8', v2:'#EDEAE2' }, inner:{ v1:'#141414', v2:'#E8742A' }, swirl:{ v1:'#6B3FA0', v2:'#E89AB5' }, translucent:{ v1:'#2F7D4F' },
   metallic:{ v1:'#C9A24A' }, smoke:{ v1:'#EDEAE2', v2:'#141414' }, marble:{ v1:'#2F6B66', v2:'#EDEAE2' }, splatter:{ v1:'#F2C230', v2:'#B3262E' } };
+const AMOUNT = { marble:'How much veining', smoke:'How much smoke', eco:'How many chips', splatter:'How much splatter', inner:'How big the centre colour' };
 const VCATS = [['classic','Classic',['black','solid','split','inner','swirl','translucent']],['premium','Premium',['metallic','iridescent','smoke','marble','splatter','clear','eco']],['picture','Picture disc',['picture']]];
 const catOf = v => (VCATS.find(c => c[2].includes(v)) || VCATS[0])[0];
 const tabs = { labels:'A', sleeve:'F' }; let vcat = null;
@@ -2030,15 +2031,16 @@ const LABEL_NOTES = { solid:'One flat colour, with the title and side printed on
 const FLOW = [
   { id:'shape', name:'Shape', mode:'disc', lede:'Pick the shape of your record. Its size follows the songs you add later: up to 10 makes a 10-inch, more makes a 12-inch LP.',
     val:() => nameOf(SHAPES, draft.d.shape),
-    rows:[ { tiles:1, spin:1, items:() => SHAPES.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ shape:k }), 120, 'A'), round:1, on:draft.d.shape === k })), pick:setKey('shape') } ],
+    rows:[ { tiles:1, spin:1, items:() => SHAPES.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ shape:k, vinyl:'black' }), 120, 'A'), round:1, on:draft.d.shape === k })), pick:setKey('shape') } ],
     note:() => [nameOf(SHAPES, draft.d.shape), OPT_NOTES.shape[draft.d.shape] || ''] },
   { id:'vinyl', name:'Vinyl', mode:'disc', lede:'Pick a kind of pressing, then its colours.',
     val:() => nameOf(VINYLS, draft.d.vinyl) + (needCols() >= 1 ? ' ' + chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : ''),
     rows:[ { seg:1, items:() => VCATS.map(([k, l]) => ({ v:k, l, on:(vcat || catOf(draft.d.vinyl)) === k })), pick:v => { vcat = v; const c = VCATS.find(c => c[0] === v)[2]; if (c.length === 1 && draft.d.vinyl !== c[0]){ draft.d.vinyl = c[0]; return true; } }, local:1 },
-           { tiles:1, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant(draft.d.vinyl === k ? { vinyl:k } : { vinyl:k, ...VDEF[k] }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:v => { if (draft.d.vinyl !== v) Object.assign(draft.d, VDEF[v] || {}); draft.d.vinyl = v; } },
+           { tiles:1, cols:3, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant(draft.d.vinyl === k ? { vinyl:k } : { vinyl:k, ...VDEF[k] }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:v => { if (draft.d.vinyl !== v) Object.assign(draft.d, VDEF[v] || {}); draft.d.vinyl = v; } },
            { l:'Your picture', show:() => draft.d.vinyl === 'picture', items:() => [{ v:'up', l:draft.pdisc ? 'Change the picture' : '+ Upload a picture', on:!draft.pdisc && !(draft.photo && draft.d.cover === 'photo') },
                ...(draft.photo && draft.d.cover === 'photo' ? [{ v:'cover', l:'Use my cover picture', on:!draft.pdisc }] : [])],
              pick:v => { if (v === 'up'){ $('pdIn').click(); return; } draft.pdisc = ''; } },
+           { l:() => AMOUNT[draft.d.vinyl], seg:1, spin:1, show:() => !!AMOUNT[draft.d.vinyl], items:() => [['0','A little'],['1','Some'],['2','A lot']].map(([v, l]) => ({ v, l, on:String(draft.d.amt ?? 1) === v })), pick:v => { draft.d.amt = +v; } },
            { l:() => needCols() >= 2 ? 'Main colour' : 'Colour', show:() => needCols() >= 1, spin:1, items:() => colourChips(VCOLS, 'v1', VCOLNAMES), pick:setKey('v1') },
            { l:'Second colour', show:() => needCols() >= 2, spin:1, items:() => colourChips(VCOLS, 'v2', VCOLNAMES), pick:setKey('v2') } ],
     note:() => [nameOf(VINYLS, draft.d.vinyl), OPT_NOTES.vinyl[draft.d.vinyl] || ''] },
@@ -2131,7 +2133,7 @@ function renderDock(now){ clearTimeout(dockTimer); if (!now){ dockTimer = setTim
       refreshPreview(); renderDock(true); renderTextLayer(); renderTextUI(); })); }
   const box = $('stOpts');
   if (F.rows){ const vis = F.rows.map((R, r) => [R, r]).filter(([R]) => !R.show || R.show());
-    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); return `${l ? `<p class="minihead">${l}</p>` : ''}${(its => `<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}"${R.tiles ? ` style="grid-template-columns:repeat(${Math.max(3, Math.ceil(its.length/Math.ceil(its.length/4)))},minmax(0,1fr))"` : R.cards ? ` style="grid-template-columns:repeat(${Math.min(3, its.length)},minmax(0,1fr))"` : its.every(it => it.dot) ? ` style="${dotCols(its.length)}"` : ''}>${its.map(it => chipHTML(it, r, R)).join('')}</div>`)(R.items())}`; }).join('');
+    box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); return `${l ? `<p class="minihead">${l}</p>` : ''}${(its => `<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}"${R.tiles ? ` style="grid-template-columns:repeat(${R.cols || Math.max(3, Math.ceil(its.length/Math.ceil(its.length/4)))},minmax(0,1fr))"` : R.cards ? ` style="grid-template-columns:repeat(${Math.min(3, its.length)},minmax(0,1fr))"` : its.every(it => it.dot) ? ` style="${dotCols(its.length)}"` : ''}>${its.map(it => chipHTML(it, r, R)).join('')}</div>`)(R.items())}`; }).join('');
     box.querySelectorAll('.chip').forEach(b => { const R = F.rows[+b.dataset.r], inp = b.querySelector('input');
       const after = res => { if (R.local && !res){ renderDock(true); return; } if (R.spin || res) spinRecord(); syncControls(); changed(); };
       if (inp){ inp.addEventListener('input', () => { R.pick(inp.value.toUpperCase()); after(); }); inp.addEventListener('click', e => e.stopPropagation()); }
