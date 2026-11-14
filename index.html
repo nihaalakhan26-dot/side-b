@@ -261,7 +261,27 @@ button{cursor:pointer}
 .drawbar .sizes button{width:30px;height:30px}
 .dtip{font-size:.72rem;color:var(--ink2)}
 .dtip:empty{display:none}
-@media (max-width:760px){.drawbar{left:6px;right:6px;bottom:6px;transform:none;max-width:none;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding:5px 6px;gap:5px;scrollbar-width:none}.drawbar::-webkit-scrollbar{display:none}.drawbar .dtools,.drawbar .dots.small{flex-wrap:nowrap}.drawbar .dots.small button,.drawbar .dots.small .pick{width:22px;height:22px;flex:none}.drawbar .sizes button{width:26px;height:26px}.dbtn{padding:6px 9px;font-size:.7rem;flex:none}}
+@media (max-width:760px){.drawbar{left:50%;right:auto;bottom:6px;padding:6px}.drawbar .dtip{display:none}.drawbar .dbtn.main{padding:12px 20px;font-size:.88rem}}
+.dbtn:disabled{opacity:.35;cursor:default}
+/* on phones, drawing opens a full-screen pad: the sleeve as big as the screen allows, Undo, Clear and Done along the top,
+   every colour, brush size and the eraser below it, nothing hidden off the edge */
+.drawsheet{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));background:radial-gradient(120% 70% at 50% 42%,#3A2A1E,#140D09 72%);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;animation:dsIn .22s ease-out}
+.drawsheet[hidden]{display:none}
+@keyframes dsIn{from{opacity:0;transform:translateY(14px)}}
+.dsTop{width:100%;max-width:520px;display:flex;align-items:center;gap:8px}
+.dsTop .dbtn{padding:12px 16px;font-size:.9rem;background:rgba(239,230,210,.12);color:var(--cream);box-shadow:inset 0 0 0 1px rgba(239,230,210,.28)}
+.dsTop .dbtn.done{margin-left:auto;background:var(--cream);color:var(--ink);box-shadow:none;padding:12px 22px}
+.dsBoard{position:relative;flex:none;width:min(calc(100vw - 24px),calc(100dvh - 290px),520px);aspect-ratio:1;margin:auto 0;background:#F3ECDD center/cover no-repeat;border-radius:2px;box-shadow:0 18px 44px rgba(0,0,0,.6)}
+.dsBoard .drawlayer{display:block}
+.dsTools{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px;border-radius:16px;background:var(--cream);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.dsTools .dots.small{display:grid;grid-template-columns:repeat(7,minmax(0,36px));gap:8px;justify-content:center;width:100%;padding:3px}
+.dsTools .dots.small button,.dsTools .dots.small .pick{width:100%;height:auto;aspect-ratio:1}
+.dsRow{display:flex;align-items:center;justify-content:center;gap:10px}
+.dsTools .sizes{gap:8px}.dsTools .sizes button{width:42px;height:42px;border-radius:10px}
+.dsTools .dbtn{padding:13px 16px;font-size:.86rem;background:#FBF6EA;box-shadow:0 0 0 1px var(--line)}
+.dsTools .dbtn[aria-pressed="true"]{background:var(--ink);color:var(--cream);box-shadow:none}
+.dsTools .dtip{text-align:center}
+body.sheeton{overflow:hidden}
 .minihead{display:block;margin:16px 0 8px;font:600 .66rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--burg)}
 #stOpts > .minihead:first-child{margin-top:4px}
 /* even spacing in the panel: every group of choices sits the same distance from the next */
@@ -787,6 +807,7 @@ button{cursor:pointer}
       </div>
       <p class="caption" id="caption"></p>
       <div class="drawbar" id="drawBar" hidden><button class="dbtn main" id="drawBtn" aria-pressed="false">Draw</button><span class="dtools" id="drawTools" style="display:none"><span class="dots small" id="drawInks"></span><span class="sizes" id="drawSizes"></span><button class="dbtn" id="drawErase" aria-pressed="false">Eraser</button><button class="dbtn" id="drawUndo">Undo</button><button class="dbtn" id="drawWipe">Clear</button></span><span class="dtip" id="drawTip"></span></div>
+      <div class="drawsheet" id="drawSheet" hidden role="dialog" aria-label="Draw on your sleeve"><div class="dsTop" id="dsTop"><button class="dbtn done" id="dsDone">Done</button></div><div class="dsBoard" id="dsBoard"></div><div class="dsTools" id="dsTools"><div class="dsRow" id="dsRow"></div></div></div>
       <div class="benchtop"><button class="pill ghostpill" id="resetBtn">&#8634; Start over</button><span class="spacer"></span><button class="pill" id="faceBtn">Turn it over</button></div>
     </div>
     <aside class="deck" id="deck">
@@ -1685,7 +1706,7 @@ function changed(){ saveDraft(); renderSides(); renderResults(lastResults, lastM
 let prevTimer;
 function refreshPreview(){ clearTimeout(prevTimer); prevTimer = setTimeout(() => {
   const S = surf(), big = recSize(draft) === 12, pw = big ? .62 : .55, top = big ? .02 : .055, side = fstep === 'labels' ? tabs.labels : 'A';
-  $('pFront').style.backgroundImage = `url(${sleeveURL(drawMode ? { ...draft, draw:[] } : S && S.kind === 'sleeve' ? { ...draft, texts:[] } : draft, 720)})`; if (drawMode) drawLive();
+  $('pFront').style.backgroundImage = `url(${sleeveURL(drawMode ? { ...draft, draw:[] } : S && S.kind === 'sleeve' ? { ...draft, texts:[] } : draft, 720)})`; if (sheetOpen) $('dsBoard').style.backgroundImage = $('pFront').style.backgroundImage; if (drawMode) drawLive();
   const v = $('pVin'); v.style.width = pw*100 + '%'; v.style.top = top*100 + '%'; $('pVinI').style.backgroundImage = `url(${vinylURL(draft, 720, side)})`;
   // how far to move and scale the record to centre it on the bench, and to fill the bench with its label
   const cx = .24 + pw/2, cy = top/1.5 + pw/2;
@@ -1855,21 +1876,36 @@ const pointsUsed = () => draft.draw.reduce((t, st) => t + st.p.length, 0);
 function drawLive(){ const cv = $('drawCv'), g = cv.getContext('2d'); g.clearRect(0, 0, cv.width, cv.height); paintStrokes(g, pen.cur ? [...draft.draw, pen.cur] : draft.draw, cv.width); }
 function syncPen(){ colourRow($('drawInks'), INKS, () => pen.erase ? '' : pen.ink, c => { pen.ink = c; pen.erase = false; syncPen(); });
   $('drawSizes').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.w === pen.w)); $('drawErase').setAttribute('aria-pressed', pen.erase); }
-let drawMode = false;
+let drawMode = false, cleared = null;
+// Undo also brings back a drawing that was cleared by mistake
+const syncUndo = () => { $('drawUndo').disabled = !draft.draw.length && !cleared; $('drawWipe').disabled = !draft.draw.length; };
+// on phones the pad opens full screen; the bench's own canvas and tools move into it, and back again after
+const phoneDraw = () => matchMedia('(max-width:760px)').matches;
+let sheetOpen = false;
+function openSheet(){ if (sheetOpen) return; sheetOpen = true;
+  if ($('drawSheet').parentNode !== document.body) document.body.appendChild($('drawSheet'));
+  $('dsTop').prepend($('drawUndo'), $('drawWipe')); $('dsBoard').appendChild($('drawCv'));
+  $('dsTools').prepend($('drawInks')); $('dsRow').append($('drawSizes'), $('drawErase')); $('dsTools').append($('drawTip'));
+  $('dsBoard').style.backgroundImage = $('pFront').style.backgroundImage; $('drawSheet').hidden = false; document.body.classList.add('sheeton'); }
+function closeSheet(){ if (!sheetOpen) return; sheetOpen = false;
+  $('drawTools').append($('drawInks'), $('drawSizes'), $('drawErase'), $('drawUndo'), $('drawWipe')); $('drawBar').append($('drawTip'));
+  $('pFront').appendChild($('drawCv')); $('drawSheet').hidden = true; document.body.classList.remove('sheeton'); }
+$('dsDone').addEventListener('click', () => setDrawMode(false));
 function sizeDrawLayer(){ const cv = $('drawCv'), r = cv.getBoundingClientRect(), px = Math.round(r.width*(devicePixelRatio || 1)); if (px && cv.width !== px) cv.width = cv.height = px; }
 function setDrawMode(on){
   drawMode = on; $('recwrap').classList.toggle('drawing', on); $('drawTools').style.display = on ? 'flex' : 'none';
-  $('drawBtn').textContent = on ? 'Drawing' : 'Draw'; $('drawBtn').setAttribute('aria-pressed', on);
+  if (on && phoneDraw()) openSheet(); else closeSheet();
+  $('drawBtn').textContent = on ? 'Drawing' : draft.draw.length ? 'Keep drawing' : 'Draw on the sleeve'; $('drawBtn').setAttribute('aria-pressed', on);
   if (on){ if (face !== 'F') setFace('F'); if (!$('drawSizes').children.length){ $('drawSizes').innerHTML = DRAW_SIZES.map((w, i) => `<button data-w="${w}" aria-label="Brush size ${i+1}"><i style="width:${4 + i*5}px;height:${4 + i*5}px"></i></button>`).join('');
       $('drawSizes').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { pen.w = +b.dataset.w; syncPen(); })); }
-    $('drawTip').textContent = ''; syncPen(); requestAnimationFrame(() => { sizeDrawLayer(); drawLive(); }); }
+    $('drawTip').textContent = ''; syncPen(); syncUndo(); requestAnimationFrame(() => { sizeDrawLayer(); drawLive(); }); }
   else { pen.cur = null; $('drawTip').textContent = 'Drawing is off, so you can move your words.'; }
   refreshPreview(); }
 $('drawBtn').addEventListener('click', () => setDrawMode(!drawMode));
-$('drawWipe').addEventListener('click', () => { draft.draw = []; drawLive(); changed(); });
+$('drawWipe').addEventListener('click', () => { if (!draft.draw.length) return; cleared = draft.draw; draft.draw = []; $('drawTip').textContent = 'Cleared. Undo brings it back.'; drawLive(); syncUndo(); changed(); });
 $('drawErase').addEventListener('click', () => { pen.erase = !pen.erase; syncPen(); });
-$('drawUndo').addEventListener('click', () => { draft.draw.pop(); drawLive(); changed(); });
-addEventListener('resize', () => { if (drawMode){ sizeDrawLayer(); drawLive(); } });
+$('drawUndo').addEventListener('click', () => { if (draft.draw.length) draft.draw.pop(); else if (cleared){ draft.draw = cleared; cleared = null; } $('drawTip').textContent = ''; drawLive(); syncUndo(); changed(); });
+addEventListener('resize', () => { if (drawMode){ if (phoneDraw() !== sheetOpen){ phoneDraw() ? openSheet() : closeSheet(); } sizeDrawLayer(); drawLive(); } });
 let drawRaf = 0;
 const penAt = e => { const b = $('drawCv').getBoundingClientRect(); return [Math.round(clamp((e.clientX - b.left)/b.width*1000, 0, 1000)), Math.round(clamp((e.clientY - b.top)/b.height*1000, 0, 1000))]; };
 $('drawCv').addEventListener('pointerdown', e => { e.preventDefault(); if (pointsUsed() >= MAX_POINTS || draft.draw.length >= 300){ $('drawTip').textContent = "That's as much drawing as one sleeve can hold."; return; }
@@ -1877,7 +1913,7 @@ $('drawCv').addEventListener('pointerdown', e => { e.preventDefault(); if (point
 $('drawCv').addEventListener('pointermove', e => { if (!pen.cur) return; const [x, y] = penAt(e), p = pen.cur.p;
   if (Math.hypot(x - p[p.length-2], y - p[p.length-1]) < 4 || pointsUsed() + p.length >= MAX_POINTS) return; p.push(x, y);
   if (!drawRaf) drawRaf = requestAnimationFrame(() => { drawRaf = 0; drawLive(); }); });
-['pointerup','pointercancel'].forEach(ev => $('drawCv').addEventListener(ev, () => { if (!pen.cur) return; draft.draw.push(pen.cur); pen.cur = null; drawLive(); changed(); }));
+['pointerup','pointercancel'].forEach(ev => $('drawCv').addEventListener(ev, () => { if (!pen.cur) return; draft.draw.push(pen.cur); pen.cur = null; cleared = null; $('drawTip').textContent = ''; drawLive(); syncUndo(); changed(); }));
 [['fName','name'],['fBy','by'],['fTo','to']].forEach(([id,k]) => $(id).addEventListener('input', () => { draft[k] = $(id).value; saveDraft(); refreshPreview(); updateFoot(); }));
 function fillFields(){ $('fName').value = draft.name; $('fBy').value = draft.by; $('fTo').value = draft.to; }
 
