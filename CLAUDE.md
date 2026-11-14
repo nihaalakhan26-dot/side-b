@@ -72,7 +72,7 @@ The owner wants every record to look like the real thing, whatever its shape or 
 - **Light**: the lamp is up and to the left. In the grooves the light gathers into two bright wedges (`lobes`), broken into streaks by the grooves, with a faint rainbow either side on dark, metallic and pearl records. Smooth parts (dead wax, the border of a shaped record) get one soft sheen. See-through records glow at the rim. The edge is bevelled, bright towards the lamp and dark away from it. No drawn outline anywhere.
 - **Label**: paper grain, a pressing ring, a little shadow at its rim, and a spindle hole.
 
-Rejected: flat fills with a few drawn rings, a black outline round the record and the label, and random straight lines for marbling. To check changes, draw a sheet of every finish and shape side by side at 720 px.
+Keep the light gentle: a first pass with strong glare made every finish look metallic and was rejected. Only Metallic is really shiny. Each finish has its own colours in its option tile (`VDEF`), so the tiles don't all match the current record, and picking a finish brings those colours with it. Rejected: flat fills with a few drawn rings, a black outline round the record and the label, and random straight lines for marbling. To check changes, draw a sheet of every finish and shape side by side at 720 px.
 
 ## The turntable (everything works)
 

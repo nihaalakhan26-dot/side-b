@@ -1566,7 +1566,7 @@ function drawVinyl(r, size, side){
   // ---- the grooves: one fine ring after another, each catching the light a little differently, with a smooth gap between songs
   const n = Math.max(1, Math.min(12, ((r[side] || r.A || []).length) || 5)), gaps = [];
   { let acc = 0; const w = Array.from({ length:n }, () => .7 + R()*.6), tot = w.reduce((a, b) => a + b, 0); for (let i = 0; i < n - 1; i++){ acc += w[i]; gaps.push(grOut - (grOut - grIn)*acc/tot); } }
-  const kB = dark ? .2 : see ? .2 : .26, kW = dark ? .15 : see ? .3 : .16, [mk, M] = layer();
+  const kB = dark ? .2 : see ? .2 : .24, kW = type === 'metallic' ? .16 : dark ? .08 : see ? .16 : .09, [mk, M] = layer();
   for (let rr = grIn; rr < grOut; rr += step){ const v = R(), wob = R();
     if (v < .5) ring(g, rr, step*1.05, `rgba(0,0,0,${((.5 - v)*kB).toFixed(3)})`); else ring(g, rr, step*1.05, white((v - .5)*kW));
     ring(M, rr, step*1.25, white(.5 + wob*.5)); }
@@ -1582,25 +1582,25 @@ function drawVinyl(r, size, side){
   ring(g, grOut, size*.0018, 'rgba(0,0,0,.3)'); if (shape === 'round'){ ring(g, h*.982, size*.006, dark ? white(.05) : white(.14)); ring(g, h*.976, size*.0012, 'rgba(0,0,0,.25)'); }
   else { ring(g, playR*.99, size*.004, dark ? white(.07) : white(.18)); ring(g, playR, size*.0014, 'rgba(0,0,0,.3)'); }
   // ---- the light. In the grooves it gathers into wedges, broken into streaks by the grooves themselves
-  { const [hl, H] = layer(), strong = type === 'metallic' ? 1 : type === 'black' ? .92 : see === 2 ? .95 : see ? .8 : type === 'iridescent' ? .85 : dark ? .85 : .75;
+  { const [hl, H] = layer(), strong = type === 'metallic' ? .9 : type === 'black' ? .46 : see === 2 ? .5 : see ? .4 : type === 'iridescent' ? .45 : dark ? .42 : .38;
     lobes(H, [[.625, .04, .8], [.625, .013, .7], [.125, .034, .65], [.125, .011, .5], [.375, .05, .14], [.875, .05, .11], [.558, .01, .3], [.69, .008, .22], [.19, .008, .2]], a => white(a*strong));
     if (dark || type === 'metallic' || type === 'iridescent'){ H.globalCompositeOperation = 'lighter';                                       // the faint rainbow you see either side of the glare on dark vinyl
-      lobes(H, [[.625, .07, 1], [.125, .065, .85]], (a, f) => `hsla(${(f*2160 + 200) % 360},90%,64%,${(a*(1 - a)*(type === 'iridescent' ? .8 : type === 'metallic' ? .3 : .22)).toFixed(3)})`); H.globalCompositeOperation = 'source-over'; }
+      lobes(H, [[.625, .07, 1], [.125, .065, .85]], (a, f) => `hsla(${(f*2160 + 200) % 360},90%,64%,${(a*(1 - a)*(type === 'iridescent' ? .5 : type === 'metallic' ? .26 : .1)).toFixed(3)})`); H.globalCompositeOperation = 'source-over'; }
     H.globalCompositeOperation = 'destination-in'; H.drawImage(mk, 0, 0); H.globalCompositeOperation = 'source-over';
-    g.globalCompositeOperation = dark ? 'screen' : 'soft-light'; g.drawImage(hl, 0, 0); if (!dark){ g.globalCompositeOperation = 'screen'; g.globalAlpha = see ? .6 : .5; g.drawImage(hl, 0, 0); g.globalAlpha = 1; }
+    g.globalCompositeOperation = dark ? 'screen' : 'soft-light'; g.drawImage(hl, 0, 0); if (!dark){ g.globalCompositeOperation = 'screen'; g.globalAlpha = type === 'metallic' ? .5 : see ? .3 : .2; g.drawImage(hl, 0, 0); g.globalAlpha = 1; }
     if (type === 'metallic'){ g.globalCompositeOperation = 'overlay'; g.drawImage(hl, 0, 0); }
     g.globalCompositeOperation = 'source-over'; }
   // on the smooth parts (dead wax, lead-in, the plain border of a shaped record) the light is one soft sheen
-  { const [sm, S] = layer(); lobes(S, [[.625, .09, 1], [.125, .08, .6]], a => white(a*(dark ? .2 : .3)));
-    const lg = S.createLinearGradient(0, 0, size, size); lg.addColorStop(.18, white(0)); lg.addColorStop(.3, white(dark ? .1 : .2)); lg.addColorStop(.42, white(0)); lg.addColorStop(.68, white(0)); lg.addColorStop(.74, white(dark ? .05 : .1)); lg.addColorStop(.8, white(0)); S.fillStyle = lg; S.fillRect(0, 0, size, size);
+  { const [sm, S] = layer(); lobes(S, [[.625, .09, 1], [.125, .08, .6]], a => white(a*(type === 'metallic' ? .3 : dark ? .1 : .13)));
+    const lg = S.createLinearGradient(0, 0, size, size); lg.addColorStop(.18, white(0)); lg.addColorStop(.3, white(type === 'metallic' ? .2 : dark ? .05 : .08)); lg.addColorStop(.42, white(0)); lg.addColorStop(.68, white(0)); lg.addColorStop(.74, white(dark ? .02 : .04)); lg.addColorStop(.8, white(0)); S.fillStyle = lg; S.fillRect(0, 0, size, size);
     S.globalCompositeOperation = 'destination-out'; S.beginPath(); S.arc(h, h, grOut, 0, 7); S.arc(h, h, grIn, 0, 7, true); S.fill('evenodd'); S.globalCompositeOperation = 'source-over';
     g.globalCompositeOperation = 'screen'; g.drawImage(sm, 0, 0); g.globalCompositeOperation = 'source-over'; }
   // see-through records gather light at the rim and glow there
-  if (see){ const rg = g.createRadialGradient(h, h, h*.7, h, h, h); rg.addColorStop(0, white(0)); rg.addColorStop(.86, white(see === 2 ? .1 : .08)); rg.addColorStop(1, white(see === 2 ? .5 : .3)); g.globalCompositeOperation = 'screen'; g.fillStyle = rg; g.fillRect(0, 0, size, size); g.globalCompositeOperation = 'source-over'; }
+  if (see){ const rg = g.createRadialGradient(h, h, h*.7, h, h, h); rg.addColorStop(0, white(0)); rg.addColorStop(.86, white(see === 2 ? .06 : .05)); rg.addColorStop(1, white(see === 2 ? .32 : .2)); g.globalCompositeOperation = 'screen'; g.fillStyle = rg; g.fillRect(0, 0, size, size); g.globalCompositeOperation = 'source-over'; }
   // a picture disc is a print under clear plastic: one more glassy sheen over everything
-  if (type === 'picture'){ const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(.2, white(0)); lg.addColorStop(.33, white(.16)); lg.addColorStop(.46, white(0)); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
+  if (type === 'picture'){ const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(.2, white(0)); lg.addColorStop(.33, white(.08)); lg.addColorStop(.46, white(0)); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
   // ---- the edge: cut and bevelled, bright where it faces the lamp and dark where it turns away
-  { const eg = g.createLinearGradient(size*.15, size*.15, size*.85, size*.85); eg.addColorStop(0, white(see ? .85 : dark ? .5 : .7)); eg.addColorStop(.4, white(see ? .3 : .06)); eg.addColorStop(.6, `rgba(0,0,0,${see ? .1 : .2})`); eg.addColorStop(1, `rgba(0,0,0,${see ? .3 : .55})`);
+  { const eg = g.createLinearGradient(size*.15, size*.15, size*.85, size*.85); eg.addColorStop(0, white(type === 'metallic' ? .7 : see ? .55 : dark ? .28 : .38)); eg.addColorStop(.4, white(see ? .18 : .04)); eg.addColorStop(.6, `rgba(0,0,0,${see ? .1 : .2})`); eg.addColorStop(1, `rgba(0,0,0,${see ? .3 : .55})`);
     shapePath(g, shape, h, size); g.lineJoin = 'round'; g.lineWidth = size*.02; g.strokeStyle = eg; g.stroke(); g.lineWidth = size*.005; g.strokeStyle = `rgba(0,0,0,${see ? .25 : .5})`; g.stroke(); }
   g.restore(); g.save();
   // ---- the label: paper pressed into the record, with its pressing ring, a little shadow at its rim, and the spindle hole
@@ -2010,6 +2010,8 @@ const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, d
 const setKey = key => v => { draft.d[key] = v; };
 // colour dots sit in even rows, never more than 7 across
 const dotCols = n => `display:grid;justify-content:start;grid-template-columns:repeat(${Math.ceil(n/Math.ceil(n/7))},40px)`;
+const VDEF = { solid:{ v1:'#B3262E' }, split:{ v1:'#2E5DA8', v2:'#EDEAE2' }, inner:{ v1:'#141414', v2:'#E8742A' }, swirl:{ v1:'#6B3FA0', v2:'#E89AB5' }, translucent:{ v1:'#2F7D4F' },
+  metallic:{ v1:'#C9A24A' }, smoke:{ v1:'#EDEAE2', v2:'#141414' }, marble:{ v1:'#2F6B66', v2:'#EDEAE2' } };
 const VCATS = [['classic','Classic',['black','solid','split','inner','swirl','translucent']],['premium','Premium',['metallic','iridescent','smoke','marble','clear','eco']],['picture','Picture disc',['picture']]];
 const catOf = v => (VCATS.find(c => c[2].includes(v)) || VCATS[0])[0];
 const tabs = { labels:'A', sleeve:'F' }; let vcat = null;
@@ -2025,7 +2027,7 @@ const FLOW = [
   { id:'vinyl', name:'Vinyl', mode:'disc', lede:'Pick a kind of pressing, then its colours.',
     val:() => nameOf(VINYLS, draft.d.vinyl) + (needCols() >= 1 ? ' ' + chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : ''),
     rows:[ { seg:1, items:() => VCATS.map(([k, l]) => ({ v:k, l, on:(vcat || catOf(draft.d.vinyl)) === k })), pick:v => { vcat = v; const c = VCATS.find(c => c[0] === v)[2]; if (c.length === 1 && draft.d.vinyl !== c[0]){ draft.d.vinyl = c[0]; return true; } }, local:1 },
-           { tiles:1, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ vinyl:k }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:setKey('vinyl') },
+           { tiles:1, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant(draft.d.vinyl === k ? { vinyl:k } : { vinyl:k, ...VDEF[k] }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:v => { if (draft.d.vinyl !== v) Object.assign(draft.d, VDEF[v] || {}); draft.d.vinyl = v; } },
            { l:'Your picture', show:() => draft.d.vinyl === 'picture', items:() => [{ v:'up', l:draft.pdisc ? 'Change the picture' : '+ Upload a picture', on:!draft.pdisc && !(draft.photo && draft.d.cover === 'photo') },
                ...(draft.photo && draft.d.cover === 'photo' ? [{ v:'cover', l:'Use my cover picture', on:!draft.pdisc }] : [])],
              pick:v => { if (v === 'up'){ $('pdIn').click(); return; } draft.pdisc = ''; } },
