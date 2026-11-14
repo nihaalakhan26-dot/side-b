@@ -114,6 +114,7 @@ button{cursor:pointer}
 .chip[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--ink);background:#fff}
 .chip:disabled{opacity:.4}
 .chip.dot{padding:0;width:40px;justify-content:center}
+[style*="minmax(0,1fr)"] > .chip.dot{width:100%;min-height:0;aspect-ratio:1}[style*="minmax(0,1fr)"] > .chip.dot .sw{width:64%;height:64%}
 .chip .sw{width:24px;height:24px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);flex:none}
 .chip .anysw{background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)}
 .chip[aria-pressed="true"] .anysw{background:var(--c)}
@@ -1343,7 +1344,7 @@ const COVERS = [['photo','Upload a picture','A photo, a painting, a scan, any ar
 const OPT_NOTES = {
   vinyl:{ black:'The classic. Deep, glossy and quiet.', solid:'One solid colour of your choosing.', translucent:'Tinted and see-through. Hold it up to the light.', clear:'Clear as glass, as if there is nothing there.',
     metallic:'A pearly sheen that catches the light.', iridescent:'Shifts colour as it turns, like oil on water.', marble:'Two colours folded together, so no two come out the same.',
-    splatter:'Flecks of a second colour flicked across the first.', swirl:'Two colours spun into a spiral.', clouds:'Soft clouds of a second colour drifting through.',
+    splatter:'A second colour flung outwards across the first.', swirl:'Two colours spun into a spiral.', clouds:'Soft clouds of a second colour drifting through.',
     split:'One colour on each half, meeting in a straight line.', stripe:'Bands of two colours across the record.', inner:'One colour in the middle, ringed by another.',
     smoke:'Wisps of smoke through clear vinyl.', eco:'Pressed from leftover vinyl, so every one is a surprise.', picture:'Any picture you like, pressed right into the record. Upload one, or use your cover.' },
   shape:{ round:'Plays from edge to edge.', heart:'Cut into a heart. The grooves stop short of the curves, so each side plays a little less.', star:'Cut into a star. The smallest playing area of all.',
@@ -1499,8 +1500,10 @@ function vinylBase(r, N, seed){
       g.font = `700 ${N*.05}px Archivo, sans-serif`; g.fillText('YOUR PICTURE', h, h*.42); g.fillText('GOES HERE', h, h*.42 + N*.06); } return c; }
   // finishes from older records, kept as they were pressed
   if (type === 'splatter' || type === 'clouds' || type === 'stripe'){ g.fillStyle = c1; g.fillRect(0, 0, N, N);
-    if (type === 'splatter') [c2, '#111', '#F7EEDB'].forEach(col => { g.fillStyle = col; for (let k = 0; k < 60; k++){ const x = R()*N, y = R()*N, rr = N*(R() < .12 ? .016 + R()*.026 : .003 + R()*.009); g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill();
-      if (rr > N*.014) for (let q = 0; q < 5; q++){ const a = R()*7, dd = rr*(1.4 + R()*2); g.beginPath(); g.arc(x + Math.cos(a)*dd, y + Math.sin(a)*dd, rr*(.12 + R()*.2), 0, 7); g.fill(); } } });
+    if (type === 'splatter'){ const drop = (col, k) => { const a = R()*6.283, d0 = h*(.2 + Math.pow(R(), .7)*.85), big = R() < .2, w = N*(big ? .008 + R()*.014 : .002 + R()*.005), len = w*(1.2 + R()*(big ? 5 : 2.5));
+        g.fillStyle = col; g.save(); g.translate(h + Math.cos(a)*d0, h + Math.sin(a)*d0); g.rotate(a + (R() - .5)*.5); g.beginPath(); g.ellipse(0, 0, len, w, 0, 0, 7); g.fill();
+        if (big){ g.beginPath(); g.ellipse(len*1.1, (R() - .5)*w, len*.45, w*.5, 0, 0, 7); g.fill(); for (let q = 0; q < 4; q++){ g.beginPath(); g.arc(len*(1.4 + R()*1.6), (R() - .5)*w*4, w*(.15 + R()*.3), 0, 7); g.fill(); } } g.restore(); };
+      for (let k = 0; k < 230; k++) drop(c2, k); const third = lum(c1) > .5 ? '#141414' : '#F7EEDB'; for (let k = 0; k < 70; k++) drop(third, k); }
     else if (type === 'clouds'){ g.filter = `blur(${N*.025}px)`; for (let k = 0; k < 22; k++){ g.fillStyle = hexA(c2, .35 + R()*.3); g.beginPath(); g.ellipse(R()*N, R()*N, N*(.06 + R()*.12), N*(.04 + R()*.08), R()*3, 0, 7); g.fill(); } g.filter = 'none'; }
     else { g.fillStyle = c2; g.fillRect(0, h - N*.14, N, N*.28); g.fillStyle = '#F4EFE6'; g.fillRect(0, h - N*.15, N, N*.012); g.fillRect(0, h + N*.138, N, N*.012); }
     return c; }
@@ -1520,7 +1523,7 @@ function vinylBase(r, N, seed){
     switch (type){
       case 'black': { const v = 13 + n2(nx*3, ny*3)*5; cr = cg = v; cb = v + 1; break; }
       case 'solid': { const v = .96 + fbm(nx*2.2, ny*2.2, 3)*.08; cr = A[0]*v; cg = A[1]*v; cb = A[2]*v; break; }
-      case 'translucent': { const v = .92 + fbm(nx*1.8, ny*1.8, 3)*.16; cr = A[0]*v; cg = A[1]*v; cb = A[2]*v; ca = 168 + fbm(nx*1.4 + 9, ny*1.4, 3)*30; break; }
+      case 'translucent': { const v = 1.04 + fbm(nx*1.8, ny*1.8, 3)*.14, m = (A[0] + A[1] + A[2])/3, sat = c => Math.max(0, Math.min(255, (m + (c - m)*1.4)*v + 18)); cr = sat(A[0]); cg = sat(A[1]); cb = sat(A[2]); ca = 104 + fbm(nx*1.4 + 9, ny*1.4, 3)*26; break; }
       case 'clear': { const v = 232 + fbm(nx*1.5, ny*1.5, 3)*16; cr = v; cg = v + 2; cb = v - 2; ca = 30 + fbm(nx*1.2 + 4, ny*1.2, 3)*22; break; }
       case 'split': { const w = (fbm(ny*2.4 + 3, 3.3, 4) - .5)*.2 + (fbm(ny*9 + 1, 8.1, 3) - .5)*.05; t = sstep(-.018, .018, nx - w); mix(A, B, t);
         // a little of each colour dragged into the other where the two halves met in the press
@@ -1564,48 +1567,48 @@ function drawVinyl(r, size, side){
   g.save(); shapePath(g, shape, h, size); g.clip();
   g.imageSmoothingQuality = 'high'; g.drawImage(vinylBase(r, Math.min(size, 420), seed), 0, 0, size, size);
   // the material's own fine grain: metal flake and pearl sparkle most, plain vinyl only a little
-  g.globalCompositeOperation = 'overlay'; g.globalAlpha = type === 'metallic' ? .55 : type === 'iridescent' ? .3 : type === 'picture' ? .08 : .14; g.fillStyle = g.createPattern(noiseCanvas, 'repeat'); g.fillRect(0, 0, size, size);
+  g.globalCompositeOperation = 'overlay'; g.globalAlpha = type === 'metallic' ? .5 : type === 'iridescent' ? .25 : type === 'picture' ? .05 : .07; g.fillStyle = g.createPattern(noiseCanvas, 'repeat'); g.fillRect(0, 0, size, size);
   g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
   // the lamp is up and to the left, so the far side of the record sits a little darker
-  { const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(0, 'rgba(255,255,255,.07)'); lg.addColorStop(.45, 'rgba(0,0,0,0)'); lg.addColorStop(1, `rgba(0,0,0,${see ? .1 : .26})`); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
+  { const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(0, 'rgba(255,255,255,0)'); lg.addColorStop(.5, 'rgba(0,0,0,0)'); lg.addColorStop(1, `rgba(0,0,0,${see ? .06 : .13})`); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
   // ---- the grooves: one fine ring after another, each catching the light a little differently, with a smooth gap between songs
   const n = Math.max(1, Math.min(12, ((r[side] || r.A || []).length) || 5)), gaps = [];
   { let acc = 0; const w = Array.from({ length:n }, () => .7 + R()*.6), tot = w.reduce((a, b) => a + b, 0); for (let i = 0; i < n - 1; i++){ acc += w[i]; gaps.push(grOut - (grOut - grIn)*acc/tot); } }
-  const kB = dark ? .2 : see ? .2 : .24, kW = type === 'metallic' ? .16 : dark ? .08 : see ? .16 : .09, [mk, M] = layer();
+  const kB = dark ? .2 : see ? .16 : .15, kW = type === 'metallic' ? .12 : dark ? .06 : see ? .1 : .04, [mk, M] = layer();
   for (let rr = grIn; rr < grOut; rr += step){ const v = R(), wob = R();
     if (v < .5) ring(g, rr, step*1.05, `rgba(0,0,0,${((.5 - v)*kB).toFixed(3)})`); else ring(g, rr, step*1.05, white((v - .5)*kW));
     ring(M, rr, step*1.25, white(.5 + wob*.5)); }
   // bands a few grooves wide where the music is louder or quieter
   for (let k = 0; k < 26; k++){ const rr = grIn + R()*(grOut - grIn), w = size*(.004 + R()*.018); ring(g, rr, w, R() < .5 ? `rgba(0,0,0,${(.03 + R()*.05).toFixed(3)})` : white(.02 + R()*(dark ? .035 : .05))); ring(M, rr, w, `rgba(0,0,0,${(R()*.3).toFixed(2)})`); }
-  for (const rr of gaps){ const w = size*.005; ring(g, rr, w, dark ? 'rgba(0,0,0,.42)' : 'rgba(255,255,255,.16)'); ring(g, rr - w*.6, size*.001, `rgba(0,0,0,${dark ? .3 : .16})`); ring(g, rr + w*.6, size*.001, white(dark ? .14 : .26));
+  for (const rr of gaps){ const w = size*.005; ring(g, rr, w, dark ? 'rgba(0,0,0,.42)' : 'rgba(255,255,255,.08)'); ring(g, rr - w*.6, size*.001, `rgba(0,0,0,${dark ? .3 : .16})`); ring(g, rr + w*.6, size*.001, white(dark ? .14 : .26));
     M.globalCompositeOperation = 'destination-out'; ring(M, rr, w, 'rgba(0,0,0,.75)'); M.globalCompositeOperation = 'source-over'; }
   // the dead wax round the label: smooth, a shade apart from the grooves, with the run-out groove curling into its locked ring
-  g.fillStyle = dark ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.05)'; g.beginPath(); g.arc(h, h, grIn, 0, 7); g.arc(h, h, labR, 0, 7, true); g.fill();
+  g.fillStyle = dark ? 'rgba(255,255,255,.025)' : 'rgba(0,0,0,.04)'; g.beginPath(); g.arc(h, h, grIn, 0, 7); g.arc(h, h, labR, 0, 7, true); g.fill();
   ring(g, grIn, size*.002, 'rgba(0,0,0,.3)'); ring(g, h*.385, size*.0016, dark ? white(.16) : 'rgba(0,0,0,.22)'); ring(g, h*.38, size*.001, dark ? 'rgba(0,0,0,.5)' : white(.3));
   g.strokeStyle = dark ? white(.1) : 'rgba(0,0,0,.14)'; g.lineWidth = size*.0013; g.beginPath(); for (let a = 0; a < 6.3; a += .05){ const rr = grIn - (grIn - h*.385)*a/6.3, x = h + Math.cos(a + 1)*rr, y = h + Math.sin(a + 1)*rr; a ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
   // the smooth lead-in before the first song, and the raised bead near the edge
-  ring(g, grOut, size*.0018, 'rgba(0,0,0,.3)'); if (shape === 'round'){ ring(g, h*.982, size*.006, dark ? white(.05) : white(.14)); ring(g, h*.976, size*.0012, 'rgba(0,0,0,.25)'); }
+  ring(g, grOut, size*.0018, 'rgba(0,0,0,.3)'); if (shape === 'round'){ ring(g, h*.982, size*.006, dark ? white(.04) : white(.07)); ring(g, h*.976, size*.0012, 'rgba(0,0,0,.25)'); }
   else { ring(g, playR*.99, size*.004, dark ? white(.07) : white(.18)); ring(g, playR, size*.0014, 'rgba(0,0,0,.3)'); }
   // ---- the light. In the grooves it gathers into wedges, broken into streaks by the grooves themselves
-  { const [hl, H] = layer(), strong = type === 'metallic' ? .9 : type === 'black' ? .46 : see === 2 ? .5 : see ? .4 : type === 'iridescent' ? .45 : dark ? .42 : .38;
+  { const [hl, H] = layer(), strong = type === 'metallic' ? .6 : type === 'black' ? .26 : see === 2 ? .3 : see ? .2 : type === 'iridescent' ? .22 : dark ? .22 : .16;
     lobes(H, [[.625, .04, .8], [.625, .013, .7], [.125, .034, .65], [.125, .011, .5], [.375, .05, .14], [.875, .05, .11], [.558, .01, .3], [.69, .008, .22], [.19, .008, .2]], a => white(a*strong));
     if (dark || type === 'metallic' || type === 'iridescent'){ H.globalCompositeOperation = 'lighter';                                       // the faint rainbow you see either side of the glare on dark vinyl
-      lobes(H, [[.625, .07, 1], [.125, .065, .85]], (a, f) => `hsla(${(f*2160 + 200) % 360},90%,64%,${(a*(1 - a)*(type === 'iridescent' ? .5 : type === 'metallic' ? .26 : .1)).toFixed(3)})`); H.globalCompositeOperation = 'source-over'; }
+      lobes(H, [[.625, .07, 1], [.125, .065, .85]], (a, f) => `hsla(${(f*2160 + 200) % 360},90%,64%,${(a*(1 - a)*(type === 'iridescent' ? .3 : type === 'metallic' ? .16 : .05)).toFixed(3)})`); H.globalCompositeOperation = 'source-over'; }
     H.globalCompositeOperation = 'destination-in'; H.drawImage(mk, 0, 0); H.globalCompositeOperation = 'source-over';
-    g.globalCompositeOperation = dark ? 'screen' : 'soft-light'; g.drawImage(hl, 0, 0); if (!dark){ g.globalCompositeOperation = 'screen'; g.globalAlpha = type === 'metallic' ? .5 : see ? .3 : .2; g.drawImage(hl, 0, 0); g.globalAlpha = 1; }
+    g.globalCompositeOperation = dark ? 'screen' : 'soft-light'; g.drawImage(hl, 0, 0); if (!dark){ g.globalCompositeOperation = 'screen'; g.globalAlpha = type === 'metallic' ? .35 : see ? .14 : .08; g.drawImage(hl, 0, 0); g.globalAlpha = 1; }
     if (type === 'metallic'){ g.globalCompositeOperation = 'overlay'; g.drawImage(hl, 0, 0); }
     g.globalCompositeOperation = 'source-over'; }
   // on the smooth parts (dead wax, lead-in, the plain border of a shaped record) the light is one soft sheen
-  { const [sm, S] = layer(); lobes(S, [[.625, .09, 1], [.125, .08, .6]], a => white(a*(type === 'metallic' ? .3 : dark ? .1 : .13)));
-    const lg = S.createLinearGradient(0, 0, size, size); lg.addColorStop(.18, white(0)); lg.addColorStop(.3, white(type === 'metallic' ? .2 : dark ? .05 : .08)); lg.addColorStop(.42, white(0)); lg.addColorStop(.68, white(0)); lg.addColorStop(.74, white(dark ? .02 : .04)); lg.addColorStop(.8, white(0)); S.fillStyle = lg; S.fillRect(0, 0, size, size);
+  { const [sm, S] = layer(); lobes(S, [[.625, .09, 1], [.125, .08, .6]], a => white(a*(type === 'metallic' ? .22 : dark ? .06 : .05)));
+    const lg = S.createLinearGradient(0, 0, size, size); lg.addColorStop(.18, white(0)); lg.addColorStop(.3, white(type === 'metallic' ? .14 : dark ? .03 : .03)); lg.addColorStop(.42, white(0)); lg.addColorStop(.68, white(0)); lg.addColorStop(.74, white(.012)); lg.addColorStop(.8, white(0)); S.fillStyle = lg; S.fillRect(0, 0, size, size);
     S.globalCompositeOperation = 'destination-out'; S.beginPath(); S.arc(h, h, grOut, 0, 7); S.arc(h, h, grIn, 0, 7, true); S.fill('evenodd'); S.globalCompositeOperation = 'source-over';
     g.globalCompositeOperation = 'screen'; g.drawImage(sm, 0, 0); g.globalCompositeOperation = 'source-over'; }
   // see-through records gather light at the rim and glow there
-  if (see){ const rg = g.createRadialGradient(h, h, h*.7, h, h, h); rg.addColorStop(0, white(0)); rg.addColorStop(.86, white(see === 2 ? .06 : .05)); rg.addColorStop(1, white(see === 2 ? .32 : .2)); g.globalCompositeOperation = 'screen'; g.fillStyle = rg; g.fillRect(0, 0, size, size); g.globalCompositeOperation = 'source-over'; }
+  if (see){ const rg = g.createRadialGradient(h, h, h*.7, h, h, h); rg.addColorStop(0, white(0)); rg.addColorStop(.86, white(.03)); rg.addColorStop(1, white(see === 2 ? .24 : .14)); g.globalCompositeOperation = 'screen'; g.fillStyle = rg; g.fillRect(0, 0, size, size); g.globalCompositeOperation = 'source-over'; }
   // a picture disc is a print under clear plastic: one more glassy sheen over everything
   if (type === 'picture'){ const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(.2, white(0)); lg.addColorStop(.33, white(.08)); lg.addColorStop(.46, white(0)); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
   // ---- the edge: cut and bevelled, bright where it faces the lamp and dark where it turns away
-  { const eg = g.createLinearGradient(size*.15, size*.15, size*.85, size*.85); eg.addColorStop(0, white(type === 'metallic' ? .7 : see ? .55 : dark ? .28 : .38)); eg.addColorStop(.4, white(see ? .18 : .04)); eg.addColorStop(.6, `rgba(0,0,0,${see ? .1 : .2})`); eg.addColorStop(1, `rgba(0,0,0,${see ? .3 : .55})`);
+  { const eg = g.createLinearGradient(size*.15, size*.15, size*.85, size*.85); eg.addColorStop(0, white(type === 'metallic' ? .55 : see ? .4 : dark ? .2 : .22)); eg.addColorStop(.4, white(see ? .12 : .02)); eg.addColorStop(.6, `rgba(0,0,0,${see ? .1 : .2})`); eg.addColorStop(1, `rgba(0,0,0,${see ? .3 : .55})`);
     shapePath(g, shape, h, size); g.lineJoin = 'round'; g.lineWidth = size*.02; g.strokeStyle = eg; g.stroke(); g.lineWidth = size*.005; g.strokeStyle = `rgba(0,0,0,${see ? .25 : .5})`; g.stroke(); }
   g.restore(); g.save();
   // ---- the label: paper pressed into the record, with its pressing ring, a little shadow at its rim, and the spindle hole
@@ -1723,7 +1726,7 @@ function cleanRec(r){
     d:{ bg:hex(d.bg, old ? old.bg : b.d.bg), ink:hex(d.ink, old ? old.ink : b.d.ink), acc:hex(d.acc, old ? old.acc : b.d.acc), filt:pick(filt, FILTERS, b.d.filt), lay:pick(d.lay, LAYOUTS, ot ? ot[1] : b.d.lay), font:pick(d.font, TITLE_FONTS, ot ? ot[0] : b.d.font), ts:num(d.ts, .6, 1.5, d.type === 'minimal' ? .6 : 1),
       showTitle:!fresh && d.type !== 'none' && d.showTitle !== false, showLine:!fresh && d.showLine !== false, showCredit:!fresh && d.showCredit !== false, credits:d.credits !== false, obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
       stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:false,
-      pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl === 'splatter' ? 'marble' : d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
+      pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
       shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab) },
     hype, draw, texts, lab, pdisc:img(r.pdisc), A:side(r.A), B:side(r.B),
     notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:hex(n.c, Number.isInteger(n.c) && NOTECOLS[n.c] ? NOTECOLS[n.c] : NOTECOLS[0]),
@@ -2014,10 +2017,10 @@ const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, d
   { v:'*', any:key, sw:draft.d[key], dot:1, title:'Any colour', on:!cols.some(c => c.toUpperCase() === String(draft.d[key]).toUpperCase()) }];
 const setKey = key => v => { draft.d[key] = v; };
 // colour dots sit in even rows, never more than 7 across
-const dotCols = n => `display:grid;justify-content:start;grid-template-columns:repeat(${Math.ceil(n/Math.ceil(n/7))},40px)`;
+const dotCols = n => `display:grid;gap:10px;grid-template-columns:repeat(${Math.ceil(n/Math.ceil(n/8))},minmax(0,1fr))`;
 const VDEF = { solid:{ v1:'#B3262E' }, split:{ v1:'#2E5DA8', v2:'#EDEAE2' }, inner:{ v1:'#141414', v2:'#E8742A' }, swirl:{ v1:'#6B3FA0', v2:'#E89AB5' }, translucent:{ v1:'#2F7D4F' },
-  metallic:{ v1:'#C9A24A' }, smoke:{ v1:'#EDEAE2', v2:'#141414' }, marble:{ v1:'#2F6B66', v2:'#EDEAE2' } };
-const VCATS = [['classic','Classic',['black','solid','split','inner','swirl','translucent']],['premium','Premium',['metallic','iridescent','smoke','marble','clear','eco']],['picture','Picture disc',['picture']]];
+  metallic:{ v1:'#C9A24A' }, smoke:{ v1:'#EDEAE2', v2:'#141414' }, marble:{ v1:'#2F6B66', v2:'#EDEAE2' }, splatter:{ v1:'#F2C230', v2:'#B3262E' } };
+const VCATS = [['classic','Classic',['black','solid','split','inner','swirl','translucent']],['premium','Premium',['metallic','iridescent','smoke','marble','splatter','clear','eco']],['picture','Picture disc',['picture']]];
 const catOf = v => (VCATS.find(c => c[2].includes(v)) || VCATS[0])[0];
 const tabs = { labels:'A', sleeve:'F' }; let vcat = null;
 const isWay = w => draft.d.bg === w.bg.toUpperCase() && draft.d.ink === w.ink.toUpperCase() && draft.d.acc === w.acc.toUpperCase();
