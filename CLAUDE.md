@@ -63,6 +63,17 @@ Ideas that were tried and dropped, and why:
    - **Older records** still draw everything they were made with (the old title, line and credit, notes). Colours are stored as hex; older records that stored list positions are converted when opened; older records without a cover type get "your picture" if they have one and "plain colour" if not.
 5. **Receiving it**: a kraft record bag with a name tag opens onto a listening room seen straight down onto a wooden table, so everything shares one view: a stack of real records with a vinyl peeking out, a plant from above, window light and sun shadows, a silver turntable. The sleeve and a card sit on the left, the turntable in the middle, a receiver on the right. Pull the sleeve forward, flip it to read the tracklist and notes, slide the record out, carry it to the turntable.
 
+## How the record is drawn
+
+The owner wants every record to look like the real thing, whatever its shape or finish: realistic material, texture and light, not a flat illustration. `drawVinyl` builds it in layers:
+
+- **Material** (`vinylBase`): each finish is worked out point by point with noise (`makeNoise`, `fbm`): marbling and swirl that flow round the record, a soft pool for colour in colour, a wavering seam for half and half, metal flake, pearl, smoke hanging in clear plastic, a muddy recycled mix for eco. Transparent, ultra clear and smoke are really see-through (the canvas keeps its alpha). Older finishes (splatter, clouds, stripe) are still drawn for old records.
+- **Grooves**: hundreds of fine rings, each a touch lighter or darker, with a smooth gap between songs (as many gaps as the side has songs), the dead wax and run-out groove round the label, and the lead-in and bead at the edge.
+- **Light**: the lamp is up and to the left. In the grooves the light gathers into two bright wedges (`lobes`), broken into streaks by the grooves, with a faint rainbow either side on dark, metallic and pearl records. Smooth parts (dead wax, the border of a shaped record) get one soft sheen. See-through records glow at the rim. The edge is bevelled, bright towards the lamp and dark away from it. No drawn outline anywhere.
+- **Label**: paper grain, a pressing ring, a little shadow at its rim, and a spindle hole.
+
+Rejected: flat fills with a few drawn rings, a black outline round the record and the label, and random straight lines for marbling. To check changes, draw a sheet of every finish and shape side by side at 720 px.
+
 ## The turntable (everything works)
 
 Power knob, start/stop, 33 and 45 speeds (45 plays faster and higher), pitch slider (plus or minus 8 percent), target light, cue lever, dust cover, tonearm drag (needle position chooses the song, each ring is a track), hold the record to slow it down, tap the label to flip sides. The receiver has volume, tone and balance knobs and live VU meters.

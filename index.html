@@ -1476,61 +1476,145 @@ function shapePath(g, shape, h, size){
   else if (shape === 'oct') poly(8, h*.99, Math.PI/8);
   else g.arc(h, h, h*.995, 0, 7);
 }
-function drawVinyl(r, size, side){
-  const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d'), d = r.d, h = size/2, R = mulberry32(99 + parseInt(hashStr(d.v1 + d.v2), 36) % 10000 + (d.vinyl||'').length);
-  const c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2', type = d.vinyl, shape = d.shape || 'round', playR = h*(PLAY[shape] || .97);
-  const hexA = (hx, a) => { const n = parseInt(hx.slice(1),16); return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`; };
-  const isClear = type === 'clear' || type === 'translucent';
-  g.save(); shapePath(g, shape, h, size); g.clip();
-  switch (type){
-    case 'black': g.fillStyle = '#121212'; g.fillRect(0,0,size,size); break;
-    case 'solid': g.fillStyle = c1; g.fillRect(0,0,size,size); break;
-    case 'translucent': g.fillStyle = hexA(c1, .66); g.fillRect(0,0,size,size); break;
-    case 'clear': g.fillStyle = 'rgba(238,238,232,.2)'; g.fillRect(0,0,size,size); break;
-    case 'metallic': { const mg = g.createLinearGradient(0,0,size,size); mg.addColorStop(0, c1); mg.addColorStop(.3, '#ffffff'); mg.addColorStop(.42, c1); mg.addColorStop(.7, hexA('#000000',.6)); mg.addColorStop(.85, c1); mg.addColorStop(1, '#ffffff');
-      g.fillStyle = c1; g.fillRect(0,0,size,size); g.globalAlpha = .55; g.fillStyle = mg; g.fillRect(0,0,size,size); g.globalAlpha = 1;
-      if (g.createConicGradient){ const cg = g.createConicGradient(.3, h, h); [[0,.5],[.1,0],[.25,.35],[.4,0],[.5,.5],[.6,0],[.75,.35],[.9,0],[1,.5]].forEach(([o,a]) => cg.addColorStop(o, `rgba(255,255,255,${a})`)); g.fillStyle = cg; g.globalCompositeOperation = 'overlay'; g.fillRect(0,0,size,size); g.globalCompositeOperation = 'source-over'; } break; }
-    case 'iridescent': g.fillStyle = '#E8E3EA'; g.fillRect(0,0,size,size);
-      if (g.createConicGradient){ const cg = g.createConicGradient(0, h, h); ['#ffd1dc','#d6f5ff','#e7ffd6','#fff1c9','#e5d6ff','#ffd1dc'].forEach((col,i,a) => cg.addColorStop(i/(a.length-1), col)); g.globalAlpha = .75; g.fillStyle = cg; g.fillRect(0,0,size,size);
-        const cg2 = g.createConicGradient(2, h, h); ['rgba(255,255,255,.6)','rgba(255,255,255,0)','rgba(160,200,255,.4)','rgba(255,255,255,0)','rgba(255,180,220,.4)','rgba(255,255,255,.6)'].forEach((col,i,a) => cg2.addColorStop(i/(a.length-1), col)); g.fillStyle = cg2; g.fillRect(0,0,size,size); g.globalAlpha = 1; } break;
-    case 'marble': g.fillStyle = c1; g.fillRect(0,0,size,size); g.lineCap = 'round';
-      for (let k=0;k<34;k++){ g.strokeStyle = k%5 === 0 ? '#F4EFE6' : c2; g.globalAlpha = .35 + R()*.4; g.lineWidth = size*(.006 + R()*.045); g.beginPath(); let x = R()*size, y = R()*size; g.moveTo(x,y);
-        for (let st=0;st<7;st++){ x += (R()-.5)*size*.45; y += (R()-.5)*size*.45; g.quadraticCurveTo(x + (R()-.5)*size*.3, y + (R()-.5)*size*.3, x, y); } g.stroke(); } g.globalAlpha = 1; break;
-    case 'splatter': g.fillStyle = c1; g.fillRect(0,0,size,size); [c2, '#111', '#F7EEDB'].forEach(col => { g.fillStyle = col;
-      for (let k=0;k<60;k++){ g.globalAlpha = .92; const x = R()*size, y = R()*size, rr = size*(R() < .12 ? .016 + R()*.026 : .003 + R()*.009); g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill();
-        if (rr > size*.014) for (let q=0;q<5;q++){ const a = R()*7, dd = rr*(1.4 + R()*2); g.beginPath(); g.arc(x + Math.cos(a)*dd, y + Math.sin(a)*dd, rr*(.12 + R()*.2), 0, 7); g.fill(); } } }); g.globalAlpha = 1; break;
-    case 'swirl': g.fillStyle = c1; g.fillRect(0,0,size,size); g.lineCap = 'round';
-      for (let arm=0; arm<4; arm++){ g.strokeStyle = arm % 2 ? '#F4EFE6' : c2; g.globalAlpha = arm % 2 ? .35 : .7; g.lineWidth = size*(arm % 2 ? .012 : .04); g.beginPath();
-        for (let t=0; t<14; t+=.04){ const rr = h*.3 + t*h*.05, a = t*.9 + arm*1.57; const x = h + Math.cos(a)*rr, y = h + Math.sin(a)*rr; t ? g.lineTo(x,y) : g.moveTo(x,y); } g.stroke(); } g.globalAlpha = 1; break;
-    case 'clouds': g.fillStyle = c1; g.fillRect(0,0,size,size); g.filter = `blur(${size*.025}px)`;
-      for (let k=0;k<22;k++){ g.fillStyle = hexA(c2, .35 + R()*.3); g.beginPath(); g.ellipse(R()*size, R()*size, size*(.06 + R()*.12), size*(.04 + R()*.08), R()*3, 0, 7); g.fill(); } g.filter = 'none'; break;
-    case 'split': g.fillStyle = c1; g.fillRect(0,0,h,size); g.fillStyle = c2; g.fillRect(h,0,h,size); break;
-    case 'stripe': g.fillStyle = c1; g.fillRect(0,0,size,size); g.fillStyle = c2; g.fillRect(0, h - size*.14, size, size*.28); g.fillStyle = '#F4EFE6'; g.fillRect(0, h - size*.15, size, size*.012); g.fillRect(0, h + size*.138, size, size*.012); break;
-    case 'inner': g.fillStyle = c1; g.fillRect(0,0,size,size); { const gr = g.createRadialGradient(h,h,h*.4,h,h,h*.72); gr.addColorStop(0, c2); gr.addColorStop(.8, c2); gr.addColorStop(1, hexA(c2, 0)); g.fillStyle = gr; g.beginPath(); g.arc(h,h,h*.72,0,7); g.fill(); } break;
-    case 'smoke': g.fillStyle = c1; g.fillRect(0,0,size,size); g.filter = `blur(${size*.02}px)`; for (let k=0;k<16;k++){ g.fillStyle = hexA(k % 3 ? c2 : '#F7EEDB', .35); g.beginPath(); g.ellipse(R()*size, R()*size, size*(.08 + R()*.16), size*(.03 + R()*.06), R()*3, 0, 7); g.fill(); } g.filter = 'none'; break;
-    case 'eco': g.fillStyle = '#3d3431'; g.fillRect(0,0,size,size); g.lineCap = 'round';
-      for (let k=0;k<70;k++){ g.strokeStyle = VCOLS[1 + Math.floor(R()*(VCOLS.length-1))]; g.globalAlpha = .25 + R()*.45; g.lineWidth = size*(.004 + R()*.03); g.beginPath(); const x = R()*size, y = R()*size, a = R()*7, l = size*(.05 + R()*.25);
-        g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a+1)*l*.6, y + Math.sin(a+1)*l*.6, x + Math.cos(a)*l, y + Math.sin(a)*l); g.stroke(); } g.globalAlpha = 1; break;
-    case 'picture': { g.fillStyle = '#111'; g.fillRect(0,0,size,size); const src = r.pdisc || ((r.d.cover || 'photo') === 'photo' ? r.photo : ''), im = src ? photoImage(src) : null;
-      if (!(im && drawPhoto(g, im, 0, 0, size, size))){ g.fillStyle = '#DCD3C1'; g.fillRect(0,0,size,size); g.fillStyle = 'rgba(35,26,20,.55)'; g.textAlign = 'center';
-        g.font = `700 ${size*.05}px Archivo, sans-serif`; g.fillText('YOUR PICTURE', h, h*.42); g.fillText('GOES HERE', h, h*.42 + size*.06); } break; }
+// ---- THE RECORD ITSELF, drawn to look like the real thing.
+// Each finish gets its own material, worked out point by point with noise (vinylBase): marbling that flows, a swirl that
+// spirals, metal flake, pearl, smoke hanging in clear plastic. Over that go the things every record has (drawVinyl): hundreds
+// of fine grooves, smooth gaps between the songs, the dead wax round the label, lamplight caught in two bright wedges across
+// the grooves, a bevelled edge, and a paper label with its pressing ring and spindle hole.
+function makeNoise(seed){ const rnd = mulberry32(seed), P = new Uint8Array(512), G = new Float32Array(256), perm = Array.from({ length:256 }, (_, i) => i);
+  for (let i = 255; i > 0; i--){ const j = Math.floor(rnd()*(i + 1)); [perm[i], perm[j]] = [perm[j], perm[i]]; }
+  for (let i = 0; i < 512; i++) P[i] = perm[i & 255]; for (let i = 0; i < 256; i++) G[i] = rnd();
+  const n2 = (x, y) => { const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf*xf*(3 - 2*xf), v = yf*yf*(3 - 2*yf), y0 = P[yi & 255], y1 = P[(yi + 1) & 255];
+    const a = G[P[(xi & 255) + y0]], b = G[P[((xi + 1) & 255) + y0]], c = G[P[(xi & 255) + y1]], d = G[P[((xi + 1) & 255) + y1]]; return a + (b - a)*u + (c - a)*v + (a - b - c + d)*u*v; };
+  const fbm = (x, y, oct=4) => { let s = 0, a = .5, f = 1, t = 0; for (let i = 0; i < oct; i++){ s += a*n2(x*f + i*17.3, y*f - i*9.1); t += a; f *= 2.03; a *= .5; } return s/t; };
+  return { n2, fbm, rnd }; }
+const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a)/(b - a))); return t*t*(3 - 2*t); };
+const hexRGB = hx => { const n = parseInt(String(hx || '#141414').slice(1), 16) || 0; return [n >> 16, (n >> 8) & 255, n & 255]; };
+// the material of the record, before grooves and light. Returns a canvas N across.
+function vinylBase(r, N, seed){
+  const c = document.createElement('canvas'); c.width = c.height = N; const g = c.getContext('2d'), d = r.d, type = d.vinyl, c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2', h = N/2, R = mulberry32(seed);
+  const hexA = (hx, a) => { const [x, y, z] = hexRGB(hx); return `rgba(${x},${y},${z},${a})`; };
+  if (type === 'picture'){ g.fillStyle = '#111'; g.fillRect(0, 0, N, N); const src = r.pdisc || ((d.cover || 'photo') === 'photo' ? r.photo : ''), im = src ? photoImage(src) : null;
+    if (!(im && drawPhoto(g, im, 0, 0, N, N))){ g.fillStyle = '#DCD3C1'; g.fillRect(0, 0, N, N); g.fillStyle = 'rgba(35,26,20,.55)'; g.textAlign = 'center';
+      g.font = `700 ${N*.05}px Archivo, sans-serif`; g.fillText('YOUR PICTURE', h, h*.42); g.fillText('GOES HERE', h, h*.42 + N*.06); } return c; }
+  // finishes from older records, kept as they were pressed
+  if (type === 'splatter' || type === 'clouds' || type === 'stripe'){ g.fillStyle = c1; g.fillRect(0, 0, N, N);
+    if (type === 'splatter') [c2, '#111', '#F7EEDB'].forEach(col => { g.fillStyle = col; for (let k = 0; k < 60; k++){ const x = R()*N, y = R()*N, rr = N*(R() < .12 ? .016 + R()*.026 : .003 + R()*.009); g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill();
+      if (rr > N*.014) for (let q = 0; q < 5; q++){ const a = R()*7, dd = rr*(1.4 + R()*2); g.beginPath(); g.arc(x + Math.cos(a)*dd, y + Math.sin(a)*dd, rr*(.12 + R()*.2), 0, 7); g.fill(); } } });
+    else if (type === 'clouds'){ g.filter = `blur(${N*.025}px)`; for (let k = 0; k < 22; k++){ g.fillStyle = hexA(c2, .35 + R()*.3); g.beginPath(); g.ellipse(R()*N, R()*N, N*(.06 + R()*.12), N*(.04 + R()*.08), R()*3, 0, 7); g.fill(); } g.filter = 'none'; }
+    else { g.fillStyle = c2; g.fillRect(0, h - N*.14, N, N*.28); g.fillStyle = '#F4EFE6'; g.fillRect(0, h - N*.15, N, N*.012); g.fillRect(0, h + N*.138, N, N*.012); }
+    return c; }
+  const { n2, fbm } = makeNoise(seed), A = hexRGB(c1), B = hexRGB(c2), W = [246, 240, 228], img = g.createImageData(N, N), px = img.data;
+  const pal = type === 'eco' ? [1, 2, 3].map(() => hexRGB(VCOLS[1 + Math.floor(R()*(VCOLS.length - 1))])) : null;
+  let o = 0;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++, o += 4){
+    const nx = (x + .5)/N*2 - 1, ny = (y + .5)/N*2 - 1, rad = Math.hypot(nx, ny), ang = Math.atan2(ny, nx); let cr, cg, cb, ca = 255, t;
+    const mix = (P, Q, k) => { cr = P[0] + (Q[0] - P[0])*k; cg = P[1] + (Q[1] - P[1])*k; cb = P[2] + (Q[2] - P[2])*k; };
+    const add = (Q, k) => { cr += (Q[0] - cr)*k; cg += (Q[1] - cg)*k; cb += (Q[2] - cb)*k; };
+    switch (type){
+      case 'black': { const v = 13 + n2(nx*3, ny*3)*5; cr = cg = v; cb = v + 1; break; }
+      case 'solid': { const v = .96 + fbm(nx*2.2, ny*2.2, 3)*.08; cr = A[0]*v; cg = A[1]*v; cb = A[2]*v; break; }
+      case 'translucent': { const v = .92 + fbm(nx*1.8, ny*1.8, 3)*.16; cr = A[0]*v; cg = A[1]*v; cb = A[2]*v; ca = 168 + fbm(nx*1.4 + 9, ny*1.4, 3)*30; break; }
+      case 'clear': { const v = 232 + fbm(nx*1.5, ny*1.5, 3)*16; cr = v; cg = v + 2; cb = v - 2; ca = 30 + fbm(nx*1.2 + 4, ny*1.2, 3)*22; break; }
+      case 'split': { const w = (fbm(ny*2.4 + 3, 3.3, 4) - .5)*.2 + (fbm(ny*9 + 1, 8.1, 3) - .5)*.05; t = sstep(-.018, .018, nx - w); mix(A, B, t);
+        // a little of each colour dragged into the other where the two halves met in the press
+        const drag = sstep(.62, .8, fbm(nx*5 + 20, ny*1.3, 4))*sstep(.3, 0, Math.abs(nx - w)); add(t > .5 ? A : B, drag*.75); break; }
+      case 'inner': { const e = .6 + (fbm(Math.cos(ang)*.9 + 4, Math.sin(ang)*.9 + 4, 3) - .5)*.16;
+        t = 1 - sstep(e - .12, e + .07, rad + (fbm(Math.cos(ang)*5 + rad*.8, Math.sin(ang)*5, 3) - .5)*.04); mix(A, B, t*t*(3 - 2*t)); break; }
+      case 'swirl': { const u = ang + 2.4*Math.log(rad + .07), sx = Math.cos(u), sy = Math.sin(u), q = fbm(nx*1.7 + 5, ny*1.7, 3);
+        const v = fbm(sx*1.5 + rad*1.3 + q*1.2, sy*1.5 - rad*1.1 + q, 4); t = sstep(.4, .6, v); mix(A, B, t);
+        const f2 = fbm(sx*3.2 - rad*2 + q*2 + 11, sy*3.2 + rad*2.4, 4); add(t > .5 ? A : B, sstep(.56, .7, f2)*.5); add(W, sstep(.66, .8, f2)*sstep(.3, .5, v)*sstep(.7, .5, v)*.3); break; }
+      case 'marble': { const q1 = fbm(nx*1.5 + 3, ny*1.5 + 7, 4), q2 = fbm(nx*1.5 - 5, ny*1.5 + 2, 4), v = fbm(nx*1.9 + 3.4*q1, ny*1.9 + 3.4*q2, 5);
+        const u = ang + 1.9*Math.log(rad + .15) + (q1 - .5)*3, st = fbm(Math.cos(u)*2.6 + rad*2.2 + q2*2, Math.sin(u)*2.6 - rad*1.6 + q1*2, 5);
+        t = sstep(.4, .62, v*.55 + st*.45); mix(A, B, t); const f2 = fbm(Math.cos(u)*5 + rad*5 + 7, Math.sin(u)*5 + q2*3, 4);
+        add(t > .5 ? A : B, sstep(.54, .68, f2)*.55); add(W, sstep(.64, .78, f2)*sstep(.25, .5, t)*sstep(.75, .5, t)*.5); break; }
+      case 'smoke': { const q1 = fbm(nx*1.3 + 2, ny*1.3 + 5, 4), q2 = fbm(nx*1.3 - 7, ny*1.3 + 1, 4), v = fbm(nx*1.6 + 2.8*q1, ny*1.6 + 2.8*q2, 5);
+        t = sstep(.42, .7, v); mix(A, B, t*.92); add(W, sstep(.66, .8, v)*.18); ca = 150 + t*100; break; }
+      case 'eco': { const q1 = fbm(nx*1.6 + 3, ny*1.6 + 7, 4), q2 = fbm(nx*1.6 - 5, ny*1.6 + 2, 4), a = sstep(.4, .6, fbm(nx*2 + 3*q1, ny*2 + 3*q2, 4)), b = sstep(.46, .62, fbm(nx*2.4 - 3*q2 + 9, ny*2.4 + 3*q1, 4));
+        mix(pal[0], pal[1], a); add(pal[2], b*.8); add([44, 38, 36], .5 + q1*.25); const ch = n2(x*.9, y*.9); if (ch > .86) add(pal[(x + y) % 3], (ch - .86)*5); break; }
+      case 'metallic': { const br = .62 + .5*Math.pow(Math.abs(Math.cos(ang - .8)), 3) + (fbm(Math.cos(ang)*14, Math.sin(ang)*14 + rad*.6, 3) - .5)*.35, fl = n2(x*1.9 + 40, y*1.9);
+        cr = A[0]*br; cg = A[1]*br; cb = A[2]*br; if (fl > .78) add([255, 252, 244], (fl - .78)*2.6*br); else if (fl < .2) { const k = 1 - (.2 - fl)*1.4; cr *= k; cg *= k; cb *= k; } break; }
+      case 'iridescent': { const hu = ang/6.2832*2 + rad*1.15 + fbm(nx*1.8, ny*1.8, 4)*.9, k = 6.2832;
+        cr = 255*(.8 + .2*Math.cos(k*hu)); cg = 255*(.82 + .18*Math.cos(k*(hu + .33))); cb = 255*(.86 + .14*Math.cos(k*(hu + .67))); const fl = n2(x*1.7, y*1.7 + 30); if (fl > .82) add([255, 255, 255], (fl - .82)*3); break; }
+      default: cr = A[0]; cg = A[1]; cb = A[2];
+    }
+    px[o] = cr; px[o + 1] = cg; px[o + 2] = cb; px[o + 3] = ca;
   }
-  // depth: soft radial falloff, lead-in band, grooves, lead-out, edge bevel
-  if (type !== 'picture'){ const dk = g.createRadialGradient(h,h,h*.3,h,h,h*1.05); dk.addColorStop(0,'rgba(0,0,0,.02)'); dk.addColorStop(1, isClear ? 'rgba(0,0,0,.12)' : 'rgba(0,0,0,.32)'); g.fillStyle = dk; g.fillRect(0,0,size,size); }
-  const lrIn = h*.38;
-  for (let rr = lrIn*1.14; rr < playR*.97; rr += size*(.012 + R()*.012)){
-    const a = (type === 'black' ? .12 : isClear ? .14 : .16) + R()*.06; g.strokeStyle = type === 'black' || type === 'eco' ? `rgba(255,255,255,${a})` : `rgba(0,0,0,${a})`;
-    g.lineWidth = size*.0024; g.beginPath(); g.arc(h, h, rr, 0, 7); g.stroke(); }
-  g.strokeStyle = type === 'black' ? 'rgba(255,255,255,.07)' : 'rgba(255,255,255,.18)'; g.lineWidth = size*.012; g.beginPath(); g.arc(h, h, playR*.99, 0, 7); g.stroke();
-  g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = size*.006; g.beginPath(); g.arc(h, h, lrIn*1.1, 0, 7); g.stroke();
-  if (g.createConicGradient){ const sh = g.createConicGradient(.6, h, h), st = type === 'black' ? .16 : isClear ? .22 : .14;
-    [[0,st*1.4],[.05,st*1.4],[.0501,0],[.5,0],[.5001,st*1.4],[.55,st*1.4],[.5501,0],[1,0]].forEach(([o,a]) => sh.addColorStop(o, `rgba(255,255,255,${a})`)); g.fillStyle = sh; g.fillRect(0,0,size,size); }
+  g.putImageData(img, 0, 0); return c;
+}
+function drawVinyl(r, size, side){
+  const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d'), d = r.d, h = size/2, seed = 99 + parseInt(hashStr((d.v1 || '') + (d.v2 || '')), 36) % 10000 + (d.vinyl || '').length, R = mulberry32(seed);
+  const type = d.vinyl, shape = d.shape || 'round', playR = h*(PLAY[shape] || .97), c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2';
+  const see = type === 'clear' ? 2 : type === 'translucent' || type === 'smoke' ? 1 : 0;                       // how see-through the plastic is
+  const two = (VINYLS.find(v => v[0] === type) || [0, 0, 0])[2] === 2;
+  const L = type === 'black' ? 0 : type === 'eco' ? .2 : type === 'picture' ? .45 : type === 'iridescent' || type === 'clear' ? .9 : two ? (lum(c1) + lum(c2))/2 : lum(c1), dark = L < .4;
+  const labR = h*.33, grIn = h*.44, grOut = playR*.975, step = Math.max(.6, size/720*.85);
+  const layer = () => { const k = document.createElement('canvas'); k.width = k.height = size; return [k, k.getContext('2d')]; };
+  const ring = (G, rr, w, col) => { G.strokeStyle = col; G.lineWidth = w; G.beginPath(); G.arc(h, h, rr, 0, 7); G.stroke(); };
+  // light caught across the grooves: bright wedges towards the lamp and away from it, fainter ones between
+  const lobes = (G, list, col) => { const cg = G.createConicGradient(0, h, h); for (let i = 0; i <= 120; i++){ const f = i/120; let a = 0;
+      for (const [at, wd, st] of list){ let dd = Math.abs(f - at); dd = Math.min(dd, 1 - dd); a += st*Math.exp(-(dd*dd)/(wd*wd)); } cg.addColorStop(f, col(Math.min(1, a), f)); } G.fillStyle = cg; G.fillRect(0, 0, size, size); };
+  const white = a => `rgba(255,255,255,${a.toFixed(3)})`;
+
+  g.save(); shapePath(g, shape, h, size); g.clip();
+  g.imageSmoothingQuality = 'high'; g.drawImage(vinylBase(r, Math.min(size, 420), seed), 0, 0, size, size);
+  // the material's own fine grain: metal flake and pearl sparkle most, plain vinyl only a little
+  g.globalCompositeOperation = 'overlay'; g.globalAlpha = type === 'metallic' ? .55 : type === 'iridescent' ? .3 : type === 'picture' ? .08 : .14; g.fillStyle = g.createPattern(noiseCanvas, 'repeat'); g.fillRect(0, 0, size, size);
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  // the lamp is up and to the left, so the far side of the record sits a little darker
+  { const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(0, 'rgba(255,255,255,.07)'); lg.addColorStop(.45, 'rgba(0,0,0,0)'); lg.addColorStop(1, `rgba(0,0,0,${see ? .1 : .26})`); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
+  // ---- the grooves: one fine ring after another, each catching the light a little differently, with a smooth gap between songs
+  const n = Math.max(1, Math.min(12, ((r[side] || r.A || []).length) || 5)), gaps = [];
+  { let acc = 0; const w = Array.from({ length:n }, () => .7 + R()*.6), tot = w.reduce((a, b) => a + b, 0); for (let i = 0; i < n - 1; i++){ acc += w[i]; gaps.push(grOut - (grOut - grIn)*acc/tot); } }
+  const kB = dark ? .2 : see ? .2 : .26, kW = dark ? .15 : see ? .3 : .16, [mk, M] = layer();
+  for (let rr = grIn; rr < grOut; rr += step){ const v = R(), wob = R();
+    if (v < .5) ring(g, rr, step*1.05, `rgba(0,0,0,${((.5 - v)*kB).toFixed(3)})`); else ring(g, rr, step*1.05, white((v - .5)*kW));
+    ring(M, rr, step*1.25, white(.5 + wob*.5)); }
+  // bands a few grooves wide where the music is louder or quieter
+  for (let k = 0; k < 26; k++){ const rr = grIn + R()*(grOut - grIn), w = size*(.004 + R()*.018); ring(g, rr, w, R() < .5 ? `rgba(0,0,0,${(.03 + R()*.05).toFixed(3)})` : white(.02 + R()*(dark ? .035 : .05))); ring(M, rr, w, `rgba(0,0,0,${(R()*.3).toFixed(2)})`); }
+  for (const rr of gaps){ const w = size*.005; ring(g, rr, w, dark ? 'rgba(0,0,0,.42)' : 'rgba(255,255,255,.16)'); ring(g, rr - w*.6, size*.001, `rgba(0,0,0,${dark ? .3 : .16})`); ring(g, rr + w*.6, size*.001, white(dark ? .14 : .26));
+    M.globalCompositeOperation = 'destination-out'; ring(M, rr, w, 'rgba(0,0,0,.75)'); M.globalCompositeOperation = 'source-over'; }
+  // the dead wax round the label: smooth, a shade apart from the grooves, with the run-out groove curling into its locked ring
+  g.fillStyle = dark ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.05)'; g.beginPath(); g.arc(h, h, grIn, 0, 7); g.arc(h, h, labR, 0, 7, true); g.fill();
+  ring(g, grIn, size*.002, 'rgba(0,0,0,.3)'); ring(g, h*.385, size*.0016, dark ? white(.16) : 'rgba(0,0,0,.22)'); ring(g, h*.38, size*.001, dark ? 'rgba(0,0,0,.5)' : white(.3));
+  g.strokeStyle = dark ? white(.1) : 'rgba(0,0,0,.14)'; g.lineWidth = size*.0013; g.beginPath(); for (let a = 0; a < 6.3; a += .05){ const rr = grIn - (grIn - h*.385)*a/6.3, x = h + Math.cos(a + 1)*rr, y = h + Math.sin(a + 1)*rr; a ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
+  // the smooth lead-in before the first song, and the raised bead near the edge
+  ring(g, grOut, size*.0018, 'rgba(0,0,0,.3)'); if (shape === 'round'){ ring(g, h*.982, size*.006, dark ? white(.05) : white(.14)); ring(g, h*.976, size*.0012, 'rgba(0,0,0,.25)'); }
+  else { ring(g, playR*.99, size*.004, dark ? white(.07) : white(.18)); ring(g, playR, size*.0014, 'rgba(0,0,0,.3)'); }
+  // ---- the light. In the grooves it gathers into wedges, broken into streaks by the grooves themselves
+  { const [hl, H] = layer(), strong = type === 'metallic' ? 1 : type === 'black' ? .92 : see === 2 ? .95 : see ? .8 : type === 'iridescent' ? .85 : dark ? .85 : .75;
+    lobes(H, [[.625, .04, .8], [.625, .013, .7], [.125, .034, .65], [.125, .011, .5], [.375, .05, .14], [.875, .05, .11], [.558, .01, .3], [.69, .008, .22], [.19, .008, .2]], a => white(a*strong));
+    if (dark || type === 'metallic' || type === 'iridescent'){ H.globalCompositeOperation = 'lighter';                                       // the faint rainbow you see either side of the glare on dark vinyl
+      lobes(H, [[.625, .07, 1], [.125, .065, .85]], (a, f) => `hsla(${(f*2160 + 200) % 360},90%,64%,${(a*(1 - a)*(type === 'iridescent' ? .8 : type === 'metallic' ? .3 : .22)).toFixed(3)})`); H.globalCompositeOperation = 'source-over'; }
+    H.globalCompositeOperation = 'destination-in'; H.drawImage(mk, 0, 0); H.globalCompositeOperation = 'source-over';
+    g.globalCompositeOperation = dark ? 'screen' : 'soft-light'; g.drawImage(hl, 0, 0); if (!dark){ g.globalCompositeOperation = 'screen'; g.globalAlpha = see ? .6 : .5; g.drawImage(hl, 0, 0); g.globalAlpha = 1; }
+    if (type === 'metallic'){ g.globalCompositeOperation = 'overlay'; g.drawImage(hl, 0, 0); }
+    g.globalCompositeOperation = 'source-over'; }
+  // on the smooth parts (dead wax, lead-in, the plain border of a shaped record) the light is one soft sheen
+  { const [sm, S] = layer(); lobes(S, [[.625, .09, 1], [.125, .08, .6]], a => white(a*(dark ? .2 : .3)));
+    const lg = S.createLinearGradient(0, 0, size, size); lg.addColorStop(.18, white(0)); lg.addColorStop(.3, white(dark ? .1 : .2)); lg.addColorStop(.42, white(0)); lg.addColorStop(.68, white(0)); lg.addColorStop(.74, white(dark ? .05 : .1)); lg.addColorStop(.8, white(0)); S.fillStyle = lg; S.fillRect(0, 0, size, size);
+    S.globalCompositeOperation = 'destination-out'; S.beginPath(); S.arc(h, h, grOut, 0, 7); S.arc(h, h, grIn, 0, 7, true); S.fill('evenodd'); S.globalCompositeOperation = 'source-over';
+    g.globalCompositeOperation = 'screen'; g.drawImage(sm, 0, 0); g.globalCompositeOperation = 'source-over'; }
+  // see-through records gather light at the rim and glow there
+  if (see){ const rg = g.createRadialGradient(h, h, h*.7, h, h, h); rg.addColorStop(0, white(0)); rg.addColorStop(.86, white(see === 2 ? .1 : .08)); rg.addColorStop(1, white(see === 2 ? .5 : .3)); g.globalCompositeOperation = 'screen'; g.fillStyle = rg; g.fillRect(0, 0, size, size); g.globalCompositeOperation = 'source-over'; }
+  // a picture disc is a print under clear plastic: one more glassy sheen over everything
+  if (type === 'picture'){ const lg = g.createLinearGradient(0, 0, size, size); lg.addColorStop(.2, white(0)); lg.addColorStop(.33, white(.16)); lg.addColorStop(.46, white(0)); g.fillStyle = lg; g.fillRect(0, 0, size, size); }
+  // ---- the edge: cut and bevelled, bright where it faces the lamp and dark where it turns away
+  { const eg = g.createLinearGradient(size*.15, size*.15, size*.85, size*.85); eg.addColorStop(0, white(see ? .85 : dark ? .5 : .7)); eg.addColorStop(.4, white(see ? .3 : .06)); eg.addColorStop(.6, `rgba(0,0,0,${see ? .1 : .2})`); eg.addColorStop(1, `rgba(0,0,0,${see ? .3 : .55})`);
+    shapePath(g, shape, h, size); g.lineJoin = 'round'; g.lineWidth = size*.02; g.strokeStyle = eg; g.stroke(); g.lineWidth = size*.005; g.strokeStyle = `rgba(0,0,0,${see ? .25 : .5})`; g.stroke(); }
   g.restore(); g.save();
-  shapePath(g, shape, h, size); g.lineWidth = size*.016; g.strokeStyle = '#1b1714'; g.stroke();
-  g.beginPath(); g.arc(h, h, h, 0, 7); g.clip();
-  paintLabel(g, r, side, h, h*.33, size);
-  g.fillStyle = '#0a0a0a'; g.beginPath(); g.arc(h, h, size*.012, 0, 7); g.fill();
-  g.restore(); return c;
+  // ---- the label: paper pressed into the record, with its pressing ring, a little shadow at its rim, and the spindle hole
+  g.beginPath(); g.arc(h, h, labR, 0, 7); g.clip();
+  paintLabel(g, r, side, h, labR, size);
+  g.globalCompositeOperation = 'overlay'; g.globalAlpha = .3; g.fillStyle = g.createPattern(noiseCanvas, 'repeat'); g.fillRect(h - labR, h - labR, labR*2, labR*2); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  { const lg = g.createLinearGradient(h - labR, h - labR, h + labR, h + labR); lg.addColorStop(0, white(.12)); lg.addColorStop(.5, white(0)); lg.addColorStop(1, 'rgba(0,0,0,.14)'); g.fillStyle = lg; g.fillRect(h - labR, h - labR, labR*2, labR*2); }
+  ring(g, labR*.56, size*.0022, 'rgba(0,0,0,.16)'); ring(g, labR*.56 + size*.002, size*.0016, white(.22));
+  ring(g, labR - size*.003, size*.006, 'rgba(0,0,0,.22)');
+  g.restore();
+  ring(g, labR + size*.0012, size*.0018, dark ? white(.14) : 'rgba(0,0,0,.2)');
+  g.fillStyle = '#070606'; g.beginPath(); g.arc(h, h, size*.0118, 0, 7); g.fill();
+  g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = size*.003; g.beginPath(); g.arc(h, h, size*.0135, 3.3, 5.5); g.stroke(); g.strokeStyle = white(.5); g.beginPath(); g.arc(h, h, size*.0135, .2, 2.3); g.stroke();
+  return c;
 }
 // the paper label in the middle of a record, centred at (h, h) with radius lr; size is the whole record's size, for the lettering
 function paintLabel(g, r, side, h, lr, size){ const L = { bg:r.d.lab, ink:inkOn(r.d.lab), acc:r.d.acc }, LS0 = r.lab && r.lab[side], d = LS0 && LS0.st ? { ...r.d, label:LS0.st } : r.d;
@@ -1554,7 +1638,7 @@ function paintLabel(g, r, side, h, lr, size){ const L = { bg:r.d.lab, ink:inkOn(
     g.font = `500 ${size*.015}px "IBM Plex Mono", monospace`; g.fillText((r.by ? `PRESSED BY ${r.by}` : 'SIDE B RECORDS').toUpperCase(), h, h + lr*.72);
     if (d.label === 'split'){ g.fillStyle = L.ink; } g.font = `500 ${size*.014}px "IBM Plex Mono", monospace`; g.fillText(r.cat || '', h, h - lr*.66);
   }
-  g.strokeStyle = '#1b1714'; g.lineWidth = size*.008; g.beginPath(); g.arc(h, h, lr, 0, 7); g.stroke();
+  g.strokeStyle = 'rgba(20,14,10,.3)'; g.lineWidth = size*.004; g.beginPath(); g.arc(h, h, lr, 0, 7); g.stroke();
 }
 // a label on its own, filling the picture: for editing it, and for the label tiles
 function labelURL(r, side, px){ return cached('l' + px + side + designKey(r), () => { const c = document.createElement('canvas'); c.width = c.height = px; const g = c.getContext('2d');
