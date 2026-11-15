@@ -50,7 +50,7 @@ button{cursor:pointer}
 #welcome .wbtn{border:0;border-radius:999px;background:#0E0D0C;color:#F2F0EC;font:400 .84rem/1 var(--typewriter),monospace;letter-spacing:.04em;text-transform:uppercase;padding:16px 32px;cursor:pointer;transition:transform .2s,background .2s}
 #welcome .wbtn:hover:not(:disabled){background:#2a2723;transform:translateY(-1px)}
 #welcome .wbtn:disabled{opacity:.55;cursor:default}
-#welcome .wlink{margin-top:clamp(18px,3.4vh,30px);border:0;background:none;padding:4px;color:#141210;font:400 .8rem/1 var(--typewriter),monospace;letter-spacing:.04em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#welcome .wlink{cursor:default;margin-top:clamp(18px,3.4vh,30px);border:0;background:none;padding:4px;color:#141210;font:400 .8rem/1 var(--typewriter),monospace;letter-spacing:.04em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 #welcome .wfoot{margin:clamp(30px,6vh,56px) 0 0;font:400 .76rem/1 var(--typewriter),monospace;letter-spacing:.06em;text-transform:uppercase;color:#141210}
 @media (max-width:760px){#welcome .wcard{width:min(92vw,74vh);padding:9% 8%}}
 #outside.welcoming .caption{opacity:0}
@@ -3217,7 +3217,7 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Enter the store';
   const welcomed = () => { ensureAudio(); $('soundBtn').hidden = false; $('welcome').classList.add('gone'); $('outside').classList.remove('welcoming'); };
   sb.addEventListener('click', () => { welcomed(); setTimeout(enterShop, 350); });
-  $('cratesBtn').addEventListener('click', () => { ensureAudio(); openCrates(); });
+  // $('cratesBtn').addEventListener('click', () => { ensureAudio(); openCrates(); }); // crates link switched off for now
   { // torn paper edge: a jagged outline, fresh each visit
     const pts = [], N = 110; let w = 1;
     const j = (a) => { w = Math.max(.2, Math.min(a, w + (Math.random() - .5) * a * .7 + (Math.random() < .08 ? a * .5 : 0))); return w.toFixed(2); };
