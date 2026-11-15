@@ -6,7 +6,7 @@
 <title>DigiVinyl: make a record for someone</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&family=Cormorant+Garamond:wght@500;600&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
 :root{
   --cream:#EFE6D2; --cream2:#E5D9C0; --paper:#F7F1E3; --ink:#231A14; --ink2:#6E5B4B; --walnut:#5B3A22; --walnut2:#7A4E2D;
@@ -39,29 +39,22 @@ button{cursor:pointer}
 #hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:55;margin:0;color:var(--text);font:700 1.35rem/1.2 'Caveat',cursive;text-shadow:0 2px 10px rgba(0,0,0,.95);pointer-events:none;text-align:center;max-width:calc(100vw - 32px)}
 
 /* ---------- intro + outside ---------- */
-/* the welcome card, over the street when the site opens: a square cream record sleeve with a record peeking out */
-#welcome{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(10,6,4,.12),rgba(10,6,4,.4));transition:opacity .5s,visibility .5s}
+/* the welcome card, over the street when the site opens: a big plain cream card, square-cornered, dead centre */
+#welcome{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:rgba(10,6,4,.18);transition:opacity .5s,visibility .5s}
 #welcome.gone{opacity:0;visibility:hidden}
-#welcome .wsleeve{position:relative;width:min(560px,46vw,74vh);aspect-ratio:1;animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
-@media (min-width:761px){#welcome .wsleeve{margin-right:13%}}
-#welcome .wrec{position:absolute;top:2.5%;left:2.5%;width:95%;height:95%;transform:translateX(26%);filter:drop-shadow(0 16px 20px rgba(0,0,0,.45));animation:wOut 1.4s .6s both cubic-bezier(.3,.7,.3,1)}
-#welcome .wspin{animation:introSpin 7s linear infinite;transform-origin:0 0}
-@keyframes introSpin{to{transform:rotate(360deg)}}
-@keyframes wOut{from{transform:translateX(0)}}
-#welcome .wcard{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9% 10%;text-align:center;background:#F4EDE0;color:#231A14;box-shadow:0 30px 60px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.6) inset}
-#welcome .wcard::before{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.12;pointer-events:none}
-#welcome .wcard::after{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.35),transparent 35%,transparent 70%,rgba(0,0,0,.06));pointer-events:none}
-@keyframes wIn{from{opacity:0;transform:translateY(18px) scale(.97)}}
-#welcome h1{position:relative;margin:0;font:400 clamp(3.4rem,8vw,6rem)/1 'Yellowtail',cursive;color:#231A14;padding:0 .08em .06em}
-#welcome .wline{position:relative;margin:clamp(12px,2.2vh,20px) auto clamp(22px,4vh,34px);max-width:32ch;text-wrap:balance;color:#4A3A2E;font-size:clamp(.95rem,1.3vw,1.08rem);line-height:1.5}
-#welcome .wbtn{position:relative;border:0;border-radius:999px;background:#231A14;color:#F4EDE0;font:700 .98rem/1 Archivo,sans-serif;padding:17px 34px;cursor:pointer;box-shadow:0 8px 18px rgba(35,26,20,.25);transition:transform .2s,background .2s}
-#welcome .wbtn:hover:not(:disabled){transform:translateY(-2px);background:#7B2A2E}
-#welcome .wbtn:disabled{opacity:.6;cursor:default}
-#welcome .wby{position:absolute;left:0;right:0;bottom:6%;margin:0;font:600 .72rem/1 'Archivo Narrow',sans-serif;letter-spacing:.12em;padding-left:.12em;text-transform:uppercase;color:#8A7660}
-@media (max-width:760px){#welcome .wsleeve{width:min(88vw,62vh)}#welcome .wrec{transform:translateY(-24%)}@keyframes wOut{from{transform:translateY(0)}}#welcome .wsleeve{margin-top:18%}}
+#welcome .wcard{position:relative;width:min(620px,48vw,78vh);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8%;text-align:center;background:#F6F1E7;color:#231A14;box-shadow:0 24px 60px rgba(0,0,0,.45);animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
+@keyframes wIn{from{opacity:0;transform:translateY(16px)}}
+#welcome .wmark{position:relative;margin:0;display:flex;flex-direction:column;align-items:center;font-weight:400;line-height:1}
+#welcome .wword{font:500 clamp(3.6rem,7.6vw,6.4rem)/.9 'Cormorant Garamond',Garamond,serif;letter-spacing:-.01em;color:#231A14}
+#welcome .wsig{align-self:flex-end;margin:-.06em -.25em 0 0;font:400 clamp(1.5rem,3vw,2.5rem)/1 'Great Vibes',cursive;color:#231A14;white-space:nowrap}
+#welcome .wline{margin:clamp(24px,4.4vh,40px) auto clamp(26px,4.6vh,40px);max-width:36ch;color:#4A3A2E;font:400 clamp(1rem,1.25vw,1.12rem)/1.55 Archivo,sans-serif}
+#welcome .wbtn{border:1.5px solid #231A14;border-radius:0;background:#231A14;color:#F6F1E7;font:600 .82rem/1 Archivo,sans-serif;letter-spacing:.18em;text-transform:uppercase;padding:17px 30px 17px calc(30px + .18em);cursor:pointer;transition:background .2s,color .2s}
+#welcome .wbtn:hover:not(:disabled){background:transparent;color:#231A14}
+#welcome .wbtn:disabled{opacity:.55;cursor:default}
+@media (max-width:760px){#welcome .wcard{width:min(90vw,70vh);padding:10% 8%}}
 #outside.welcoming .caption{opacity:0}
 @keyframes nOn{0%,6%{opacity:.08}7%{opacity:1}9%{opacity:.25}12%,30%{opacity:1}31%{opacity:.4}33%,100%{opacity:1}}
-@media (prefers-reduced-motion: reduce){#welcome .wsleeve,#welcome .wrec,#welcome .wspin{animation:none}}
+@media (prefers-reduced-motion: reduce){#welcome .wcard{animation:none}}
 /* THE CRATES: records people chose to share, to browse and play */
 #crates{position:fixed;inset:0;z-index:75;display:none;flex-direction:column;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(246,199,122,.12),transparent 70%),#1A110C;color:var(--text)}
 #crates.on{display:flex}
@@ -841,14 +834,10 @@ body.sheeton{overflow:hidden}
 <section id="outside" class="scene on welcoming" aria-label="Outside the shop">
   <div id="outsideBg"></div><div id="outsideInner"></div>
   <p class="caption">The door's open. Tap it to go in.</p>
-  <div id="welcome"><div class="wsleeve">
-    <svg class="wrec" viewBox="-100 -100 200 200" aria-hidden="true"><g class="wspin"><circle r="98" fill="#141110"/><circle r="40" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="44" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="48" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="52" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="56" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="60" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="64" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="68" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="72" fill="none" stroke="#2A2522" stroke-width="2"/><circle r="76" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="80" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="84" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="88" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="92" fill="none" stroke="#2A2522" stroke-width="1.2"/><path d="M0 0 L-62 -75 A98 98 0 0 1 -12 -97Z" fill="#fff" opacity=".07"/><path d="M0 0 L62 75 A98 98 0 0 1 12 97Z" fill="#fff" opacity=".05"/><circle r="34" fill="#B3252B"/><text y="5" text-anchor="middle" font-family="Yellowtail,cursive" font-size="15" fill="#F3EBDD">DigiVinyl</text><circle r="2.6" fill="#F3EBDD"/></g></svg>
-    <div class="wcard" role="dialog" aria-labelledby="wTitle">
-      <h1 id="wTitle">DigiVinyl</h1>
-      <p class="wline">A digital record store experience where you can browse the shelves, build your own vinyl and send it to someone special.</p>
-      <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
-      <p class="wby">made by @nihalakhan</p>
-    </div>
+  <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle">
+    <h1 id="wTitle" class="wmark"><span class="wword">DigiVinyl</span><span class="wsig">made by @nihalakhan</span></h1>
+    <p class="wline">A digital record store experience.<br>Browse the shelves, build your own vinyl and send it to someone special.</p>
+    <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
   </div></div>
 </section>
 <section id="crates" aria-label="Records others made"><header><div><h2>The crates</h2><p>Records people made here and chose to share. Tap one to play it.</p></div><button class="chrome" id="cratesClose" style="position:static">Back to the street</button></header><div class="grid" id="cratesGrid"></div></section>
