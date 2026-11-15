@@ -274,6 +274,19 @@ button{cursor:pointer}
 .dtip:empty{display:none}
 @media (max-width:760px){.drawbar{left:50%;right:auto;bottom:6px;padding:6px}.drawbar .dtip{display:none}.drawbar .dbtn.main{padding:12px 20px;font-size:.88rem}}
 .dbtn:disabled{opacity:.35;cursor:default}
+.drawbar.drawing{display:grid;grid-template-columns:auto auto 1fr auto auto auto;align-items:center;gap:12px 8px;padding:14px 16px;border-radius:18px;width:min(470px,calc(100% - 24px));max-width:none}
+.drawbar.drawing .dtools{display:contents}
+.drawbar.drawing #drawInks{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:repeat(13,minmax(0,1fr));gap:7px}
+.drawbar.drawing #drawInks button,.drawbar.drawing #drawInks .pick{width:100%;height:auto;aspect-ratio:1}
+.drawbar.drawing #drawSizes{grid-column:1;grid-row:2;gap:6px}
+.drawbar.drawing #drawSizes button{width:34px;height:34px;border-radius:9px}
+.drawbar.drawing #drawErase{grid-column:2;grid-row:2;margin-left:6px}
+.drawbar.drawing #drawUndo{grid-column:4;grid-row:2}.drawbar.drawing #drawWipe{grid-column:5;grid-row:2}
+.drawbar.drawing #drawBtn{grid-column:6;grid-row:2;margin-left:8px}
+.drawbar.drawing .dbtn{height:34px;padding:0 14px;font-size:.78rem;box-shadow:inset 0 0 0 1px rgba(43,37,34,.18)}
+.drawbar.drawing .dbtn.main{box-shadow:none;background:var(--ink);color:var(--cream)}
+.drawbar.drawing .dbtn[aria-pressed="true"]:not(.main){background:var(--ink);color:var(--cream);box-shadow:none}
+.drawbar.drawing .dtip{grid-column:1/-1;grid-row:3;text-align:center}
 /* on phones, drawing opens a full-screen pad: the sleeve as big as the screen allows, Undo, Clear and Done along the top,
    every colour, brush size and the eraser below it, nothing hidden off the edge */
 .drawsheet{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));background:radial-gradient(120% 70% at 50% 42%,#3A2A1E,#140D09 72%);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;animation:dsIn .22s ease-out}
@@ -830,7 +843,7 @@ body.sheeton{overflow:hidden}
         <div id="stOpts"></div>
         <p class="optnote" id="stNote" hidden></p>
         <div class="xtra" data-for="colours"><p class="minihead">Or pick each colour</p><div class="pickers" id="sleevePick"></div></div>
-        <div class="xtra" data-for="hype" id="hypePad"><p class="minihead">What the hype sticker says</p><div class="hyperow"><input id="hypeA" maxlength="24" placeholder="Stars"><input id="hypeB" maxlength="40" placeholder="The quote"><input id="hypeC" maxlength="30" placeholder="Who said it"></div></div>
+        <div class="xtra" data-for="hype" id="hypePad"><p class="minihead">Kind of sticker</p><div class="chips segrow" id="stkKinds"><button class="chip segopt" data-k="burst">Starburst</button><button class="chip segopt" data-k="bar">Black bar</button><button class="chip segopt" data-k="round">Gold foil</button></div><p class="minihead">What the hype sticker says</p><div class="hyperow"><input id="hypeA" maxlength="24" placeholder="Top line"><input id="hypeB" maxlength="40" placeholder="The big words"><input id="hypeC" maxlength="30" placeholder="Bottom line"></div></div>
         <!-- SONGS -->
         <section class="step" id="st-songs">
           <div class="card searchrow"><input id="q" type="search" placeholder="Search a song or artist" autocomplete="off" aria-label="Search songs" enterkeyhint="search"><button class="btn sm" id="qBtn">Search</button></div>
@@ -1392,16 +1405,34 @@ function drawSleeve(r, size){
   // the finishing touches each have their own place: a banner across the top, a strip down the left, a sticker top right, a badge bottom right
   if (d.stereo){ g.fillStyle = '#16120F'; g.fillRect(0, 0, 100, 6.4); g.fillStyle = '#F3E9D4'; g.fillRect(0, 6.4, 100, .5);
     g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 3.2px Archivo, sans-serif'; g.fillText('S  T  E  R  E  O', (L.X - 6 + 100)/2, 3.4); g.textBaseline = 'alphabetic'; g.textAlign = 'left'; }
-  if (d.obi){ g.fillStyle = W.acc; g.fillRect(0,0,11,100); g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(9.6,0,1.4,100);
-    g.save(); g.translate(6.8, 96); g.rotate(-Math.PI/2); g.fillStyle = W.acc === W.bg ? W.ink : (lum(W.acc) > .55 ? '#231A14' : '#F6EBD6');
-    g.font = '900 5px Archivo, sans-serif'; g.fillText((r.name || 'Untitled').toUpperCase().slice(0,30), 0, 0); g.font = '500 2.6px "IBM Plex Mono", monospace'; g.fillText(`SIDE B RECORDS  ${r.cat || ''}`, 0, -5.6); g.restore(); }
+  if (d.obi){ const paper = '#F5EFDF', ink = '#1E1814', acc = lum(W.acc) > .82 ? '#B3252B' : W.acc, onAcc = lum(acc) > .55 ? '#1E1814' : '#F7F1E3', name = (r.name || 'Untitled').toUpperCase().slice(0, 30);
+    g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 1.2; g.shadowOffsetX = .5; g.fillStyle = paper; g.fillRect(0, 0, 11, 100); g.restore();
+    // a coloured head with a little record on it, then the speed
+    g.fillStyle = acc; g.fillRect(0, 0, 11, 15.5); g.fillStyle = onAcc; g.beginPath(); g.arc(5.5, 5.6, 3.5, 0, 7); g.fill(); g.fillStyle = acc; g.beginPath(); g.arc(5.5, 5.6, 1.25, 0, 7); g.fill(); g.fillStyle = onAcc; g.beginPath(); g.arc(5.5, 5.6, .32, 0, 7); g.fill();
+    g.textAlign = 'center'; g.font = '800 1.75px Archivo, sans-serif'; g.fillText('STEREO', 5.5, 11.8); g.font = '600 1.5px Archivo, sans-serif'; g.fillText('33\u2153 RPM', 5.5, 14.1);
+    g.fillStyle = acc; g.fillRect(1.2, 17, 8.6, .35); g.fillRect(1.2, 17.8, 8.6, .15);
+    // the record's name runs down the band, the way an obi carries it
+    g.save(); g.translate(5.5, 19.6); g.rotate(Math.PI/2); g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillStyle = ink; fitFont(g, name, 900, 'Archivo, sans-serif', 5, 44); g.fillText(name, 0, .2); g.restore();
+    g.fillStyle = acc; g.save(); g.translate(5.5, 66); g.rotate(Math.PI/4); g.fillRect(-.8, -.8, 1.6, 1.6); g.restore();
+    g.save(); g.translate(5.5, 68.6); g.rotate(Math.PI/2); g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillStyle = ink; const by = (r.by ? 'PRESSED BY ' + r.by : 'SIDE B RECORDS').toUpperCase().slice(0, 26); fitFont(g, by, 600, '"Archivo Narrow", sans-serif', 2.3, 15.5); g.fillText(by, 0, .1); g.restore();
+    // the catalogue number in a box and the price at the foot
+    g.fillStyle = acc; g.fillRect(1.2, 85.6, 8.6, .15); g.fillRect(1, 87, 9, 5.2); g.fillStyle = onAcc; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.font = '700 1.7px Archivo, sans-serif'; g.fillText(String(r.cat || 'SB-001').slice(0, 8), 5.5, 90.3);
+    g.fillStyle = ink; g.font = '600 1.6px Archivo, sans-serif'; g.fillText('\u00A52,800', 5.5, 95.2); g.font = '500 1.1px Archivo, sans-serif'; g.fillText('MADE BY HAND', 5.5, 97.6);
+    const fold = g.createLinearGradient(8.6, 0, 11, 0); fold.addColorStop(0, 'rgba(0,0,0,0)'); fold.addColorStop(1, 'rgba(0,0,0,.14)'); g.fillStyle = fold; g.fillRect(8.6, 0, 2.4, 100); g.textAlign = 'left'; }
   if (d.g180){ g.save(); g.translate(STICK.badge[0], STICK.badge[1]); g.rotate(-.12); g.fillStyle = '#C9A24A'; g.beginPath(); g.arc(0,0,7.5,0,7); g.fill(); g.strokeStyle = '#8a6a26'; g.lineWidth = .35; g.beginPath(); g.arc(0,0,6.5,0,7); g.stroke();
     g.fillStyle = '#231A14'; g.textAlign = 'center'; g.font = '900 4.4px Archivo, sans-serif'; g.fillText('180', 0, .6); g.font = '600 1.6px "IBM Plex Mono", monospace'; g.fillText('GRAM VINYL', 0, 3.4); g.fillText('AUDIOPHILE', 0, -3.4); g.restore(); }
-  if (d.sticker){ const h = r.hype || {}; g.save(); g.translate(STICK.sticker[0], STICK.sticker[1] + L.T); g.rotate(-.2); g.fillStyle = '#F7EEDB'; g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 1.2; g.beginPath(); g.arc(0,0,12,0,7); g.fill(); g.shadowBlur = 0;
-    g.strokeStyle = '#B8452B'; g.lineWidth = .5; g.beginPath(); g.arc(0,0,10.6,0,7); g.stroke(); g.textAlign = 'center';
-    g.fillStyle = '#B8452B'; fitFont(g, h.a || '', 700, 'Archivo, sans-serif', 3, 17); g.fillText(h.a || '', 0, -4.2);
-    g.fillStyle = '#231A14'; fitFont(g, h.b || '', 700, 'Caveat, cursive', 5.4, 19); g.fillText(h.b || '', 0, 1.6);
-    g.fillStyle = '#B8452B'; fitFont(g, (h.c || '').toUpperCase(), 600, '"IBM Plex Mono", monospace', 2.3, 16); g.fillText((h.c || '').toUpperCase(), 0, 6.2); g.restore(); }
+  if (d.sticker){ const h = r.hype || {}, kind = d.stk || 'burst', A = (h.a || '').toUpperCase(), Bt = h.b || '', C = (h.c || '').toUpperCase(), put = (t, wgt, fam, max, wd, y) => { fitFont(g, t, wgt, fam, max, wd); g.fillText(t, 0, y); };
+    g.save(); g.translate(STICK.sticker[0], STICK.sticker[1] + L.T); g.rotate(kind === 'bar' ? -.1 : -.2); g.textAlign = 'center'; g.shadowColor = 'rgba(0,0,0,.4)'; g.shadowBlur = 1.4; g.shadowOffsetY = .4;
+    if (kind === 'bar'){ g.fillStyle = '#161412'; g.beginPath(); g.roundRect(-14, -8.2, 28, 16.4, 1.2); g.fill(); g.shadowColor = 'transparent'; g.strokeStyle = '#F2C230'; g.lineWidth = .35; g.beginPath(); g.roundRect(-13, -7.2, 26, 14.4, .7); g.stroke();
+      g.fillStyle = '#F2C230'; put(A, 800, 'Archivo, sans-serif', 2.4, 23, -3.7); g.fillStyle = '#FFFFFF'; put(Bt.toUpperCase(), 900, 'Archivo, sans-serif', 4, 24, 1); g.fillStyle = '#F2C230'; g.fillRect(-8, 2.4, 16, .25); put(C, 600, '"Archivo Narrow", sans-serif', 2.1, 23, 5.5); }
+    else if (kind === 'round'){ const gd = g.createRadialGradient(-4, -5, 1, 0, 0, 13); gd.addColorStop(0, '#FBE9A8'); gd.addColorStop(.55, '#E0B34C'); gd.addColorStop(1, '#B8862B'); g.fillStyle = gd; g.beginPath(); g.arc(0, 0, 12.2, 0, 7); g.fill(); g.shadowColor = 'transparent';
+      g.strokeStyle = '#6E4E14'; g.lineWidth = .3; g.beginPath(); g.arc(0, 0, 11, 0, 7); g.stroke(); g.lineWidth = .15; g.beginPath(); g.arc(0, 0, 10.3, 0, 7); g.stroke();
+      g.fillStyle = '#3A2808'; put(A, 800, 'Archivo, sans-serif', 2.5, 15, -4.4); put(Bt, 400, '"DM Serif Display", serif', 4.6, 19, .9); g.fillRect(-5, 2.4, 10, .2); put(C, 700, '"Archivo Narrow", sans-serif', 2.1, 15, 5.6); }
+    else { g.fillStyle = '#C22A22'; g.beginPath(); for (let k = 0; k < 40; k++){ const a = k*Math.PI/20, rr = k % 2 ? 11.3 : 12.9; k ? g.lineTo(Math.cos(a)*rr, Math.sin(a)*rr) : g.moveTo(Math.cos(a)*rr, Math.sin(a)*rr); } g.closePath(); g.fill(); g.shadowColor = 'transparent';
+      g.strokeStyle = '#F7EEDB'; g.lineWidth = .3; g.beginPath(); g.arc(0, 0, 10, 0, 7); g.stroke(); g.lineWidth = .14; g.beginPath(); g.arc(0, 0, 9.3, 0, 7); g.stroke();
+      g.fillStyle = '#FBE08A'; put(A, 800, 'Archivo, sans-serif', 2.5, 14, -4.2); g.fillStyle = '#FFF6E2'; put(Bt, 400, 'Yellowtail, cursive', 5.6, 17.5, 1.5); g.fillStyle = '#FBE08A'; put(C, 700, '"Archivo Narrow", sans-serif', 2.1, 13.5, 5.8); }
+    g.restore(); }
+
   g.setTransform(1,0,0,1,0,0);
   g.globalCompositeOperation = 'overlay'; g.globalAlpha = .24; g.drawImage(noiseCanvas, 0, 0, size, size); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
   const v = g.createRadialGradient(size/2,size/2,size*.3,size/2,size/2,size*.75); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.06)'); g.fillStyle = v; g.fillRect(0,0,size,size);
@@ -1518,6 +1549,7 @@ function vinylBase(r, N, seed){
   const amt = typeof r.d.amt === 'number' ? Math.min(2, Math.max(0, r.d.amt)) : 1, lv = a => { const i = Math.min(1, Math.floor(amt)), f = amt - i; return a[i] + (a[i + 1] - a[i])*f; }, c = document.createElement('canvas'); c.width = c.height = N; const g = c.getContext('2d'), d = r.d, type = d.vinyl, c1 = d.v1 || '#141414', c2 = d.v2 || '#EDEAE2', h = N/2, R = mulberry32(seed);
   const hexA = (hx, a) => { const [x, y, z] = hexRGB(hx); return `rgba(${x},${y},${z},${a})`; };
   if (type === 'picture'){ g.fillStyle = '#111'; g.fillRect(0, 0, N, N); const src = r.pdisc || ((d.cover || 'photo') === 'photo' ? r.photo : ''), im = src ? photoImage(src) : null;
+    if (im && im.complete && im.naturalWidth && d.pfilt && d.pfilt !== 'none'){ photoFiltered(g, im, 0, 0, N, N, d.pfilt, { bg:d.bg, ink:d.ink, acc:d.acc }); return c; }
     if (!(im && drawPhoto(g, im, 0, 0, N, N))){ g.fillStyle = '#DCD3C1'; g.fillRect(0, 0, N, N); g.fillStyle = 'rgba(35,26,20,.55)'; g.textAlign = 'center';
       g.font = `700 ${N*.05}px Archivo, sans-serif`; g.fillText('YOUR PICTURE', h, h*.42); g.fillText('GOES HERE', h, h*.42 + N*.06); } return c; }
   // finishes from older records, kept as they were pressed
@@ -1709,7 +1741,7 @@ function renderNotes(container, r, face, editable){
    ============================================================ */
 const MINS = 6, MAXSIDE = 12;
 const blank = () => ({ name:'', line:'', by:'', to:'', year:String(new Date().getFullYear()), cat:'SB-' + String(100 + Math.floor(Math.random()*899)), photo:'', pdisc:'',
-  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', cover:'photo', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:false, pm:'full', vinyl:'black', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2', amt:1 },
+  d:{ bg:'#1F2F4F', ink:'#F1E6CF', acc:'#D9A33A', filt:'none', cover:'photo', lay:'top', font:'serif', ts:1, showTitle:false, showLine:false, showCredit:false, obi:false, sticker:false, worn:false, stereo:false, g180:false, credits:true, half:false, barcode:true, legal:false, pm:'full', vinyl:'black', v1:'#C9A24A', v2:'#EDEAE2', shape:'round', label:'solid', lab:'#EFE6D2', amt:1, pfilt:'none', stk:'burst' },
   hype:{ a:'\u2605\u2605\u2605\u2605\u2605', b:'A modern classic', c:'Side B Weekly' }, draw:[], texts:[], lab:{ A:{ texts:[], img:'', z:1, st:'solid' }, B:{ texts:[], img:'', z:1, st:'solid' } }, A:[], B:[], notes:[] });
 // a record can come from anyone's link, so check every field before it is drawn or played
 const MEDIA_HOSTS = /(^|\.)(apple\.com|mzstatic\.com)$/;
@@ -1749,7 +1781,7 @@ function cleanRec(r){
       showTitle:!fresh && d.type !== 'none' && d.showTitle !== false, showLine:!fresh && d.showLine !== false, showCredit:!fresh && d.showCredit !== false, credits:d.credits !== false, obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
       stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:false,
       pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
-      shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab), amt:typeof d.amt === 'number' && d.amt >= 0 && d.amt <= 2 ? Math.round(d.amt*20)/20 : 1 },
+      shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab), amt:typeof d.amt === 'number' && d.amt >= 0 && d.amt <= 2 ? Math.round(d.amt*20)/20 : 1, pfilt:pick(d.pfilt, FILTERS, 'none'), stk:['burst', 'bar', 'round'].includes(d.stk) ? d.stk : (d.sticker === true && !d.stk ? 'round' : 'burst') },
     hype, draw, texts, lab, pdisc:img(r.pdisc), A:side(r.A), B:side(r.B),
     notes:(Array.isArray(r.notes) ? r.notes : []).filter(n => n && typeof n === 'object').slice(0, 6).map(n => ({ t:str(n.t, 300), c:hex(n.c, Number.isInteger(n.c) && NOTECOLS[n.c] ? NOTECOLS[n.c] : NOTECOLS[0]),
       x:num(n.x, -6, 70, 30), y:num(n.y, -6, 82, 30), r:num(n.r, -15, 15, 0), f:n.f === 'B' ? 'B' : 'F' })) };
@@ -1869,6 +1901,7 @@ function dotsFill(id, colors, key){ const el = $(id);
   el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === draft.d[key])); }
 function syncControls(){
   ['a','b','c'].forEach(k => { const el = $('hype' + k.toUpperCase()); if (document.activeElement !== el) el.value = draft.hype[k]; });
+  $('stkKinds').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', (draft.d.stk || 'burst') === b.dataset.k));
   renderTextUI();
 }
 $('photoIn').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
@@ -1876,6 +1909,7 @@ $('photoIn').addEventListener('change', e => { const f = e.target.files[0]; if (
       const r = Math.max(S/im.width, S/im.height); g.drawImage(im, (S - im.width*r)/2, (S - im.height*r)/2, im.width*r, im.height*r);
       draft.photo = c.toDataURL('image/jpeg', .8); draft.d.pm = 'full'; draft.d.cover = 'photo'; syncControls(); changed(); renderTextUI(); }; im.src = rd.result; };
   rd.readAsDataURL(f); e.target.value = ''; });
+$('stkKinds').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { draft.d.stk = b.dataset.k; sfx.click(); syncControls(); changed(); }));
 ['a','b','c'].forEach(k => $('hype' + k.toUpperCase()).addEventListener('input', e => { draft.hype[k] = e.target.value; saveDraft(); refreshPreview(); }));
 
 // LAYERS: words and a picture, on the sleeve front or on either side of the label, handled right on the preview.
@@ -2007,9 +2041,9 @@ function closeSheet(){ if (!sheetOpen) return; sheetOpen = false;
 $('dsDone').addEventListener('click', () => setDrawMode(false));
 function sizeDrawLayer(){ const cv = $('drawCv'), r = cv.getBoundingClientRect(), px = Math.round(r.width*(devicePixelRatio || 1)); if (px && cv.width !== px) cv.width = cv.height = px; }
 function setDrawMode(on){
-  drawMode = on; $('recwrap').classList.toggle('drawing', on); $('drawTools').style.display = on ? 'flex' : 'none';
+  drawMode = on; $('recwrap').classList.toggle('drawing', on); $('drawTools').style.display = on ? '' : 'none'; $('drawBar').classList.toggle('drawing', on);
   if (on && phoneDraw()) openSheet(); else closeSheet();
-  $('drawBtn').textContent = on ? 'Drawing' : draft.draw.length ? 'Keep drawing' : 'Draw on the sleeve'; $('drawBtn').setAttribute('aria-pressed', on);
+  $('drawBtn').textContent = on ? 'Done' : draft.draw.length ? 'Keep drawing' : 'Draw on the sleeve'; $('drawBtn').setAttribute('aria-pressed', on);
   if (on){ if (face !== 'F') setFace('F'); if (!$('drawSizes').children.length){ $('drawSizes').innerHTML = DRAW_SIZES.map((w, i) => `<button data-w="${w}" aria-label="Brush size ${i+1}"><i style="width:${4 + i*5}px;height:${4 + i*5}px"></i></button>`).join('');
       $('drawSizes').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { pen.w = +b.dataset.w; syncPen(); })); }
     $('drawTip').textContent = ''; syncPen(); syncUndo(); requestAnimationFrame(() => { sizeDrawLayer(); drawLive(); }); }
@@ -2039,7 +2073,7 @@ const colourChips = (cols, key, names) => [...cols.map((c, i) => ({ v:c, sw:c, d
   { v:'*', any:key, sw:draft.d[key], dot:1, title:'Any colour', on:!cols.some(c => c.toUpperCase() === String(draft.d[key]).toUpperCase()) }];
 const setKey = key => v => { draft.d[key] = v; };
 // colour dots sit in even rows, never more than 7 across
-const dotCols = n => `display:grid;gap:10px;grid-template-columns:repeat(${Math.ceil(n/Math.ceil(n/8))},minmax(0,1fr))`;
+const dotCols = n => `display:grid;gap:10px;grid-template-columns:repeat(8,minmax(0,1fr))`;
 const VDEF = { solid:{ v1:'#B3262E' }, split:{ v1:'#2E5DA8', v2:'#EDEAE2' }, inner:{ v1:'#141414', v2:'#E8742A' }, swirl:{ v1:'#6B3FA0', v2:'#E89AB5' }, translucent:{ v1:'#2F7D4F' },
   metallic:{ v1:'#C9A24A' }, smoke:{ v1:'#EDEAE2', v2:'#141414' }, marble:{ v1:'#2F6B66', v2:'#EDEAE2' }, splatter:{ v1:'#F2C230', v2:'#B3262E' } };
 const AMOUNT = { marble:'How much veining', smoke:'How much smoke', eco:'How many chips', splatter:'How much splatter', inner:'How big the centre colour' };
@@ -2062,16 +2096,15 @@ const FLOW = [
            { l:'Your picture', show:() => draft.d.vinyl === 'picture', items:() => [{ v:'up', l:draft.pdisc ? 'Change the picture' : '+ Upload a picture', on:!draft.pdisc && !(draft.photo && draft.d.cover === 'photo') },
                ...(draft.photo && draft.d.cover === 'photo' ? [{ v:'cover', l:'Use my cover picture', on:!draft.pdisc }] : [])],
              pick:v => { if (v === 'up'){ $('pdIn').click(); return; } draft.pdisc = ''; } },
+           { l:'Filter', tiles:1, cols:3, spin:1, show:() => draft.d.vinyl === 'picture' && !!(draft.pdisc || (draft.photo && draft.d.cover === 'photo')), items:() => FILTERS.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ pfilt:k }), 120, 'A'), round:1, on:(draft.d.pfilt || 'none') === k })), pick:setKey('pfilt') },
            { l:() => AMOUNT[draft.d.vinyl], slider:1, show:() => !!AMOUNT[draft.d.vinyl], get:() => draft.d.amt ?? 1, pick:v => { draft.d.amt = v; }, items:() => [] },
            { l:() => needCols() >= 2 ? 'Main colour' : 'Colour', show:() => needCols() >= 1, spin:1, items:() => colourChips(VCOLS, 'v1', VCOLNAMES), pick:setKey('v1') },
            { l:'Second colour', show:() => needCols() >= 2, spin:1, items:() => colourChips(VCOLS, 'v2', VCOLNAMES), pick:setKey('v2') } ],
     note:() => [nameOf(VINYLS, draft.d.vinyl), OPT_NOTES.vinyl[draft.d.vinyl] || ''] },
-  { id:'labels', name:'Labels', mode:'label', sec:['st-layers'], lede:'The paper circle in the middle of each side. Start from a ready-made label and double-click its words to change them, or add your own text and a picture.',
+  { id:'labels', name:'Labels', mode:'label', sec:['st-layers'], lede:'The paper circle in the middle of each side. Double-click its words to change them, or add your own text and a picture.',
     tabs:{ key:'labels', items:[['A','Side A'],['B','Side B']] },
     val:() => `${nameOf(LABEL_LAYOUTS, draft.lab.A.st || 'solid')} ${chip(draft.d.lab)}` + (['A','B'].some(k => draft.lab[k].texts.length || draft.lab[k].img) ? ', your own words' : ''),
-    rows:[ { l:'Start from', cards:1, items:() => LABEL_LAYOUTS.map(([k, l, desc]) => ({ v:k, l, desc, img:labelURL({ ...draft, lab:{ ...draft.lab, [tabs.labels]:{ texts:[], img:'', z:1, st:k } } }, tabs.labels, 96), round:1, on:labSt() === k && !draft.lab[tabs.labels].texts.length && !draft.lab[tabs.labels].img })),
-             pick:v => { const L = draft.lab[tabs.labels]; L.st = v; L.texts = []; L.img = ''; selText = -1; } },
-           { l:'Paper colour', items:() => colourChips(SLEEVE_SWATCHES.slice(0, 10), 'lab'), pick:setKey('lab') } ] },
+    rows:[            { l:'Paper colour', items:() => colourChips(SLEEVE_SWATCHES.slice(0, 10), 'lab'), pick:setKey('lab') } ] },
   { id:'sleeve', name:'Sleeve', mode:'front', lede:() => tabs.sleeve === 'F' ? 'Upload your own picture or artwork, or draw straight onto the sleeve. Then add words on top if you like.' : 'The back of the sleeve: your tracklist, and what goes around it.',
     tabs:{ key:'sleeve', items:[['F','Front'],['B','Back']] },
     sec:() => tabs.sleeve !== 'F' ? [] : ['st-layers'],
