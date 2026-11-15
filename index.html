@@ -55,7 +55,11 @@ button{cursor:pointer}
 @media (prefers-reduced-motion: reduce){#doorGlow{animation:none;opacity:.4}}
 #facade .fl{animation:leaf var(--d) linear infinite;animation-delay:var(--o)}
 @keyframes leaf{0%{translate:0 -80px;rotate:0deg;opacity:0}8%{opacity:1}50%{translate:50px 230px;rotate:200deg}90%{opacity:1}100%{translate:-10px 520px;rotate:380deg;opacity:0}}
-@media (prefers-reduced-motion: reduce){#facade .fl{animation:none}}
+#facade .rn{animation:rainfall var(--d) linear infinite;animation-delay:var(--o)}
+@keyframes rainfall{from{translate:60px -280px}to{translate:-130px 560px}}
+#facade .sn{animation:snowfall var(--d) linear infinite;animation-delay:var(--o)}
+@keyframes snowfall{0%{translate:0 -260px}50%{translate:var(--w) 340px}100%{translate:0 940px}}
+@media (prefers-reduced-motion: reduce){#facade .fl,#facade .rn,#facade .sn{animation:none}}
 .rain{position:absolute;inset:-120px 0 0 0;pointer-events:none;background-image:repeating-linear-gradient(100deg,rgba(210,225,255,.11) 0 1px,transparent 1px 19px);animation:fall .55s linear infinite}
 @keyframes fall{to{transform:translateY(120px)}}
 .caption{position:absolute;left:0;right:0;bottom:calc(22px + env(safe-area-inset-bottom,0px));text-align:center;margin:0;color:var(--text);font:700 1.4rem/1.2 'Caveat',cursive;text-shadow:0 2px 8px rgba(0,0,0,.9)}
@@ -914,7 +918,7 @@ body.sheeton{overflow:hidden}
     <div class="ltop">
       <div class="deco" aria-hidden="true"><div class="stack"><i class="cover" data-slot="141"></i><b class="lvinyl"></b><i class="cover" data-slot="140"></i></div><svg class="plantTop" id="plantTop" viewBox="-110 -110 220 220"></svg><span class="shaft"></span><span class="shaft s2"></span></div>
       <div class="lleft"><button class="grec" id="gRec" aria-label="Your record"></button><div class="dcard"><div class="to" id="gTo"></div><div class="msg">I made you a record.</div><div class="from" id="gFrom"></div></div></div>
-      <div class="lmid"><svg id="deckSvg" viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg" aria-label="Turntable"></svg><div class="nowtag" id="nowTag"></div></div>
+      <div class="lmid"><svg id="deckSvg" viewBox="0 0 600 560" xmlns="http://www.w3.org/2000/svg" aria-label="Turntable"></svg><div class="nowtag" id="nowTag"></div></div>
       <span class="mug" aria-hidden="true"></span>
       <div class="amp" id="amp">
         <div class="ampface">
@@ -1170,16 +1174,23 @@ const DOOR = { x:696, y:484, w:164, h:376, hinge:860 };
 const EV = { x:778, y:560 }, EF = 1400, EG = 880;
 const EP = (x, y, z) => { const k = EF/(EF + z); return [EV.x + (x - EV.x)*k, EV.y + (y - EV.y)*k]; };
 const epoly = (a, fill, extra='') => `<polygon points="${a.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')}" fill="${fill}"${extra}/>`;
+// THE WEATHER outside is different on every visit: a windy autumn dusk, a wet night, a bright summer day or a snowy evening.
+// One name (WX) changes the sky, the light, the tree, what falls and what lies on the ground. Add ?wx=rain (autumn, rain, sun, snow) to see one.
+const WEATHERS = ['autumn', 'rain', 'sun', 'snow'];
+const WX = (() => { const q = new URLSearchParams(location.search).get('wx'); return WEATHERS.includes(q) ? q : WEATHERS[Math.floor(Math.random()*WEATHERS.length)]; })();
 function facadeSVG(){
+  const TINT = { autumn:[.74, .72, .88], rain:[.44, .48, .68], sun:[1.04, 1, .93], snow:[.6, .67, .9] }[WX], LIT = WX === 'sun' ? .22 : 1;
   const R = mulberry32(53), pick = a => a[Math.floor(R()*a.length)];
   // every daylight colour is pulled towards dusk; lit things keep their own colour
-  const D = hex => { const n = parseInt(hex.slice(1), 16); return `rgb(${((n >> 16)*.74) | 0},${(((n >> 8) & 255)*.72) | 0},${((n & 255)*.88) | 0})`; };
+  const D = hex => { const n = parseInt(hex.slice(1), 16); return `rgb(${Math.min(255, (n >> 16)*TINT[0]) | 0},${Math.min(255, ((n >> 8) & 255)*TINT[1]) | 0},${Math.min(255, (n & 255)*TINT[2]) | 0})`; };
   const rc = (x, y, w, h, fill, extra='') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${extra}/>`;
   const leaf = (x, y, sc, col, op=1) => `<path d="M0 -7 C5 -5 6 3 0 8 C-6 3 -5 -5 0 -7Z" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${Math.floor(R()*360)}) scale(${sc.toFixed(2)})" fill="${col}"${op < 1 ? ` opacity="${op}"` : ''}/>`;
   const S0 = 250, S1 = 1306, GY = EG, IRON = '#15161B';
   const SHOP = D('#A32E26'), SHOP_HI = D('#C4483C'), SHOP_SH = D('#7A1F1A'), SHOP_DK = D('#4E1512'), BST = D('#A88868'), BST_HI = D('#C4A482'), BST_SH = D('#7E6248');
   const CONC = D('#A8A297'), CONC_HI = D('#BDB7AB'), CONC_SH = D('#827C72'), STEEL = D('#8E949C');
-  const AUT = ['#D86A2C','#E8A23A','#C4572B','#B8452B','#F0BE4E','#A8501E','#D1432F','#E08A30'];
+  const AUT = { sun:['#3E7A45','#4E8F52','#2F6238','#5E9A4E','#6EAA58','#2F7D4F'], snow:['#F4F6FA','#E4EAF2','#FFFFFF','#D4DCE8','#C4CEDC'] }[WX] || ['#D86A2C','#E8A23A','#C4572B','#B8452B','#F0BE4E','#A8501E','#D1432F','#E08A30'];
+  const CROWN = { sun:['#1F4A2A','#255430','#1A4024'], snow:['#A8B2C4','#98A4B8','#B8C0D0'] }[WX] || ['#7A3418','#8A3E1C','#6E2E16'], GLINT = { sun:['#8CC46A','#A4D47A','#7AB85E'], snow:['#FFFFFF'] }[WX] || ['#F0BE4E','#F4A640','#F8D06A','#EE8A38'];
+  const SKY = { autumn:['#1B2550','#44508A','#9A7A9C','#F2AE78'], rain:['#080B16','#10152A','#1A2036','#262A3C'], sun:['#2F7FD0','#6FB0E6','#B4DAF2','#F2EBD0'], snow:['#18223E','#2E3C66','#687292','#B4A6A8'] }[WX];
   const brickPat = (id, tones, mortar) => { let t = `<pattern id="${id}" width="120" height="60" patternUnits="userSpaceOnUse"><rect width="120" height="60" fill="${D(mortar)}"/>`;
     for (let r = 0; r < 4; r++) for (let i = -1; i < 3; i++) t += rc(i*40 + (r % 2)*20 + 1, r*15 + 1, 38, 13, D(pick(tones)));
     return t + '</pattern>'; };
@@ -1196,11 +1207,14 @@ function facadeSVG(){
     <radialGradient id="oFlat" cx=".5" cy=".6" r=".85"><stop offset="0" stop-color="#FFE9B8" stop-opacity=".55"/><stop offset=".6" stop-color="#F2A85A" stop-opacity=".2"/><stop offset="1" stop-color="#3A1A0A" stop-opacity=".65"/></radialGradient>
     <linearGradient id="oGlassD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#56638E"/><stop offset=".5" stop-color="#2C3350"/><stop offset="1" stop-color="#181C2C"/></linearGradient>
     <linearGradient id="oGlassS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9FB4E8" stop-opacity=".2"/><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="..18"/></linearGradient>
-    <linearGradient id="oSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B2550"/><stop offset=".45" stop-color="#44508A"/><stop offset=".75" stop-color="#9A7A9C"/><stop offset="1" stop-color="#F2AE78"/></linearGradient>
+    <linearGradient id="oSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SKY[0]}"/><stop offset=".45" stop-color="${SKY[1]}"/><stop offset=".75" stop-color="${SKY[2]}"/><stop offset="1" stop-color="${SKY[3]}"/></linearGradient>
     <linearGradient id="oShadeDn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0A0F24" stop-opacity=".5"/><stop offset="1" stop-color="#0A0F24" stop-opacity="0"/></linearGradient>
     <linearGradient id="oPave" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${D('#A9A49A')}"/><stop offset="1" stop-color="${D('#8A857C')}"/></linearGradient></defs>`.replace('"..18"', '".18"');
-  s += rc(-4000, -2600, 9536, 3500, 'url(#oSky)') + `<circle cx="1120" cy="-1180" r="150" fill="url(#oLamp)" opacity=".35"/><path d="M1120 -1226 a46 46 0 1 0 40 70 a38 38 0 1 1 -40 -70Z" fill="#FBF1D4"/>`;
-  for (let k = 0; k < 70; k++) s += `<circle cx="${(-900 + R()*3400).toFixed(0)}" cy="${(-2400 + R()*1300).toFixed(0)}" r="${(1 + R()*1.6).toFixed(1)}" fill="#fff" opacity="${(.3 + R()*.6).toFixed(2)}"/>`;
+  s += rc(-4000, -2600, 9536, 3500, 'url(#oSky)');
+  if (WX === 'sun'){ s += `<circle cx="1120" cy="-1180" r="260" fill="url(#oLamp)" opacity=".9"/><circle cx="1120" cy="-1180" r="54" fill="#FFF6D8"/>`;
+    for (let k = 0; k < 9; k++){ const x = -900 + R()*3400, y = -2300 + R()*1200, w = 120 + R()*160; s += `<g fill="#fff" opacity="${(.7 + R()*.25).toFixed(2)}"><ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${w.toFixed(0)}" ry="${(w*.26).toFixed(0)}"/><ellipse cx="${(x - w*.3).toFixed(0)}" cy="${(y - w*.16).toFixed(0)}" rx="${(w*.42).toFixed(0)}" ry="${(w*.24).toFixed(0)}"/><ellipse cx="${(x + w*.25).toFixed(0)}" cy="${(y - w*.22).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="${(w*.3).toFixed(0)}"/></g>`; } }
+  else if (WX !== 'rain'){ s += `<circle cx="1120" cy="-1180" r="150" fill="url(#oLamp)" opacity=".35"/><path d="M1120 -1226 a46 46 0 1 0 40 70 a38 38 0 1 1 -40 -70Z" fill="#FBF1D4"/>`;
+    for (let k = 0; k < 70; k++) s += `<circle cx="${(-900 + R()*3400).toFixed(0)}" cy="${(-2400 + R()*1300).toFixed(0)}" r="${(1 + R()*1.6).toFixed(1)}" fill="#fff" opacity="${(.3 + R()*.6).toFixed(2)}"/>`; }
 
   // ---- a plain New York window: brownstone lintel and sill, a blind part way down, a lamp on or the glass dark
   const roomIn = (w, h, k) => { let t = rc(0, 0, w, h, ['#D8BE8A','#C9B49A','#B8C0B0','#DDB88C'][k % 4]);
@@ -1304,8 +1318,13 @@ function facadeSVG(){
     for (let k = 0; k < 40; k++){ const r = Math.floor(R()*2), x = -3040 + Math.floor(R()*40)*190; s += epoly([G(x, zs[r]), G(x + 190, zs[r]), G(x + 190, zs[r + 1]), G(x, zs[r + 1])], R() < .5 ? '#fff' : '#000', ` opacity="${(.03 + R()*.05).toFixed(2)}"`); }
     const ky = G(0, -372)[1]; s += rc(-4000, ky, 9536, 12, D('#C4BFB4')) + rc(-4000, ky + 12, 9536, 10, D('#6E6A64')) + rc(-4000, ky + 22, 9536, 300, D('#3A3C46')) + rc(-4000, ky + 22, 9536, 14, '#000', ' opacity=".3"'); }
   s += rc(-4000, GY, 9536, 16, 'url(#oShadeDn)', ' opacity=".8"');
+  if (WX === 'snow'){ const ky = G(0, -372)[1]; s += rc(-4000, GY, 9536, ky - GY + 12, '#EEF2F8', ' opacity=".9"') + rc(-4000, ky + 22, 9536, 300, '#C9D2E0', ' opacity=".55"') + rc(-4000, GY, 9536, 26, 'url(#oShadeDn)', ' opacity=".5"');
+    for (let k = 0; k < 40; k++){ const p = G(-1400 + R()*4200, -R()*360); s += `<ellipse cx="${p[0].toFixed(0)}" cy="${p[1].toFixed(0)}" rx="${(30 + R()*70).toFixed(0)}" ry="${(3 + R()*5).toFixed(0)}" fill="#B8C4D8" opacity=".35"/>`; } }
+  // rain: the sidewalk turns to a dark mirror, with the windows and the neon standing in it
+  if (WX === 'rain'){ s += rc(-4000, GY, 9536, 400, '#05070F', ' opacity=".35"') + `<g style="mix-blend-mode:screen" filter="url(#oBlur)">${[[452, 300, '#FFB866', .5], [1103, 300, '#FFB866', .5], [778, 170, '#FFD08A', .6], [520, 150, '#FF5FA8', .55], [1103, 180, '#5FE0FF', .5], [778, 110, '#FF4A4A', .4]].map(([x, w, c, o]) => `<path d="M${x - w/2} ${GY} H${x + w/2} L${x + w*.42} 1070 H${x - w*.42}Z" fill="${c}" opacity="${o}"/>`).join('')}</g>`;
+    for (let k = 0; k < 26; k++){ const p = G(-1400 + R()*4200, -20 - R()*340), w = 40 + R()*110; s += `<ellipse cx="${p[0].toFixed(0)}" cy="${p[1].toFixed(0)}" rx="${w.toFixed(0)}" ry="${(w*.09).toFixed(0)}" fill="#8FA4D8" opacity=".13"/>`; } }
   // light on the concrete: warm from the shop, pink and blue from the neon
-  s += `<g style="mix-blend-mode:screen" filter="url(#oBlur)"><path d="M306 ${GY} H600 L690 1060 H216Z" fill="#FFB866" opacity=".3"/><path d="M956 ${GY} H1250 L1340 1060 H866Z" fill="#FFB866" opacity=".3"/><path d="M690 ${GY} H866 L930 1060 H626Z" fill="#FFC27A" opacity=".42"/><ellipse cx="470" cy="930" rx="150" ry="36" fill="#FF5FA8" opacity=".3"/><ellipse cx="1100" cy="930" rx="150" ry="36" fill="#5FE0FF" opacity=".24"/><ellipse cx="778" cy="900" rx="80" ry="20" fill="#FF4A4A" opacity=".25"/></g>`;
+  s += `<g style="mix-blend-mode:screen" opacity="${LIT}" filter="url(#oBlur)"><path d="M306 ${GY} H600 L690 1060 H216Z" fill="#FFB866" opacity=".3"/><path d="M956 ${GY} H1250 L1340 1060 H866Z" fill="#FFB866" opacity=".3"/><path d="M690 ${GY} H866 L930 1060 H626Z" fill="#FFC27A" opacity=".42"/><ellipse cx="470" cy="930" rx="150" ry="36" fill="#FF5FA8" opacity=".3"/><ellipse cx="1100" cy="930" rx="150" ry="36" fill="#5FE0FF" opacity=".24"/><ellipse cx="778" cy="900" rx="80" ry="20" fill="#FF4A4A" opacity=".25"/></g>`;
   // a slatted bench under the left window, a sandwich board of real records by the right
   s += `<ellipse cx="456" cy="894" rx="130" ry="7" fill="#000" opacity=".3"/><path d="M344 890 V800 M568 890 V800 M344 846 H330 V890 M568 846 H582 V890" stroke="${IRON}" stroke-width="6" fill="none"/>${[792, 808, 824].map(y => rc(336, y, 240, 11, D('#B8823E'), ' rx="2"')).join('')}${rc(326, 842, 260, 12, D('#C9924E'), ' rx="2"')}${rc(326, 854, 260, 5, D('#8A5E2A'))}`;
   { const x = 1150, y = 760, w = 104, h = 136; s += `<ellipse cx="${x + w/2 + 6}" cy="${y + h + 2}" rx="${w*.62}" ry="6" fill="#000" opacity=".3"/><path d="M${x - 4} ${y + h} L${x + 4} ${y - 8} H${x + w - 4} L${x + w + 4} ${y + h}" fill="none" stroke="${D('#B8823E')}" stroke-width="8"/>${rc(x + 6, y, w - 12, h - 22, '#1E221F')}`;
@@ -1331,18 +1350,23 @@ function facadeSVG(){
     const bez = (b, u) => { const m = 1 - u; return [m*m*m*b[0][0] + 3*m*m*u*b[1][0] + 3*m*u*u*b[2][0] + u*u*u*b[3][0], m*m*m*b[0][1] + 3*m*m*u*b[1][1] + 3*m*u*u*b[2][1] + u*u*u*b[3][1]]; };
     // the crown in three passes: deep shadowed masses, the body of the leaves, then the ones catching the lamplight
     const cl = []; for (let k = 0; k < 130; k++){ const p = bez(br[k % br.length], .3 + R()*.75 > 1 ? 1 : .3 + R()*.7), a = R()*6.283, d = R()*74; const c = [p[0] + Math.cos(a)*d, p[1] + Math.sin(a)*d*.75, 40 + R()*44]; if (!(c[0] > 190 && c[1] > 190)) cl.push(c); }
-    cl.forEach(([x, y, r]) => t += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${r.toFixed(0)}" ry="${(r*.8).toFixed(0)}" fill="${D(pick(['#7A3418','#8A3E1C','#6E2E16']))}"/>`);
+    cl.forEach(([x, y, r]) => t += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${r.toFixed(0)}" ry="${(r*.8).toFixed(0)}" fill="${D(pick(CROWN))}"/>`);
     cl.forEach(([x, y, r]) => { for (let j = 0; j < 16; j++){ const a = R()*6.283, d = Math.sqrt(R())*r*1.12; t += leaf(x + Math.cos(a)*d, y + Math.sin(a)*d*.8, 1.4 + R()*1.1, D(pick(AUT))); } });
-    cl.forEach(([x, y, r]) => { for (let j = 0; j < 5; j++){ const a = -R()*3.1416, d = Math.sqrt(R())*r; t += leaf(x + Math.cos(a)*d + r*.15, y + Math.sin(a)*d*.8 - r*.1, 1.2 + R()*.9, pick(['#F0BE4E','#F4A640','#F8D06A','#EE8A38'])); } });
+    cl.forEach(([x, y, r]) => { for (let j = 0; j < 5; j++){ const a = -R()*3.1416, d = Math.sqrt(R())*r; t += leaf(x + Math.cos(a)*d + r*.15, y + Math.sin(a)*d*.8 - r*.1, 1.2 + R()*.9, pick(GLINT)); } });
     s += t; }
-  for (let k = 0; k < 240; k++){ const near = R() < .5, x = near ? -600 + R()*1100 : -1400 + R()*4200, z = R() < .25 ? -R()*24 : -R()*640, p = G(x, z); s += leaf(p[0], p[1], (.7 + R()*.6)*(EF/(EF + z))*.9, D(pick(AUT))).replace('scale(', 'scale(1 .5) scale('); }
-  s += `<g class="falling">${Array.from({length:14}, (_, k) => `<path class="fl" style="--d:${(8 + R()*7).toFixed(1)}s;--o:${(-R()*14).toFixed(1)}s" d="M0 -7 C5 -5 6 3 0 8 C-6 3 -5 -5 0 -7Z" transform="translate(${(-60 + R()*620).toFixed(0)} ${(120 + R()*380).toFixed(0)})" fill="${pick(AUT)}"/>`).join('')}</g>`;
+  for (let k = 0; k < ({ sun:26, snow:0 }[WX] ?? 240); k++){ const near = R() < .5, x = near ? -600 + R()*1100 : -1400 + R()*4200, z = R() < .25 ? -R()*24 : -R()*640, p = G(x, z); s += leaf(p[0], p[1], (.7 + R()*.6)*(EF/(EF + z))*.9, D(pick(AUT))).replace('scale(', 'scale(1 .5) scale('); }
+  if (WX === 'rain') s += `<g class="falling" stroke="#C4D6FF" stroke-linecap="round">${Array.from({ length:190 }, () => { const x = -1500 + R()*4600, y = -700 + R()*1500, l = 40 + R()*50; return `<line class="rn" style="--d:${(.55 + R()*.5).toFixed(2)}s;--o:${(-R()*1.2).toFixed(2)}s" x1="${x.toFixed(0)}" y1="${y.toFixed(0)}" x2="${(x - l*.22).toFixed(0)}" y2="${(y + l).toFixed(0)}" stroke-width="${(1 + R()*1.2).toFixed(1)}" opacity="${(.18 + R()*.3).toFixed(2)}"/>`; }).join('')}</g>`;
+  else if (WX === 'snow') s += `<g class="falling" fill="#fff">${Array.from({ length:150 }, () => `<circle class="sn" style="--d:${(7 + R()*9).toFixed(1)}s;--o:${(-R()*16).toFixed(1)}s;--w:${(-40 + R()*90).toFixed(0)}px" cx="${(-1500 + R()*4600).toFixed(0)}" cy="${(-300 + R()*700).toFixed(0)}" r="${(1.6 + R()*3.6).toFixed(1)}" opacity="${(.55 + R()*.45).toFixed(2)}"/>`).join('')}</g>`;
+  else s += `<g class="falling">${Array.from({length:WX === 'sun' ? 3 : 14}, (_, k) => `<path class="fl" style="--d:${(8 + R()*7).toFixed(1)}s;--o:${(-R()*14).toFixed(1)}s" d="M0 -7 C5 -5 6 3 0 8 C-6 3 -5 -5 0 -7Z" transform="translate(${(-60 + R()*620).toFixed(0)} ${(120 + R()*380).toFixed(0)})" fill="${pick(AUT)}"/>`).join('')}</g>`;
+  // snow lying on everything that has a top
+  if (WX === 'snow'){ const cap = (x, y, w, h=7) => `<path d="M${x} ${y} q${w*.25} ${-h*1.5} ${w*.5} ${-h*.8} q${w*.25} ${-h*.9} ${w*.5} ${h*.8} v${h*.6} h${-w}Z" fill="#F4F7FB"/><path d="M${x} ${y + h*.6} h${w}" stroke="#B8C4D8" stroke-width="1.2"/>`;
+    s += cap(S0 - 10, 290, S1 - S0 + 20, 9) + cap(336, 792, 240, 6) + cap(326, 842, 260, 5) + cap(298, 808, 310, 5) + cap(948, 808, 310, 5) + cap(486, 247, 584, 6) + cap(1150, 752, 104, 5); }
 
   // ---- THE LIGHT: lamps on the sign, the neon's haze on the glass, the street lamp, grain, the evening closing in
-  s += `<g style="mix-blend-mode:screen;pointer-events:none">${[470, 778, 1086].map(x => `<ellipse cx="${x + 24}" cy="356" rx="170" ry="74" fill="url(#oLamp)" opacity=".5"/>`).join('')}<ellipse cx="490" cy="640" rx="190" ry="110" fill="url(#oPink)" opacity=".5"/><ellipse cx="1103" cy="640" rx="190" ry="110" fill="url(#oCyan)" opacity=".45"/><circle cx="1336" cy="118" r="230" fill="url(#oLamp)" opacity=".8"/><ellipse cx="1360" cy="950" rx="260" ry="50" fill="url(#oLamp)" opacity=".4"/>
+  s += `<g style="mix-blend-mode:screen;pointer-events:none" opacity="${LIT}">${[470, 778, 1086].map(x => `<ellipse cx="${x + 24}" cy="356" rx="170" ry="74" fill="url(#oLamp)" opacity=".5"/>`).join('')}<ellipse cx="490" cy="640" rx="190" ry="110" fill="url(#oPink)" opacity=".5"/><ellipse cx="1103" cy="640" rx="190" ry="110" fill="url(#oCyan)" opacity=".45"/><circle cx="1336" cy="118" r="230" fill="url(#oLamp)" opacity=".8"/><ellipse cx="1360" cy="950" rx="260" ry="50" fill="url(#oLamp)" opacity=".4"/>
     ${[[298, 310], [948, 310]].map(([x, w]) => `<rect x="${x - 30}" y="400" width="${w + 60}" height="420" fill="#FFB866" opacity=".08" filter="url(#oBlur)"/>`).join('')}</g>`;
   s += `<rect x="-4000" y="-2600" width="9536" height="3900" fill="url(#grainP)" opacity=".24" style="mix-blend-mode:overlay;pointer-events:none"/>
-    <defs><radialGradient id="oVig" gradientUnits="userSpaceOnUse" cx="778" cy="600" r="1500"><stop offset=".45" stop-color="#0A0F24" stop-opacity="0"/><stop offset="1" stop-color="#0A0F24" stop-opacity=".6"/></radialGradient></defs><rect x="-4000" y="-2600" width="9536" height="3900" fill="url(#oVig)" style="pointer-events:none"/>
+    <defs><radialGradient id="oVig" gradientUnits="userSpaceOnUse" cx="778" cy="600" r="1500"><stop offset=".45" stop-color="#0A0F24" stop-opacity="0"/><stop offset="1" stop-color="#0A0F24" stop-opacity="${{ sun:.16, rain:.72 }[WX] ?? .6}"/></radialGradient></defs><rect x="-4000" y="-2600" width="9536" height="3900" fill="url(#oVig)" style="pointer-events:none"/>
     <rect id="doorHit" x="${DOOR.x - 10}" y="${DOOR.y - 10}" width="${DOOR.w + 20}" height="${DOOR.h + 20}" fill="transparent"/><g id="doorGlow"><rect x="${DOOR.x - 6}" y="${DOOR.y - 6}" width="${DOOR.w + 12}" height="${DOOR.h + 12}" rx="4" fill="#FFD79A" fill-opacity=".12" stroke="#FFD79A" stroke-width="10" filter="url(#oSoft)"/><rect x="${DOOR.x - 2}" y="${DOOR.y - 2}" width="${DOOR.w + 4}" height="${DOOR.h + 4}" rx="2" fill="none" stroke="#FFE9C4" stroke-width="2"/></g></svg>`;
   return s;
 }
@@ -2900,77 +2924,86 @@ const distAt = th => { const n = needlePos(th); return Math.hypot(n.x - C.x, n.y
 function thetaForDist(d){ let lo=0, hi=1.05; for (let i=0;i<28;i++){ const m=(lo+hi)/2; if (distAt(m) > d) lo = m; else hi = m; } return (lo+hi)/2; }
 const TH_MAX = thetaForDist(56);
 function buildDeck(){
+  // THE TURNTABLE, seen from above: a thick walnut plinth whose front edge shows, a satin black top plate set into it,
+  // a heavy machined platter with strobe dots, and every control in its own row below the platter so nothing crowds the record.
+  const F = 'font-family="Archivo Narrow,sans-serif" font-weight="700"', W = 600, H = 560, TOP = 522;
+  const knurl = (cx, cy, r, n) => Array.from({ length:n }, (_, k) => { const a = k/n*6.283; return `<line x1="${(cx + Math.cos(a)*(r - 3)).toFixed(1)}" y1="${(cy + Math.sin(a)*(r - 3)).toFixed(1)}" x2="${(cx + Math.cos(a)*r).toFixed(1)}" y2="${(cy + Math.sin(a)*r).toFixed(1)}" stroke="rgba(0,0,0,.45)" stroke-width="1"/>`; }).join('');
+  const tube = `M${P.x} ${P.y-14} L${P.x} ${P.y+150} C${P.x} ${P.y+210} ${P.x+26} ${P.y+232} ${P.x+22} ${P.y+268} C${P.x+19} ${P.y+292} ${P.x+4} ${P.y+292} ${P.x+2} ${P.y+L-36}`;
   let s = `<defs>
-    <linearGradient id="plG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2e0db"/><stop offset=".5" stop-color="#cdcac4"/><stop offset="1" stop-color="#b3b0a9"/></linearGradient>
-    <pattern id="brush" width="600" height="3" patternUnits="userSpaceOnUse"><rect width="600" height=".7" fill="rgba(255,255,255,.22)"/><rect y="1.6" width="600" height=".5" fill="rgba(0,0,0,.05)"/></pattern>
-    <radialGradient id="metalG" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fbfbfa"/><stop offset=".6" stop-color="#d4d2cd"/><stop offset="1" stop-color="#9e9c97"/></radialGradient>
+    <linearGradient id="wdG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A5A34"/><stop offset=".5" stop-color="#6B4426"/><stop offset="1" stop-color="#4A2E18"/></linearGradient>
+    <linearGradient id="wdF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2E18"/><stop offset="1" stop-color="#2A190C"/></linearGradient>
+    <pattern id="wdP" width="600" height="9" patternUnits="userSpaceOnUse"><path d="M0 2 Q150 0 300 2.5 T600 2" stroke="rgba(0,0,0,.16)" stroke-width="1" fill="none"/><path d="M0 6 Q200 7.5 400 5.5 T600 6" stroke="rgba(255,225,180,.07)" stroke-width=".8" fill="none"/></pattern>
+    <linearGradient id="plG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34363B"/><stop offset=".45" stop-color="#24262A"/><stop offset="1" stop-color="#17181B"/></linearGradient>
+    <pattern id="brush" width="600" height="3" patternUnits="userSpaceOnUse"><rect width="600" height=".6" fill="rgba(255,255,255,.045)"/><rect y="1.6" width="600" height=".5" fill="rgba(0,0,0,.12)"/></pattern>
+    <linearGradient id="plateSheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".3" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
+    <radialGradient id="metalG" cx="36%" cy="30%" r="75%"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#d9d9d6"/><stop offset="1" stop-color="#85858a"/></radialGradient>
+    <radialGradient id="metalG2" cx="36%" cy="30%" r="75%"><stop offset="0" stop-color="#fbfbfa"/><stop offset=".55" stop-color="#c6c6c8"/><stop offset="1" stop-color="#74747a"/></radialGradient>
     <radialGradient id="btnOn" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff2d6"/><stop offset="1" stop-color="#d9a35a"/></radialGradient>
-    <linearGradient id="rimG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9e8e4"/><stop offset=".5" stop-color="#b9b7b2"/><stop offset="1" stop-color="#8e8c87"/></linearGradient>
-    <radialGradient id="matG"><stop offset="0" stop-color="#262626"/><stop offset="1" stop-color="#151515"/></radialGradient>
-    <linearGradient id="coverG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".35" stop-color="#fff" stop-opacity=".05"/><stop offset=".55" stop-color="#fff" stop-opacity=".16"/><stop offset=".75" stop-color="#fff" stop-opacity=".04"/></linearGradient>
+    <linearGradient id="rimG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f4f2"/><stop offset=".3" stop-color="#b9b9bc"/><stop offset=".5" stop-color="#e6e6e4"/><stop offset=".72" stop-color="#8a8a90"/><stop offset="1" stop-color="#c4c4c6"/></linearGradient>
+    <radialGradient id="matG"><stop offset="0" stop-color="#2a2a2c"/><stop offset=".8" stop-color="#1b1b1d"/><stop offset="1" stop-color="#101011"/></radialGradient>
+    <radialGradient id="matSh" cx="30%" cy="26%" r="80%"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <linearGradient id="coverG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".2"/><stop offset=".35" stop-color="#fff" stop-opacity=".04"/><stop offset=".55" stop-color="#fff" stop-opacity=".14"/><stop offset=".75" stop-color="#fff" stop-opacity=".03"/></linearGradient>
     <radialGradient id="tlGlow"><stop offset="0" stop-color="#fff1c8" stop-opacity=".7"/><stop offset="1" stop-color="#fff1c8" stop-opacity="0"/></radialGradient>
-    <filter id="sh6" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>
-    <linearGradient id="wdG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7A4E2D"/><stop offset=".5" stop-color="#5B3A22"/><stop offset="1" stop-color="#3E2614"/></linearGradient><pattern id="wdP" width="600" height="7" patternUnits="userSpaceOnUse"><rect width="600" height="1" y="2" fill="rgba(0,0,0,.14)"/><rect width="600" height=".6" y="5" fill="rgba(255,255,255,.06)"/></pattern>
-    <radialGradient id="matSh" cx="32%" cy="28%" r="80%"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    <linearGradient id="plateSheen" x1="0" y1="0" x2="1" y2="1"><stop offset=".12" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff" stop-opacity=".32"/><stop offset=".2" stop-color="#fff" stop-opacity=".32"/><stop offset=".2" stop-color="#fff" stop-opacity="0"/><stop offset=".24" stop-color="#fff" stop-opacity="0"/><stop offset=".24" stop-color="#fff" stop-opacity=".22"/><stop offset=".27" stop-color="#fff" stop-opacity=".22"/><stop offset=".27" stop-color="#fff" stop-opacity="0"/></linearGradient>
-    <linearGradient id="rimHi" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-    <filter id="armSh" x="-50%" y="-20%" width="200%" height="140%"><feGaussianBlur stdDeviation="3"/><feColorMatrix type="matrix" values="0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .06  0 0 0 .32 0"/></filter>
-    <clipPath id="recClip"><circle id="recClipC" cx="${C.x}" cy="${C.y}" r="192"/></clipPath>
-    <radialGradient id="metalG2" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fbfbfa"/><stop offset=".6" stop-color="#cfcdc8"/><stop offset="1" stop-color="#8f8d88"/></radialGradient>
     <linearGradient id="tubeG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8d8b86"/><stop offset=".45" stop-color="#f7f7f5"/><stop offset="1" stop-color="#a3a19c"/></linearGradient>
+    <filter id="sh6" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter><filter id="sh3" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.5"/></filter>
+    <filter id="armSh" x="-50%" y="-20%" width="200%" height="140%"><feGaussianBlur stdDeviation="3.5"/><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .5 0"/></filter>
+    <clipPath id="recClip"><circle id="recClipC" cx="${C.x}" cy="${C.y}" r="192"/></clipPath>
     <g id="armShape">
-      <rect x="${P.x-19}" y="${P.y-74}" width="38" height="46" rx="9" fill="#151515"/><rect x="${P.x-19}" y="${P.y-40}" width="38" height="5" fill="#c9cdd0"/>
-      <rect x="${P.x-5}" y="${P.y-30}" width="10" height="18" fill="#7d8387"/>
-      <path d="M${P.x} ${P.y-14} L${P.x} ${P.y+150} C${P.x} ${P.y+210} ${P.x+26} ${P.y+232} ${P.x+22} ${P.y+268} C${P.x+19} ${P.y+292} ${P.x+4} ${P.y+292} ${P.x+2} ${P.y+L-36}" fill="none" stroke="#6d6b66" stroke-width="10" stroke-linecap="round"/><path d="M${P.x} ${P.y-14} L${P.x} ${P.y+150} C${P.x} ${P.y+210} ${P.x+26} ${P.y+232} ${P.x+22} ${P.y+268} C${P.x+19} ${P.y+292} ${P.x+4} ${P.y+292} ${P.x+2} ${P.y+L-36}" fill="none" stroke="#e4e3df" stroke-width="6" stroke-linecap="round"/><path transform="translate(-1.4 0)" d="M${P.x} ${P.y-14} L${P.x} ${P.y+150} C${P.x} ${P.y+210} ${P.x+26} ${P.y+232} ${P.x+22} ${P.y+268} C${P.x+19} ${P.y+292} ${P.x+4} ${P.y+292} ${P.x+2} ${P.y+L-36}" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round"/>
-      <g transform="rotate(-16 ${P.x} ${P.y+L})"><rect x="${P.x-13}" y="${P.y+L-38}" width="26" height="48" rx="4" fill="#1d1d1d"/><rect x="${P.x-8}" y="${P.y+L-16}" width="16" height="18" rx="2" fill="#141414"/><rect x="${P.x-8}" y="${P.y+L-6}" width="16" height="4" fill="#D9622B"/><rect x="${P.x+11}" y="${P.y+L-32}" width="22" height="5" rx="2.5" fill="#d9dcde"/></g>
-      <circle cx="${P.x}" cy="${P.y}" r="16" fill="url(#metalG2)"/><circle cx="${P.x}" cy="${P.y}" r="6" fill="#222"/>
+      <rect x="${P.x-21}" y="${P.y-78}" width="42" height="50" rx="10" fill="#0e0e0f"/><rect x="${P.x-21}" y="${P.y-78}" width="12" height="50" rx="6" fill="#fff" opacity=".1"/><rect x="${P.x-21}" y="${P.y-46}" width="42" height="4" fill="#c9cdd0"/><rect x="${P.x-21}" y="${P.y-66}" width="42" height="1.5" fill="#3a3a3c"/>
+      <rect x="${P.x-5}" y="${P.y-30}" width="10" height="18" fill="#8d9195"/>
+      <path d="${tube}" fill="none" stroke="#5a5a5e" stroke-width="10" stroke-linecap="round"/><path d="${tube}" fill="none" stroke="#dcdcda" stroke-width="6.5" stroke-linecap="round"/><path transform="translate(-1.5 0)" d="${tube}" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+      <g transform="rotate(-16 ${P.x} ${P.y+L})"><rect x="${P.x-14}" y="${P.y+L-40}" width="28" height="50" rx="4" fill="#161617"/><rect x="${P.x-14}" y="${P.y+L-40}" width="7" height="50" rx="3" fill="#fff" opacity=".1"/><rect x="${P.x-9}" y="${P.y+L-16}" width="18" height="20" rx="2" fill="#0c0c0d"/><rect x="${P.x-9}" y="${P.y+L-5}" width="18" height="4" fill="#D9622B"/><rect x="${P.x+12}" y="${P.y+L-34}" width="24" height="5.5" rx="2.7" fill="url(#tubeG)"/></g>
+      <circle cx="${P.x}" cy="${P.y}" r="17" fill="url(#metalG2)"/><circle cx="${P.x}" cy="${P.y}" r="17" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="1"/><circle cx="${P.x}" cy="${P.y}" r="6.5" fill="#151516"/><circle cx="${P.x-1.5}" cy="${P.y-1.5}" r="2" fill="#555"/>
     </g>
   </defs>
-  <rect x="0" y="0" width="600" height="470" rx="16" fill="url(#wdG)"/><rect x="0" y="0" width="600" height="470" rx="16" fill="url(#wdP)"/>
-  <rect x="1" y="1" width="598" height="468" rx="15" fill="none" stroke="rgba(255,220,170,.22)" stroke-width="1.5"/><path d="M16 469 H584 Q599 469 599 454 V16" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="2.5"/>
-  <rect x="9" y="9" width="582" height="452" rx="9" fill="rgba(0,0,0,.45)"/><rect x="10" y="10" width="580" height="450" rx="8" fill="url(#plG)"/><rect x="10" y="10" width="580" height="450" rx="8" fill="url(#brush)"/>
-  <rect x="11.2" y="11.2" width="577.6" height="447.6" rx="7" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="1.6"/><path d="M20 459 H580 Q589 459 589 450 V20" fill="none" stroke="rgba(0,0,0,.22)" stroke-width="2"/>
-  <rect x="10" y="10" width="580" height="450" rx="8" fill="url(#plateSheen)" opacity=".5"/>
-  ${[[24,24],[576,24],[576,446],[24,446]].map(([x,y]) => `<circle cx="${x}" cy="${y}" r="4" fill="url(#metalG)" stroke="rgba(0,0,0,.35)" stroke-width=".6"/><line x1="${x-2.6}" y1="${y}" x2="${x+2.6}" y2="${y}" stroke="rgba(0,0,0,.45)" stroke-width="1" transform="rotate(${(x+y)%90} ${x} ${y})"/>`).join('')}
-  <text x="62" y="31" font-family="Archivo Narrow,sans-serif" font-weight="600" font-size="8.5" letter-spacing="1.5" fill="#6d665b">DIRECT DRIVE TURNTABLE  SB-1700</text>
-  <circle cx="${C.x+7}" cy="${C.y+12}" r="212" fill="rgba(0,0,0,.5)" filter="url(#sh6)"/>
-  <g id="platterRot"><circle cx="${C.x}" cy="${C.y}" r="207" fill="url(#rimG)"/><circle cx="${C.x}" cy="${C.y}" r="207" fill="none" stroke="#8e9295" stroke-width="1.5"/>`;
-  for (let i=0;i<180;i++){ const a = i/180*Math.PI*2; s += `<rect x="${(C.x+202*Math.cos(a)-1).toFixed(1)}" y="${(C.y+202*Math.sin(a)-1).toFixed(1)}" width="2" height="2" fill="${i%2?'#5f6366':'#9a9ea1'}"/>`; }
-  s += `<circle cx="${C.x}" cy="${C.y}" r="196" fill="url(#matG)"/>`; for (let r=40;r<196;r+=8) s += `<circle cx="${C.x}" cy="${C.y}" r="${r}" fill="none" stroke="rgba(255,255,255,.035)" stroke-width="2.5"/>`;
+  <!-- the plinth: its top, and the front edge you see from above -->
+  <rect x="0" y="14" width="${W}" height="${H - 14}" rx="18" fill="url(#wdF)"/><rect x="0" y="0" width="${W}" height="${H - 22}" rx="18" fill="url(#wdG)"/><rect x="0" y="0" width="${W}" height="${H - 22}" rx="18" fill="url(#wdP)"/>
+  <rect x="1" y="1" width="${W - 2}" height="${H - 24}" rx="17" fill="none" stroke="rgba(255,225,180,.28)" stroke-width="1.5"/><path d="M18 ${H - 22.5} H${W - 18}" stroke="rgba(0,0,0,.5)" stroke-width="1.5"/><path d="M18 ${H - 20.5} H${W - 18}" stroke="rgba(255,225,180,.14)" stroke-width="1"/>
+  <!-- the top plate, sunk a hair into the wood -->
+  <rect x="11" y="11" width="${W - 22}" height="${TOP - 4}" rx="11" fill="rgba(0,0,0,.6)"/><rect x="13" y="13" width="${W - 26}" height="${TOP - 10}" rx="9" fill="url(#plG)"/><rect x="13" y="13" width="${W - 26}" height="${TOP - 10}" rx="9" fill="url(#brush)"/><rect x="13" y="13" width="${W - 26}" height="${TOP - 10}" rx="9" fill="url(#plateSheen)"/>
+  <rect x="14" y="14" width="${W - 28}" height="${TOP - 12}" rx="8" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1.2"/>
+  ${[[30,30],[W-30,30],[W-26,452],[28,452]].map(([x,y]) => `<circle cx="${x}" cy="${y}" r="4.5" fill="url(#metalG2)" stroke="rgba(0,0,0,.6)" stroke-width=".8"/><line x1="${x-3}" y1="${y}" x2="${x+3}" y2="${y}" stroke="rgba(0,0,0,.6)" stroke-width="1.1" transform="rotate(${(x+y)%90} ${x} ${y})"/>`).join('')}
+  <!-- the platter: its shadow on the plate, the machined rim with strobe dots, the rubber mat -->
+  <circle cx="${C.x+6}" cy="${C.y+11}" r="212" fill="rgba(0,0,0,.75)" filter="url(#sh6)"/>
+  <g id="platterRot"><circle cx="${C.x}" cy="${C.y}" r="207" fill="url(#rimG)"/><circle cx="${C.x}" cy="${C.y}" r="207" fill="none" stroke="#55555a" stroke-width="1.2"/><circle cx="${C.x}" cy="${C.y}" r="204.5" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1"/>`;
+  for (let i=0;i<180;i++){ const a = i/180*Math.PI*2; s += `<rect x="${(C.x+201*Math.cos(a)-1).toFixed(1)}" y="${(C.y+201*Math.sin(a)-1).toFixed(1)}" width="2" height="2" fill="${i%2?'#4e4e53':'#8e8e93'}"/>`; }
+  s += `<circle cx="${C.x}" cy="${C.y}" r="197.5" fill="#0a0a0b"/><circle cx="${C.x}" cy="${C.y}" r="196" fill="url(#matG)"/>`; for (let r=40;r<196;r+=8) s += `<circle cx="${C.x}" cy="${C.y}" r="${r}" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="2.5"/><circle cx="${C.x}" cy="${C.y}" r="${r + 2}" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1"/>`;
   s += `</g>
-  <circle cx="${C.x}" cy="${C.y}" r="196.5" fill="none" stroke="rgba(0,0,0,.5)" stroke-width="2"/><circle cx="${C.x}" cy="${C.y}" r="206" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1"/><circle cx="${C.x}" cy="${C.y}" r="199" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="1"/><circle cx="${C.x}" cy="${C.y}" r="196" fill="url(#matSh)" pointer-events="none"/>
-  <path d="M ${C.x + 206*Math.cos(-2.5)} ${C.y + 206*Math.sin(-2.5)} A 206 206 0 0 1 ${C.x + 206*Math.cos(-1.6)} ${C.y + 206*Math.sin(-1.6)}" fill="none" stroke="url(#rimHi)" stroke-width="5" opacity=".8" pointer-events="none"/>
-  <path d="M ${C.x + 206*Math.cos(.6)} ${C.y + 206*Math.sin(.6)} A 206 206 0 0 1 ${C.x + 206*Math.cos(1.2)} ${C.y + 206*Math.sin(1.2)}" fill="none" stroke="url(#rimHi)" stroke-width="4" opacity=".45" pointer-events="none"/>
+  <circle cx="${C.x}" cy="${C.y}" r="196" fill="url(#matSh)" pointer-events="none"/>
   <g id="recordWrap" style="display:none"><g id="record"><image id="discImg" clip-path="url(#recClip)" preserveAspectRatio="none"/><g id="grooves"></g><g id="tgaps"></g></g><g id="sheen" clip-path="url(#recClip)"></g></g>
   <circle id="tlBeam" cx="${C.x-120}" cy="${C.y-130}" r="80" fill="url(#tlGlow)" opacity="0" pointer-events="none"/>
   <circle id="platterGlow" cx="${C.x}" cy="${C.y}" r="200" fill="none" stroke="#F6C77A" stroke-width="6" opacity="0"/>
   <circle id="recordHit" cx="${C.x}" cy="${C.y}" r="196" fill="transparent"/>
-  <circle cx="${C.x}" cy="${C.y}" r="7" fill="url(#metalG)" pointer-events="none"/>
-  <g id="tlightBtn" class="ctl" tabindex="0" role="button" aria-label="Target light" style="cursor:pointer"><circle cx="34" cy="40" r="16" fill="#161616"/><circle id="tlight" cx="34" cy="40" r="9" fill="#555"/></g>
-  <g id="powerKnob" class="ctl" tabindex="0" role="switch" aria-checked="false" aria-label="Power" style="cursor:pointer"><circle cx="34" cy="432" r="20" fill="#1a1a1a"/><circle cx="34" cy="432" r="15" fill="url(#metalG)"/><rect id="powerTick" x="32.5" y="417" width="3" height="10" rx="1.5" fill="#2a2a2a" transform="rotate(-50 34 432)"/></g>
-  <text x="34" y="405" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-weight="600" font-size="8" letter-spacing="1" fill="#5b554b">POWER</text>
-  <g id="startBtn2" class="ctl" tabindex="0" role="button" aria-label="Start or stop" style="cursor:pointer"><rect x="64" y="416" width="78" height="38" rx="4" fill="#1b1b1b"/><rect id="startFace" x="67" y="419" width="72" height="32" rx="3" fill="url(#metalG)"/>
-    <text x="103" y="439" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-weight="600" font-size="9" letter-spacing="1" fill="#3b3631">START/STOP</text></g>
-  <g id="sp33" class="ctl" tabindex="0" role="button" aria-label="33 RPM" style="cursor:pointer"><rect x="150" y="430" width="28" height="22" rx="3" fill="url(#metalG)"/><text x="164" y="445" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-size="9" font-weight="600" fill="#3b3631">33</text><circle id="led33" cx="164" cy="424" r="2.6" fill="#ff7a3a"/></g>
-  <g id="sp45" class="ctl" tabindex="0" role="button" aria-label="45 RPM" style="cursor:pointer"><rect x="184" y="430" width="28" height="22" rx="3" fill="url(#metalG)"/><text x="198" y="445" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-size="9" font-weight="600" fill="#3b3631">45</text><circle id="led45" cx="198" cy="424" r="2.6" fill="#6b5f50"/></g>
-  <rect x="548" y="250" width="22" height="160" rx="5" fill="#262626"/><rect x="554" y="258" width="10" height="144" rx="2" fill="#0d0d0d"/><line x1="538" y1="330" x2="545" y2="330" stroke="#5b554b" stroke-width="1.5"/>
-  <g id="pitchKnob" class="ctl" tabindex="0" role="slider" aria-label="Pitch" style="cursor:ns-resize"><rect id="pitchRect" x="544" y="322" width="30" height="16" rx="3" fill="url(#metalG)"/><rect id="pitchLine" x="546" y="329" width="26" height="2" fill="#D9622B"/></g>
-  <text x="559" y="244" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-weight="600" font-size="8" fill="#5b554b">PITCH</text>
-  <text id="pitchTxt" x="559" y="424" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-size="9" fill="#3b3631">+0.0%</text>
-  <rect x="438" y="440" width="96" height="20" rx="3" fill="#1a1a1a"/><text x="486" y="454" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="800" font-size="11" letter-spacing="2" fill="#d9d4c7">SIDE B</text>
-  <circle cx="${P.x+3}" cy="${P.y+5}" r="52" fill="rgba(0,0,0,.35)" filter="url(#sh6)"/><circle cx="${P.x}" cy="${P.y}" r="50" fill="#1a1a1a"/><circle cx="${P.x}" cy="${P.y}" r="44" fill="none" stroke="#3a3a3a" stroke-width="3" stroke-dasharray="1.5 2"/><circle cx="${P.x}" cy="${P.y}" r="38" fill="#2a2a2a"/><circle cx="${P.x}" cy="${P.y}" r="30" fill="url(#metalG)"/>
-  ${Array.from({length:9}, (_,k) => `<line x1="${P.x-62 + 15*Math.cos(-2.4 + k*.6)}" y1="${P.y+14 + 15*Math.sin(-2.4 + k*.6)}" x2="${P.x-62 + 18*Math.cos(-2.4 + k*.6)}" y2="${P.y+14 + 18*Math.sin(-2.4 + k*.6)}" stroke="#5b554b" stroke-width="1"/>`).join('')}
-  <text x="${P.x-62}" y="${P.y+44}" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-size="6.5" font-weight="600" fill="#5b554b">ANTI-SKATE</text>
-  <text x="181" y="413" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-size="6.5" font-weight="600" fill="#5b554b">SPEED</text>
-  <circle cx="${P.x-62}" cy="${P.y+14}" r="12" fill="#1a1a1a"/><circle cx="${P.x-62}" cy="${P.y+14}" r="8" fill="url(#metalG)"/>
-  <g id="cueLever" class="ctl" tabindex="0" role="button" aria-label="Cue lever, lifts and lowers the arm" style="cursor:pointer"><rect x="${P.x+28}" y="${P.y+176}" width="16" height="48" rx="3" fill="#1b1b1b"/><rect id="cueHandle" x="${P.x+30}" y="${P.y+178}" width="12" height="16" rx="2" fill="url(#metalG)"/></g>
-  <text x="${P.x+36}" y="${P.y+236}" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-weight="600" font-size="8" fill="#5b554b">CUE</text>
-  <rect x="${P.x-14}" y="${P.y+262}" width="28" height="16" rx="5" fill="#1b1b1b"/>
-  <g id="armShadow" filter="url(#armSh)"><use href="#armShape"/></g>
+  <circle cx="${C.x+1}" cy="${C.y+2}" r="8" fill="rgba(0,0,0,.5)" filter="url(#sh3)" pointer-events="none"/><circle cx="${C.x}" cy="${C.y}" r="7" fill="url(#metalG)" pointer-events="none"/>
+  <g id="tlightBtn" class="ctl" tabindex="0" role="button" aria-label="Target light" style="cursor:pointer"><circle cx="40" cy="62" r="15" fill="#0c0c0d"/><circle cx="40" cy="62" r="15" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1"/><circle id="tlight" cx="40" cy="62" r="8.5" fill="#555"/><circle cx="37.5" cy="59.5" r="2.5" fill="#fff" opacity=".35"/></g>
+  <!-- the control row, well below the platter -->
+  <rect x="26" y="466" width="330" height="46" rx="23" fill="rgba(0,0,0,.35)"/><rect x="26.5" y="466.5" width="329" height="45" rx="22.5" fill="none" stroke="rgba(255,255,255,.08)"/>
+  <g id="powerKnob" class="ctl" tabindex="0" role="switch" aria-checked="false" aria-label="Power" style="cursor:pointer"><circle cx="52" cy="491" r="20" fill="rgba(0,0,0,.7)" filter="url(#sh3)"/><circle cx="50" cy="489" r="18" fill="#0c0c0d"/><circle cx="50" cy="489" r="15" fill="url(#metalG)"/>${knurl(50, 489, 15, 28)}<circle cx="50" cy="489" r="10" fill="url(#metalG2)"/><rect id="powerTick" x="48.5" y="476" width="3" height="9" rx="1.5" fill="#D9622B" transform="rotate(-50 50 489)"/></g>
+  <text x="50" y="462" text-anchor="middle" ${F} font-size="7.5" letter-spacing="1.4" fill="#8C8A84">POWER</text>
+  <g id="startBtn2" class="ctl" tabindex="0" role="button" aria-label="Start or stop" style="cursor:pointer"><rect x="84" y="473" width="104" height="36" rx="6" fill="rgba(0,0,0,.7)" filter="url(#sh3)"/><rect x="82" y="471" width="104" height="36" rx="6" fill="#0c0c0d"/><rect id="startFace" x="85" y="474" width="98" height="30" rx="4" fill="url(#metalG)"/><rect x="85" y="474" width="98" height="3" rx="1.5" fill="#fff" opacity=".7"/>
+    <text x="134" y="493.5" text-anchor="middle" ${F} font-size="9.5" letter-spacing="1.6" fill="#2a2a2c">START · STOP</text></g>
+  <g id="sp33" class="ctl" tabindex="0" role="button" aria-label="33 RPM" style="cursor:pointer"><rect x="204" y="477" width="44" height="26" rx="5" fill="#0c0c0d"/><rect x="206" y="479" width="40" height="22" rx="3.5" fill="url(#metalG)"/><text x="222" y="494" text-anchor="middle" ${F} font-size="10" fill="#2a2a2c">33</text><circle id="led33" cx="238" cy="490" r="2.6" fill="#ff7a3a"/></g>
+  <g id="sp45" class="ctl" tabindex="0" role="button" aria-label="45 RPM" style="cursor:pointer"><rect x="256" y="477" width="44" height="26" rx="5" fill="#0c0c0d"/><rect x="258" y="479" width="40" height="22" rx="3.5" fill="url(#metalG)"/><text x="274" y="494" text-anchor="middle" ${F} font-size="10" fill="#2a2a2c">45</text><circle id="led45" cx="290" cy="490" r="2.6" fill="#6b5f50"/></g>
+  <text x="252" y="462" text-anchor="middle" ${F} font-size="7.5" letter-spacing="1.4" fill="#8C8A84">SPEED</text><text x="134" y="462" text-anchor="middle" ${F} font-size="7.5" letter-spacing="1.4" fill="#8C8A84">PLAY</text>
+  <text x="${W - 34}" y="496" text-anchor="end" font-family="Yellowtail,cursive" font-size="26" fill="#D8D4C8">Side B</text><text x="${W - 34}" y="507" text-anchor="end" ${F} font-size="6.5" letter-spacing="2.2" fill="#8C8A84">MODEL SB-1700</text>
+  <!-- pitch -->
+  <rect x="546" y="248" width="26" height="164" rx="6" fill="#0a0a0b"/><rect x="546.5" y="248.5" width="25" height="163" rx="5.5" fill="none" stroke="rgba(255,255,255,.12)"/><rect x="556" y="258" width="6" height="144" rx="3" fill="#000"/>${[-8,-4,0,4,8].map(v => `<line x1="536" y1="${330 - v*9}" x2="${v ? 541 : 544}" y2="${330 - v*9}" stroke="#8C8A84" stroke-width="${v ? 1 : 1.6}"/>`).join('')}
+  <g id="pitchKnob" class="ctl" tabindex="0" role="slider" aria-label="Pitch" style="cursor:ns-resize"><rect x="543" y="324" width="32" height="16" rx="3" fill="rgba(0,0,0,.6)" filter="url(#sh3)" pointer-events="none"/><rect id="pitchRect" x="543" y="322" width="32" height="16" rx="3" fill="url(#metalG)"/><rect id="pitchLine" x="545" y="329" width="28" height="2" fill="#D9622B"/></g>
+  <text x="559" y="240" text-anchor="middle" ${F} font-size="7.5" letter-spacing="1.4" fill="#8C8A84">PITCH</text>
+  <text id="pitchTxt" x="559" y="428" text-anchor="middle" ${F} font-size="9.5" fill="#C9C5B8">+0.0%</text>
+  <!-- the arm's base: gimbal, anti-skate dial, cue lever, rest -->
+  <circle cx="${P.x+4}" cy="${P.y+7}" r="54" fill="rgba(0,0,0,.75)" filter="url(#sh6)"/><circle cx="${P.x}" cy="${P.y}" r="50" fill="#0c0c0d"/><circle cx="${P.x}" cy="${P.y}" r="50" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1"/><circle cx="${P.x}" cy="${P.y}" r="43" fill="none" stroke="#4a4a4e" stroke-width="4" stroke-dasharray="1.4 2"/><circle cx="${P.x}" cy="${P.y}" r="37" fill="#1d1d1f"/><circle cx="${P.x}" cy="${P.y}" r="30" fill="url(#metalG)"/><circle cx="${P.x}" cy="${P.y}" r="30" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="1"/>
+  ${Array.from({length:9}, (_,k) => `<line x1="${P.x-64 + 16*Math.cos(-2.4 + k*.6)}" y1="${P.y+16 + 16*Math.sin(-2.4 + k*.6)}" x2="${P.x-64 + 19*Math.cos(-2.4 + k*.6)}" y2="${P.y+16 + 19*Math.sin(-2.4 + k*.6)}" stroke="#8C8A84" stroke-width="1"/>`).join('')}
+  <text x="${P.x-64}" y="${P.y+46}" text-anchor="middle" ${F} font-size="6.5" letter-spacing="1" fill="#8C8A84">ANTI-SKATE</text>
+  <circle cx="${P.x-64}" cy="${P.y+16}" r="12.5" fill="#0c0c0d"/><circle cx="${P.x-64}" cy="${P.y+16}" r="9" fill="url(#metalG)"/>${knurl(P.x-64, P.y+16, 9, 18)}
+  <g id="cueLever" class="ctl" tabindex="0" role="button" aria-label="Cue lever, lifts and lowers the arm" style="cursor:pointer"><rect x="${P.x+27}" y="${P.y+174}" width="18" height="52" rx="5" fill="#0a0a0b"/><rect x="${P.x+27.5}" y="${P.y+174.5}" width="17" height="51" rx="4.5" fill="none" stroke="rgba(255,255,255,.12)"/><rect id="cueHandle" x="${P.x+30}" y="${P.y+178}" width="12" height="16" rx="2.5" fill="url(#metalG)"/></g>
+  <text x="${P.x+36}" y="${P.y+240}" text-anchor="middle" ${F} font-size="7.5" letter-spacing="1.4" fill="#8C8A84">CUE</text>
+  <rect x="${P.x-15}" y="${P.y+261}" width="30" height="18" rx="6" fill="#0a0a0b"/><rect x="${P.x-15}" y="${P.y+261}" width="30" height="5" rx="2.5" fill="#fff" opacity=".12"/>
+  <g id="armShadow" filter="url(#armSh)" transform="translate(7 10)"><use href="#armShape"/></g>
   <g id="arm" tabindex="0" role="button" aria-label="Tonearm. Press Enter to lift or lower it. While lifted, use the left and right arrow keys to move it."><use href="#armShape"/><line x1="${P.x}" y1="${P.y-70}" x2="${P.x+10}" y2="${P.y+L+14}" stroke="transparent" stroke-width="56" pointer-events="visibleStroke"/></g>
   <g id="dcover" style="cursor:pointer" tabindex="0" role="button" aria-label="Dust cover">
-    <rect id="dcRect" x="4" y="4" width="592" height="462" rx="14" fill="url(#coverG)" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
-    <rect id="dcHandle" x="268" y="459" width="64" height="8" rx="3" fill="rgba(255,255,255,.5)"/>
+    <rect id="dcRect" x="6" y="6" width="${W - 12}" height="${TOP + 6}" rx="14" fill="url(#coverG)" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
+    <rect id="dcHandle" x="268" y="${TOP + 3}" width="64" height="8" rx="3" fill="rgba(255,255,255,.5)"/>
   </g>`;
   $('deckSvg').innerHTML = s;
   const sh = $('sheen'); [[-40,12,.07],[140,12,.07],[-40,4,.06],[140,4,.06]].forEach(([mid,half,op]) => { const a1=(mid-half)*Math.PI/180, a2=(mid+half)*Math.PI/180, R=200;
@@ -3023,7 +3056,7 @@ function setCover(closed){ coverClosed = closed; const g = $('dcover'); sfx.slid
   g.style.transition = 'transform .6s cubic-bezier(.4,0,.2,1), opacity .6s'; g.style.transformOrigin = '300px 0px'; g.style.transform = closed ? 'none' : 'translateY(-14px) scaleY(.06)'; g.style.opacity = closed ? 1 : .85;
   if (!closed && deck && !power) setHintT('Turn the power knob on, press Start, then drag the arm onto the record.'); }
 function syncDeckUI(){
-  $('powerTick').setAttribute('transform', `rotate(${power ? 40 : -50} 34 432)`); $('powerKnob').setAttribute('aria-checked', power);
+  $('powerTick').setAttribute('transform', `rotate(${power ? 40 : -50} 50 489)`); $('powerKnob').setAttribute('aria-checked', power);
   $('startFace').setAttribute('fill', running ? 'url(#btnOn)' : 'url(#metalG)');
   $('led33').setAttribute('fill', power && rpm === 33 ? '#ff7a3a' : '#6b5f50'); $('led45').setAttribute('fill', power && rpm === 45 ? '#ff7a3a' : '#6b5f50');
   $('tlight').setAttribute('fill', tlOn ? '#FFE3A6' : '#555'); $('tlBeam').setAttribute('opacity', tlOn ? 1 : 0);
