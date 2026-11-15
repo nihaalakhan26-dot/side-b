@@ -3,6 +3,10 @@
 //   GET  /api/record?id=x&json  answers { c } (the packed record) for the page to open
 //   GET  /api/record?id=x&img   the sleeve picture, for link previews
 //   GET  /r/x                   (rewritten to /api/record?id=x) the site, with a link preview of the record
+// The crates (records their makers chose to share, kept without who they're from and for):
+//   GET  /api/record?garden         the newest shared records { records:[{ id, name, t, v }] }
+//   GET  /api/record?gid=x&json     a shared record { c }, packed without names or notes
+//   DELETE /api/record?gid=x        takes one out of the crates; needs the header x-garden-key set to GARDEN_KEY
 // Vercel's Upstash integration sets KV_REST_API_URL and KV_REST_API_TOKEN (older setups use UPSTASH_REDIS_REST_*).
 const fs = require('fs');
 const path = require('path');
@@ -13,6 +17,7 @@ const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TO
 const TTL = 60 * 60 * 24 * 30;      // records last 30 days
 const PER_HOUR = 20;                // records one person can press in an hour
 const ID = /^[A-Za-z0-9]{8}$/;
+const CRATE_SIZE = 400;            // how many shared records the crates keep
 
 async function redis(...cmd) {
   const r = await fetch(URL_, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(cmd) });
@@ -37,7 +42,15 @@ async function save(req, res) {
   const rec = JSON.stringify({ c, t, name: clean(body.name, 80), by: clean(body.by, 60), to: clean(body.to, 60) });
   for (let i = 0; i < 5; i++) {
     const id = newId();
-    if (await redis('SET', 'rec:' + id, rec, 'EX', TTL, 'NX')) return res.status(200).json({ id, days: TTL / 86400 });
+    if (await redis('SET', 'rec:' + id, rec, 'EX', TTL, 'NX')) {
+      // into the crates too, if the maker asked: a copy without who it's from and for, and a picture of the record
+      const gc = String(body.gc || ''), gv = String(body.gv || ''), gt = String(body.gt || '');
+      if (gc && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(gt) && gt.length <= 60000 && /^[zp][A-Za-z0-9_-]{10,}$/.test(gc) && gc.length <= 150000 && /^data:image\/(png|webp);base64,[A-Za-z0-9+/=]+$/.test(gv) && gv.length <= 120000) {
+        await redis('SET', 'gdn:' + id, JSON.stringify({ c: gc, t: gt, v: gv, name: clean(body.name, 80) }), 'EX', TTL);
+        await redis('LPUSH', 'garden', id); await redis('LTRIM', 'garden', 0, CRATE_SIZE - 1);
+      }
+      return res.status(200).json({ id, days: TTL / 86400 });
+    }
   }
   throw new Error('No free id');
 }
@@ -58,6 +71,26 @@ module.exports = async (req, res) => {
     if (!URL_ || !TOKEN) return res.status(503).json({ error: 'Record storage is not set up.' });
     if (req.method === 'POST') return await save(req, res);
     const q = req.query || {}, id = String(q.id || '');
+    if ('garden' in q) {
+      const ids = (await redis('LRANGE', 'garden', 0, 79)) || [];
+      const raw = ids.length ? await redis('MGET', ...ids.map(i => 'gdn:' + i)) : [];
+      const records = ids.map((i, k) => { try { const g = JSON.parse(raw[k]); return { id: i, name: g.name, t: g.t, v: g.v }; } catch (e) { return null; } }).filter(Boolean);
+      res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+      return res.status(200).json({ records });
+    }
+    if ('gid' in q) {
+      const gid = String(q.gid || '');
+      if (!ID.test(gid)) return res.status(404).json({ error: 'No such record.' });
+      if (req.method === 'DELETE') {
+        if (!process.env.GARDEN_KEY || req.headers['x-garden-key'] !== process.env.GARDEN_KEY) return res.status(403).json({ error: 'Not allowed.' });
+        await redis('LREM', 'garden', 0, gid); await redis('DEL', 'gdn:' + gid);
+        return res.status(200).json({ removed: gid });
+      }
+      const raw = await redis('GET', 'gdn:' + gid), g = raw ? JSON.parse(raw) : null;
+      if (!g) return res.status(404).json({ error: 'gone' });
+      res.setHeader('Cache-Control', 'no-store');
+      return res.status(200).json({ c: g.c });
+    }
     if (!ID.test(id)) return res.status(404).json({ error: 'No such record.' });
     const rec = await load(id);
     if ('json' in q) {
@@ -73,7 +106,7 @@ module.exports = async (req, res) => {
     }
     // the page itself, with a preview card for WhatsApp, iMessage and the rest
     const host = `https://${req.headers['x-forwarded-host'] || req.headers.host}`;
-    const title = rec ? (rec.by ? `${rec.by} pressed you a record` : 'Someone pressed you a record') : 'Side B';
+    const title = rec ? (rec.by ? `${rec.by} pressed you a record` : 'Someone pressed you a record') : 'DigiVinyl';
     const desc = rec ? (rec.name ? `"${rec.name}". Open the bag and play it.` : 'Open the bag and play it.') : 'Make a record for someone.';
     let meta = `<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:type" content="website"><meta property="og:url" content="${esc(host + '/r/' + id)}">`;
     if (rec && rec.t) meta += `<meta property="og:image" content="${esc(host + '/api/record?id=' + id + '&img')}"><meta name="twitter:card" content="summary_large_image">`;

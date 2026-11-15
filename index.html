@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Side B: records and pressing</title>
+<title>DigiVinyl: make a record for someone</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
@@ -39,26 +39,39 @@ button{cursor:pointer}
 #hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:55;margin:0;color:var(--text);font:700 1.35rem/1.2 'Caveat',cursive;text-shadow:0 2px 10px rgba(0,0,0,.95);pointer-events:none;text-align:center;max-width:calc(100vw - 32px)}
 
 /* ---------- intro + outside ---------- */
-#intro{display:grid;place-items:center;text-align:center;padding:24px;z-index:3;color:var(--text);
-  background:radial-gradient(ellipse 55% 45% at 50% 42%,rgba(255,95,168,.13),transparent 70%),radial-gradient(ellipse 120% 90% at 50% 40%,transparent 40%,rgba(0,0,0,.6)),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='32'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.42' stroke-width='2'%3E%3Cpath d='M0 1H72M0 17H72M1 1V17M37 17V33'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='.025'%3E%3Crect x='2' y='2' width='70' height='3'/%3E%3Crect x='38' y='18' width='34' height='3'/%3E%3Crect x='0' y='18' width='36' height='3'/%3E%3C/g%3E%3C/svg%3E"),#2E1913}
-#intro::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 45%,rgba(0,0,0,0),rgba(0,0,0,.25));pointer-events:none}
-#intro::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:overlay;opacity:.35;pointer-events:none}
-#intro .ibox{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
-#intro .ineonrec{width:clamp(64px,11vh,96px);margin-bottom:clamp(6px,1.5vh,14px);overflow:visible}
-#intro .glowY{stroke:#FFD27A;stroke-width:3;filter:drop-shadow(0 0 2px #FFE9B0) drop-shadow(0 0 6px #FFB43A) drop-shadow(0 0 16px #FF9A1F);animation:nOn 2.6s .2s both}
-#intro .ineon{margin:0;font:400 clamp(5rem,16vw,9rem)/1 'Yellowtail',cursive;color:#FFE4F0;padding:0 .1em .08em;
-  text-shadow:0 0 2px #fff,0 0 6px #FF8CC6,0 0 14px #FF5FA8,0 0 30px #FF3D8F,0 0 60px #E0206E;animation:nOn 2.2s .5s both}
-#intro .isub{margin:clamp(4px,1vh,10px) 0 0;padding-left:.34em;font:700 clamp(.7rem,2.2vw,.86rem)/1 'Archivo',sans-serif;letter-spacing:.34em;text-transform:uppercase;color:#DFF8FF;white-space:nowrap;
-  text-shadow:0 0 2px #fff,0 0 7px #5FE0FF,0 0 18px #2EB8FF;animation:nOn 2s 1.1s both}
-#intro .iline{margin:clamp(22px,4vh,36px) 0 clamp(20px,3.6vh,30px);max-width:40ch;text-wrap:balance;color:#E9D9BE;font-size:1.02rem;line-height:1.5}
-#intro .ibtn{border:0;border-radius:999px;background:var(--cream);color:var(--ink);font:700 .95rem/1 Archivo,sans-serif;padding:17px 30px;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .2s,box-shadow .2s}
-#intro .ibtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 0 4px rgba(239,230,210,.18)}
-#intro .ibtn:disabled{opacity:.6;cursor:default}
-#intro .ilink{margin-top:16px;border:0;background:none;color:#BFA98A;font:500 .88rem/1 Archivo,sans-serif;text-decoration:underline;text-underline-offset:4px;cursor:pointer;padding:6px}
-#intro .ilink:hover{color:var(--cream)}
+/* the welcome card, over the street when the site opens */
+#welcome{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(10,6,4,.25),rgba(10,6,4,.55));transition:opacity .5s,visibility .5s}
+#welcome.gone{opacity:0;visibility:hidden}
+#welcome .wcard{width:min(500px,100%);padding:clamp(28px,5vh,44px) clamp(22px,5vw,46px) clamp(24px,4vh,36px);text-align:center;border-radius:22px;background:rgba(20,13,9,.78);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 30px 70px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,228,190,.14);color:var(--text);animation:wIn .7s .15s both cubic-bezier(.2,.8,.2,1)}
+@keyframes wIn{from{opacity:0;transform:translateY(18px) scale(.97)}}
+#welcome h1{margin:0;font:400 clamp(3.4rem,11vw,5rem)/1 'Yellowtail',cursive;color:#FFE4F0;padding:0 .1em .06em;text-shadow:0 0 2px #fff,0 0 6px #FF8CC6,0 0 16px #FF5FA8,0 0 34px #E0206E;animation:nOn 2s .5s both}
+#welcome .wline{margin:clamp(14px,2.4vh,20px) auto clamp(22px,3.6vh,30px);max-width:34ch;text-wrap:balance;color:#E9D9BE;font-size:1.02rem;line-height:1.5}
+#welcome .wbtn{border:0;border-radius:999px;background:var(--cream);color:var(--ink);font:700 .98rem/1 Archivo,sans-serif;padding:17px 32px;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .2s,box-shadow .2s}
+#welcome .wbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 0 4px rgba(239,230,210,.18)}
+#welcome .wbtn:disabled{opacity:.6;cursor:default}
+#welcome .wlink{display:block;margin:16px auto 0;border:0;background:none;color:#C9B595;font:500 .9rem/1 Archivo,sans-serif;text-decoration:underline;text-underline-offset:4px;cursor:pointer;padding:6px}
+#welcome .wlink:hover{color:var(--cream)}
+#outside.welcoming .caption{opacity:0}
 @keyframes nOn{0%,6%{opacity:.08}7%{opacity:1}9%{opacity:.25}12%,30%{opacity:1}31%{opacity:.4}33%,100%{opacity:1}}
-@media (prefers-reduced-motion: reduce){#intro .ineon,#intro .isub,#intro .glowY{animation:none}}
+@media (prefers-reduced-motion: reduce){#welcome h1,#welcome .wcard{animation:none}}
+/* THE CRATES: records people chose to share, to browse and play */
+#crates{position:fixed;inset:0;z-index:75;display:none;flex-direction:column;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(246,199,122,.12),transparent 70%),#1A110C;color:var(--text)}
+#crates.on{display:flex}
+#crates header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:calc(18px + env(safe-area-inset-top,0px)) clamp(18px,4vw,48px) 14px}
+#crates h2{margin:0;font:400 clamp(2.4rem,6vw,3.4rem)/1 'Yellowtail',cursive;color:var(--cream)}
+#crates header p{margin:6px 0 0;color:#BFA98A;font-size:.92rem}
+#crates .grid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:clamp(18px,3vw,34px) clamp(14px,2.4vw,28px);padding:14px clamp(18px,4vw,48px) calc(40px + env(safe-area-inset-bottom,0px));align-content:start}
+#crates .crec{border:0;background:none;padding:0;cursor:pointer;text-align:left;color:inherit;font:inherit}
+#crates .crec .art{position:relative;display:block;width:100%;aspect-ratio:1.3;margin-bottom:10px}
+#crates .crec .sl,#crates .crec .vn{position:absolute;top:0;height:100%;aspect-ratio:1;object-fit:cover}
+#crates .crec .sl{left:0;z-index:1;box-shadow:0 12px 24px rgba(0,0,0,.5);background:#2a2018}
+#crates .crec .vn{right:0;transition:transform .5s cubic-bezier(.3,.7,.3,1)}
+#crates .crec:hover .vn,#crates .crec:focus-visible .vn{transform:translateX(8%) rotate(40deg)}
+#crates .crec b{display:block;font:700 .95rem/1.25 Archivo,sans-serif;color:var(--cream)}
+#crates .crec small{display:block;margin-top:3px;color:#9C8870;font-size:.78rem}
+#crates .empty{grid-column:1/-1;color:#BFA98A;padding:30px 0}
+.gopt{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:.84rem;line-height:1.4;color:var(--ink2);cursor:pointer}
+.gopt input{margin-top:3px;width:17px;height:17px;flex:none;accent-color:var(--ink)}
 #outside{background:#1F3A63;overflow:hidden}
 #outsideBg{position:absolute;inset:0;background:#141722}
 #outsideInner{position:absolute;inset:0;transition:transform 1s cubic-bezier(.6,0,.8,.4)}
@@ -815,21 +828,19 @@ body.sheeton{overflow:hidden}
 <body>
 <button id="soundBtn" class="chrome" aria-pressed="false" hidden>Sound off</button>
 
-<section id="intro" class="scene on">
-  <div class="ibox">
-    <svg class="ineonrec" viewBox="-60 -60 120 120" aria-hidden="true"><g fill="none" stroke-linecap="round"><g class="glowY"><circle r="50"/><circle r="17"/><path d="M-34 -22 A40 40 0 0 1 -8 -39"/><path d="M34 22 A40 40 0 0 1 8 39"/></g><circle r="3.5" fill="#FFE9B0" stroke="none"/></g></svg>
-    <h1 class="ineon">Side B</h1>
-    <p class="isub">Record shop &middot; pressing booth</p>
-    <p class="iline">Make a record for someone, and send it as a link.</p>
-    <button id="startBtn" class="ibtn" disabled>Getting the shop ready</button>
-    <button id="exampleBtn" class="ilink" type="button">or open an example record</button>
-  </div>
-</section>
 
-<section id="outside" class="scene" aria-label="Outside the shop">
+
+<section id="outside" class="scene on welcoming" aria-label="Outside the shop">
   <div id="outsideBg"></div><div id="outsideInner"></div>
   <p class="caption">The door's open. Tap it to go in.</p>
+  <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle">
+    <h1 id="wTitle">DigiVinyl</h1>
+    <p class="wline">Design a vinyl record, fill it with songs and send it to someone as a link.</p>
+    <button id="startBtn" class="wbtn" disabled>Getting the shop ready</button>
+    <button id="cratesBtn" class="wlink" type="button">Browse records others made</button>
+  </div></div>
 </section>
+<section id="crates" aria-label="Records others made"><header><div><h2>The crates</h2><p>Records people made here and chose to share. Tap one to play it.</p></div><button class="chrome" id="cratesClose" style="position:static">Back to the street</button></header><div class="grid" id="cratesGrid"></div></section>
 
 <section id="shop" class="scene" aria-label="Inside the shop">
   <div id="shopWrap"><div id="shopSizer"><div id="shopStage"></div></div></div>
@@ -838,7 +849,7 @@ body.sheeton{overflow:hidden}
 
 <section id="studio" class="scene" aria-label="Pressing booth">
   <header class="shead">
-    <span class="logo">Side B</span>
+    <span class="logo">DigiVinyl</span>
     <nav class="steps" aria-label="Steps" id="steps"></nav>
     <button class="btn ghost sm" id="resumeBtn" hidden>Carry on with your last record</button>
     <button class="btn ghost sm" id="toShop">Back to the shop</button>
@@ -901,6 +912,7 @@ body.sheeton{overflow:hidden}
             <div class="row"><div><label for="fBy">FROM</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
           </div>
           <p class="hintline">These go on the gift tag, the back of the sleeve and the record label.</p>
+          <label class="gopt"><input type="checkbox" id="fGarden"><span><b>Put it in the crates</b> for others to browse and play. Who it's from and who it's for stay private.</span></label>
           <p class="needs" id="pressNeeds" hidden></p>
           <div class="card recap" id="recap"></div>
           <div class="card tracksheet minilist" id="recapTracks"></div>
@@ -1294,7 +1306,7 @@ function facadeSVG(){
   // ---- THE SHOP FRONT: painted cast-iron columns, a big hand-painted sign with records on it, plain glass below
   s += rc(S0, 296, S1 - S0, GY - 296, SHOP_DK) + rc(S0 - 10, 290, S1 - S0 + 20, 12, SHOP_HI) + rc(S0 - 4, 302, S1 - S0 + 8, 10, SHOP) + rc(S0, 312, S1 - S0, 6, '#000', ' opacity=".35"');
   s += rc(S0 + 14, 320, S1 - S0 - 28, 82, '#EFE3C6') + `<rect x="${S0 + 20}" y="326" width="${S1 - S0 - 40}" height="70" fill="none" stroke="#C22A22" stroke-width="2.5"/>` + rc(S0 + 14, 402, S1 - S0 - 28, 6, SHOP_HI) + rc(S0, 408, S1 - S0, 6, '#000', ' opacity=".3"');
-  s += `<text x="778" y="381" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="56" letter-spacing="5" fill="#C22A22">SIDE B RECORDS</text>`;
+  s += `<text x="778" y="381" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="56" letter-spacing="7" fill="#C22A22">RECORD STORE</text>`;
   const signRecords = () => [[S0 + 78, '#E3B548', '#B8862B', '#C22A22'], [S1 - 78, '#1C1C20', '#3A3A40', '#EDB33A']].map(([cx, c1, c2, lab]) => `<circle cx="${cx + 5}" cy="366" r="66" fill="#000" opacity=".3"/><circle cx="${cx}" cy="360" r="66" fill="${c1}"/>${[58, 50, 42, 34].map(r => `<circle cx="${cx}" cy="360" r="${r}" fill="none" stroke="${c2}" stroke-width="1.6"/>`).join('')}<circle cx="${cx}" cy="360" r="24" fill="${lab}"/><circle cx="${cx}" cy="360" r="4" fill="#111"/><path d="M${cx - 44} ${360 - 44} A62 62 0 0 1 ${cx + 10} ${360 - 62}" stroke="#fff" stroke-opacity=".3" stroke-width="5" fill="none"/>`).join('');
   const col = (x, w) => rc(x, 414, w, GY - 414, SHOP) + rc(x, 414, 5, GY - 414, SHOP_HI) + rc(x + w - 5, 414, 5, GY - 414, SHOP_SH) + rc(x + w/2 - 5, 440, 10, GY - 520, SHOP_SH) + rc(x - 4, 414, w + 8, 14, SHOP_HI) + rc(x - 4, 428, w + 8, 5, SHOP_DK) + rc(x - 5, GY - 60, w + 10, 60, SHOP_SH) + rc(x - 5, GY - 60, w + 10, 5, SHOP_HI);
   s += col(S0, 48) + col(S1 - 48, 48) + col(608, 40) + col(908, 40);
@@ -2343,11 +2355,23 @@ async function decodeRec(str){ const bytes = unb64url(str.slice(1)); let out = b
 // Pressing saves the record for 30 days and gives a short /r/ link with a preview card.
 // If storage isn't set up or doesn't answer, the record is packed into the link itself instead.
 async function shareLink(r){ const code = await encodeRec(r);
-  try { const t = drawSleeve(r, 300).toDataURL('image/jpeg', .62), ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
-    const res = await fetch('/api/record', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ c:code, t, name:r.name, by:r.by, to:r.to }), signal:ctl.signal }); clearTimeout(to);
+  try { const t = drawSleeve(r, 300).toDataURL('image/jpeg', .62), ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000), body = { c:code, t, name:r.name, by:r.by, to:r.to };
+    if ($('fGarden').checked){ const pub = { ...r, by:'', to:'', notes:[] }; body.gc = await encodeRec(pub); body.gt = drawSleeve(pub, 300).toDataURL('image/jpeg', .62); body.gv = drawVinyl(pub, 200, 'A').toDataURL('image/png'); }
+    const res = await fetch('/api/record', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body), signal:ctl.signal }); clearTimeout(to);
     const data = await res.json(); if (res.ok && /^[A-Za-z0-9]{8}$/.test(data.id)) return { url: location.origin + '/r/' + data.id, short:true }; } catch(e){}
   return { url: location.origin + (location.pathname.startsWith('/r/') ? '/' : location.pathname) + (code.length < 6000 ? '?r=' : '#r=') + code, short:false }; }
-let fromMaker = false;
+let fromMaker = false, fromCrates = false;
+// THE CRATES: records their makers chose to share, newest first, with the shop's example always in the front
+async function openCrates(){ const box = $('cratesGrid'); $('crates').classList.add('on');
+  const ex = cleanRec(EXAMPLE), tile = (k, name, sub, sl, vn) => `<button class="crec" data-k="${esc(k)}"><span class="art"><img class="vn" src="${esc(vn)}" alt=""><img class="sl" src="${esc(sl)}" alt=""></span><b>${esc(name || 'Untitled')}</b><small>${esc(sub)}</small></button>`;
+  let html = tile('example', ex.name, 'From the shop', sleeveURL(ex, 300), vinylURL(ex, 240, 'A')); box.innerHTML = html + '<p class="empty">Looking through the crates...</p>';
+  let list = []; try { const res = await fetch('/api/record?garden'); if (res.ok) list = (await res.json()).records || []; } catch(e){}
+  list = list.filter(x => /^[A-Za-z0-9]{8}$/.test(x.id) && /^data:image\//.test(x.t || '') && /^data:image\//.test(x.v || ''));
+  box.innerHTML = html + list.map(x => tile(x.id, x.name, 'Made here', x.t, x.v)).join('') + (list.length ? '' : '<p class="empty">No one has shared a record yet. Make one and tick "Put it in the crates" when you press it.</p>');
+  box.querySelectorAll('.crec').forEach(b => b.addEventListener('click', async () => { ensureAudio(); const k = b.dataset.k; $('crates').classList.remove('on'); fromCrates = true;
+    if (k === 'example'){ window.__example(); return; }
+    try { const res = await fetch(`/api/record?gid=${k}&json`), data = await res.json(); if (res.ok && data.c){ location.hash = 'r=' + data.c; return; } } catch(e){}
+    fromCrates = false; openCrates(); setHintT('That record has come off the shelf.', 6000); })); }
 $('pressBtn').addEventListener('click', async () => { const btn = $('pressBtn'), label = btn.textContent; btn.disabled = true; btn.textContent = 'Pressing...';
   const link = await shareLink(draft); btn.textContent = label; updateFoot(); $('shareLink').value = link.url;
   $('shareNote').textContent = link.short ? 'Send this link to them. It lasts 30 days, so tell them not to leave it too long.' : "Send this link to them. The whole record lives inside it, so there's nothing to sign up for.";
@@ -2528,7 +2552,7 @@ function sample(s, btn){ const me = btn.dataset.on === '1'; stopSample(); docume
 /* ============================================================
    SCENES: intro, outside, shop
    ============================================================ */
-let current = 'intro';
+let current = 'outside';
 function go(name){ document.querySelectorAll('.scene').forEach(s => s.classList.toggle('on', s.id === name)); current = name; setScene(name); hideTag(); $('hint').textContent = '';
   $('soundBtn').hidden = !ctx || name === 'studio'; if (name === 'shop') requestAnimationFrame(fitShop); if (name === 'studio') goStep(fstep); }
 function enterShop(){
@@ -3158,9 +3182,9 @@ function draw(){
 async function route(){
   const h = location.hash;
   if (h.startsWith('#r=')){ try { const r = cleanRec(await decodeRec(h.slice(3))); go('gift'); buildGift(r); }
-    catch(e){ go('intro'); setHintT('This record link looks broken. Ask the person who sent it for a fresh one.', 10000); } }
+    catch(e){ go('outside'); setHintT('This record link looks broken. Ask the person who sent it for a fresh one.', 10000); } }
   else { if (focus.open){ $('focus').classList.remove('open','freed'); focus.open = false; const f = $('free'); if (f) f.remove(); putTag.classList.remove('show'); }
-    if (current === 'gift'){ unloadDeck(); $('backEdit').classList.remove('on'); $('replyBtn').classList.remove('on'); go(fromMaker ? 'studio' : replying ? 'outside' : 'intro'); fromMaker = false; replying = false; } }
+    if (current === 'gift'){ unloadDeck(); $('backEdit').classList.remove('on'); $('replyBtn').classList.remove('on'); go(fromMaker ? 'studio' : 'outside'); if (fromCrates) openCrates(); fromMaker = false; replying = false; fromCrates = false; } }
 }
 addEventListener('hashchange', route);
 const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihala', to:'Amy', year:'2026', cat:'SB-0412',
@@ -3187,10 +3211,12 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   if (draft.photo) photoImage(draft.photo);
   requestAnimationFrame(draw);
   setMuted(store.get('sideb-muted') === true);
-  const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Walk up to the shop';
-  sb.addEventListener('click', () => { ensureAudio(); $('soundBtn').hidden = false; go('outside'); });
+  const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Make a record';
+  const welcomed = () => { ensureAudio(); $('soundBtn').hidden = false; $('welcome').classList.add('gone'); $('outside').classList.remove('welcoming'); };
+  sb.addEventListener('click', () => { welcomed(); setTimeout(enterShop, 350); });
+  $('cratesBtn').addEventListener('click', () => { welcomed(); openCrates(); });
+  $('cratesClose').addEventListener('click', () => $('crates').classList.remove('on'));
   window.__example = async () => { location.hash = 'r=' + await encodeRec(EXAMPLE); };
-  $('exampleBtn').addEventListener('click', () => { ensureAudio(); window.__example(); });
   const short = location.pathname.match(/^\/r\/([A-Za-z0-9]{8})\/?$/);
   if (short){ try { const res = await fetch(`/api/record?id=${short[1]}&json`), data = await res.json();
       if (res.ok && data.c) history.replaceState(null, '', location.pathname + '#r=' + data.c);
@@ -3199,7 +3225,7 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   const fromQuery = new URLSearchParams(location.search).get('r');
   if (fromQuery && !location.hash.startsWith('#r=')) history.replaceState(null, '', location.pathname + '#r=' + fromQuery);
   if (location.hash.startsWith('#r=')) route();
-  else if (location.hash === '#studio'){ go('studio'); } else if (location.hash === '#shop'){ go('shop'); }
+  else if (location.hash === '#studio'){ welcomed(); go('studio'); } else if (location.hash === '#shop'){ welcomed(); go('shop'); }
 })();
 })();
 </script>
