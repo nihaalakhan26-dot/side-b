@@ -42,16 +42,17 @@ button{cursor:pointer}
 /* the welcome card, over the street when the site opens: a big plain cream card, square-cornered, dead centre */
 #welcome{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:rgba(10,6,4,.18);transition:opacity .5s,visibility .5s}
 #welcome.gone{opacity:0;visibility:hidden}
-#welcome .wcard{position:relative;width:min(620px,48vw,78vh);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8%;text-align:center;background:#F6F1E7;color:#231A14;box-shadow:0 24px 60px rgba(0,0,0,.45);animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
-@keyframes wIn{from{opacity:0;transform:translateY(16px)}}
-#welcome .wmark{position:relative;margin:0;display:flex;flex-direction:column;align-items:center;font-weight:400;line-height:1}
-#welcome .wword{font:500 clamp(3.6rem,7.6vw,6.4rem)/.9 'Cormorant Garamond',Garamond,serif;letter-spacing:-.01em;color:#231A14}
-#welcome .wsig{align-self:flex-end;margin:-.06em -.25em 0 0;font:400 clamp(1.5rem,3vw,2.5rem)/1 'Great Vibes',cursive;color:#231A14;white-space:nowrap}
-#welcome .wline{margin:clamp(24px,4.4vh,40px) auto clamp(26px,4.6vh,40px);max-width:36ch;color:#4A3A2E;font:400 clamp(1rem,1.25vw,1.12rem)/1.55 Archivo,sans-serif}
-#welcome .wbtn{border:1.5px solid #231A14;border-radius:0;background:#231A14;color:#F6F1E7;font:600 .82rem/1 Archivo,sans-serif;letter-spacing:.18em;text-transform:uppercase;padding:17px 30px 17px calc(30px + .18em);cursor:pointer;transition:background .2s,color .2s}
-#welcome .wbtn:hover:not(:disabled){background:transparent;color:#231A14}
+#welcome .wcard{position:relative;width:min(660px,52vw,86vh);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7% 9%;text-align:center;color:#141210;filter:drop-shadow(0 22px 34px rgba(0,0,0,.5));animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
+#welcome .wpaper{position:absolute;inset:0;z-index:-1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .33 0 0 0 0 .3 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),radial-gradient(ellipse at 40% 35%,#ECEAE5,#DCD9D2 120%);background-color:#E4E1DB}
+#welcome .wmark{margin:0;line-height:0}
+#welcome .wmark img{display:block;width:min(100%,400px);height:auto}
+#welcome .wline{margin:clamp(22px,4vh,36px) auto clamp(22px,4vh,34px);max-width:34ch;color:#141210;font:400 clamp(1.02rem,1.45vw,1.22rem)/1.3 'Times New Roman',Times,Georgia,serif}
+#welcome .wbtn{border:0;border-radius:999px;background:#0E0D0C;color:#F2F0EC;font:400 .84rem/1 var(--typewriter),monospace;letter-spacing:.04em;text-transform:uppercase;padding:16px 32px;cursor:pointer;transition:transform .2s,background .2s}
+#welcome .wbtn:hover:not(:disabled){background:#2a2723;transform:translateY(-1px)}
 #welcome .wbtn:disabled{opacity:.55;cursor:default}
-@media (max-width:760px){#welcome .wcard{width:min(90vw,70vh);padding:10% 8%}}
+#welcome .wlink{margin-top:clamp(18px,3.4vh,30px);border:0;background:none;padding:4px;color:#141210;font:400 .8rem/1 var(--typewriter),monospace;letter-spacing:.04em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#welcome .wfoot{margin:clamp(30px,6vh,56px) 0 0;font:400 .76rem/1 var(--typewriter),monospace;letter-spacing:.06em;text-transform:uppercase;color:#141210}
+@media (max-width:760px){#welcome .wcard{width:min(92vw,74vh);padding:9% 8%}}
 #outside.welcoming .caption{opacity:0}
 @keyframes nOn{0%,6%{opacity:.08}7%{opacity:1}9%{opacity:.25}12%,30%{opacity:1}31%{opacity:.4}33%,100%{opacity:1}}
 @media (prefers-reduced-motion: reduce){#welcome .wcard{animation:none}}
@@ -834,10 +835,12 @@ body.sheeton{overflow:hidden}
 <section id="outside" class="scene on welcoming" aria-label="Outside the shop">
   <div id="outsideBg"></div><div id="outsideInner"></div>
   <p class="caption">The door's open. Tap it to go in.</p>
-  <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle">
-    <h1 id="wTitle" class="wmark"><span class="wword">DigiVinyl</span><span class="wsig">made by @nihalakhan</span></h1>
-    <p class="wline">A digital record store experience.<br>Browse the shelves, build your own vinyl and send it to someone special.</p>
+  <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle"><div class="wpaper" id="wPaper"></div>
+    <h1 id="wTitle" class="wmark"><img src="img/digivinyl.png" alt="DigiVinyl" width="432" height="123"></h1>
+    <p class="wline">A digital record store experience where you can browse the shelves, build your own vinyl and send it to someone special</p>
     <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
+    <button id="cratesBtn" class="wlink" type="button">Browse records others made</button>
+    <p class="wfoot">Built by @nihalakhan</p>
   </div></div>
 </section>
 <section id="crates" aria-label="Records others made"><header><div><h2>The crates</h2><p>Records people made here and chose to share. Tap one to play it.</p></div><button class="chrome" id="cratesClose" style="position:static">Back to the street</button></header><div class="grid" id="cratesGrid"></div></section>
@@ -912,7 +915,7 @@ body.sheeton{overflow:hidden}
             <div class="row"><div><label for="fBy">FROM</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
           </div>
           <p class="hintline">These go on the gift tag, the back of the sleeve and the record label.</p>
-          <label class="gopt" hidden><input type="checkbox" id="fGarden"><span><b>Put it in the crates</b> for others to browse and play. Who it's from and who it's for stay private.</span></label>
+          <label class="gopt"><input type="checkbox" id="fGarden"><span><b>Put it in the crates</b> for others to browse and play. Who it's from and who it's for stay private.</span></label>
           <p class="needs" id="pressNeeds" hidden></p>
           <div class="card recap" id="recap"></div>
           <div class="card tracksheet minilist" id="recapTracks"></div>
@@ -3214,6 +3217,15 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Enter the store';
   const welcomed = () => { ensureAudio(); $('soundBtn').hidden = false; $('welcome').classList.add('gone'); $('outside').classList.remove('welcoming'); };
   sb.addEventListener('click', () => { welcomed(); setTimeout(enterShop, 350); });
+  $('cratesBtn').addEventListener('click', () => { ensureAudio(); openCrates(); });
+  { // torn paper edge: a jagged outline, fresh each visit
+    const pts = [], N = 110; let w = 1;
+    const j = (a) => { w = Math.max(.2, Math.min(a, w + (Math.random() - .5) * a * .7 + (Math.random() < .08 ? a * .5 : 0))); return w.toFixed(2); };
+    for (let i = 0; i <= N; i++) pts.push(`${(i / N * 100).toFixed(2)}% ${j(2.2)}%`);
+    for (let i = 1; i <= N; i++) pts.push(`${(100 - j(1.5)).toFixed(2)}% ${(i / N * 100).toFixed(2)}%`);
+    for (let i = N - 1; i >= 0; i--) pts.push(`${(i / N * 100).toFixed(2)}% ${(100 - j(2.4)).toFixed(2)}%`);
+    for (let i = N - 1; i > 0; i--) pts.push(`${j(1.5)}% ${(i / N * 100).toFixed(2)}%`);
+    $('wPaper').style.clipPath = `polygon(${pts.join(',')})`; }
   $('cratesClose').addEventListener('click', () => $('crates').classList.remove('on'));
   window.__example = async () => { location.hash = 'r=' + await encodeRec(EXAMPLE); };
   const short = location.pathname.match(/^\/r\/([A-Za-z0-9]{8})\/?$/);
