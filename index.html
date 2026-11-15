@@ -40,9 +40,26 @@ button{cursor:pointer}
 
 /* ---------- intro + outside ---------- */
 #intro{display:grid;place-items:center;text-align:center;padding:24px;background:radial-gradient(ellipse 60% 50% at 50% 40%,rgba(217,163,58,.16),transparent 70%),var(--night);color:var(--text);z-index:3}
-#intro h1{margin:0;font-family:'Yellowtail',cursive;font-weight:400;font-size:clamp(4rem,12vw,8rem);color:var(--mustard);line-height:1}
-#intro .sub{margin:.3rem 0 0;font:600 .9rem/1 var(--mono);letter-spacing:.3em;color:#e98a5a}
-#intro p{color:#cdb794;margin:1.4rem auto 1.8rem;max-width:36ch;line-height:1.5}
+#intro .ibox{display:flex;flex-direction:column;align-items:center;width:100%;max-width:560px}
+#intro .irec{position:relative;width:min(300px,64vw,34vh);aspect-ratio:1.42;margin-bottom:clamp(14px,3vh,30px)}
+#intro .irsleeve{position:absolute;left:0;top:0;height:100%;aspect-ratio:1;z-index:2;background:linear-gradient(135deg,#EADCC0,#D8C6A2);box-shadow:0 20px 40px rgba(0,0,0,.55);overflow:hidden}
+#intro .irsleeve::before{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.35}
+#intro .irsleeve::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.18),transparent 40%,rgba(0,0,0,.12))}
+#intro .irsleeve i{position:absolute;left:50%;top:50%;width:38%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#E9DFCB 0 34%,#1a1512 35% 100%);box-shadow:inset 0 3px 6px rgba(0,0,0,.6)}
+#intro .irsleeve span{position:absolute;left:0;right:0;bottom:9%;text-align:center;padding-left:.3em;font:700 clamp(.5rem,1.7vw,.62rem)/1 'Archivo Narrow',sans-serif;letter-spacing:.3em;color:#7A1E18}
+#intro .irdisc{position:absolute;right:0;top:3%;height:94%;aspect-ratio:1;z-index:1;filter:drop-shadow(0 14px 18px rgba(0,0,0,.5));animation:introOut 1.4s .3s cubic-bezier(.3,.7,.3,1) both}
+#intro .irdisc img{position:absolute;inset:0;width:100%;height:100%;animation:spin33 1.8s linear infinite;transition:opacity .9s}
+#intro .irdisc img:not(.on){opacity:0}
+@keyframes spin33{to{transform:rotate(360deg)}}
+@keyframes introOut{from{transform:translateX(-34%)}}
+#intro h1{margin:0;font-family:'Yellowtail',cursive;font-weight:400;font-size:clamp(3.4rem,10vw,6rem);color:var(--mustard);line-height:1}
+#intro .sub{margin:.5rem 0 0;padding-left:.32em;font:700 .74rem/1.2 'Archivo Narrow',sans-serif;letter-spacing:.32em;text-transform:uppercase;color:#C98A5A;white-space:nowrap}
+#intro .lede{margin:clamp(14px,2.6vh,22px) 0 0;color:#E6D6B8;font-size:1.06rem}
+#intro .isteps{list-style:none;display:flex;justify-content:center;gap:clamp(10px,3vw,26px);margin:clamp(14px,2.6vh,22px) 0 clamp(18px,3.4vh,30px);padding:0;color:#A89478;font:600 .8rem/1.2 Archivo,sans-serif}
+#intro .isteps li{display:flex;align-items:center;gap:7px}
+#intro .isteps b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1px solid rgba(201,154,58,.55);color:var(--mustard);font-size:.68rem}
+@media (max-width:520px){#intro .isteps{flex-direction:column;align-items:flex-start;gap:8px}}
+@media (prefers-reduced-motion: reduce){#intro .irdisc,#intro .irdisc img{animation:none}}
 #outside{background:#1F3A63;overflow:hidden}
 #outsideBg{position:absolute;inset:0;background:#141722}
 #outsideInner{position:absolute;inset:0;transition:transform 1s cubic-bezier(.6,0,.8,.4)}
@@ -800,10 +817,12 @@ body.sheeton{overflow:hidden}
 <button id="soundBtn" class="chrome" aria-pressed="false" hidden>Sound off</button>
 
 <section id="intro" class="scene on">
-  <div>
+  <div class="ibox">
+    <div class="irec" aria-hidden="true"><div class="irsleeve"><i></i><span>SIDE B RECORDS</span></div><div class="irdisc"><img id="introA" alt=""><img id="introB" alt=""></div></div>
     <h1>Side B</h1>
-    <p class="sub">RECORDS AND PRESSING</p>
-    <p>Make a record for someone.</p>
+    <p class="sub">Record shop &amp; pressing booth</p>
+    <p class="lede">Make a record for someone.</p>
+    <ol class="isteps"><li><b>1</b>Design the vinyl</li><li><b>2</b>Choose the songs</li><li><b>3</b>Send it as a link</li></ol>
     <button id="startBtn" class="btn or" disabled>Getting the shop ready</button>
   </div>
 </section>
@@ -2380,16 +2399,16 @@ function setScene(name){ if (!ctx) return;
 // THE SHOP'S MUSIC: the owner's own track, audio/shop.mp3, made to sound like a record playing somewhere across the room:
 // quiet, the treble rolled off, a little of the room's echo, fading in as you walk in and out as you leave. The sound button
 // mutes it. If the file isn't there the shop is simply quiet. Tune it with the three numbers below.
-const SHOP_MUSIC = { vol:.42, muffle:2600, room:.5 };
+const SHOP_MUSIC = { vol:.336, muffle:2340, room:.5, speed:.8 };
 let shopTrack = null;
 function shopMusic(on){ if (!ctx) return;
-  if (!shopTrack){ if (!on) return; const el = new Audio(sitePath('audio/shop.mp3')); el.loop = true; el.preload = 'auto';
+  if (!shopTrack){ if (!on) return; const el = new Audio(sitePath('audio/shop.mp3')); el.loop = true; el.preload = 'auto'; el.preservesPitch = el.mozPreservesPitch = el.webkitPreservesPitch = true;
     let src; try { src = ctx.createMediaElementSource(el); } catch(e){ return; }
     const g = ctx.createGain(), hp = filt('highpass', 110), lp = filt('lowpass', SHOP_MUSIC.muffle), dry = ctx.createGain(), wet = ctx.createGain(), rv = ambReverb();
     g.gain.value = 0; g.connect(master); dry.gain.value = .75; wet.gain.value = SHOP_MUSIC.room; src.connect(hp); hp.connect(lp); lp.connect(dry); lp.connect(rv); rv.connect(wet); dry.connect(g); wet.connect(g);
     shopTrack = { el, g, ok:true, off:0 }; el.addEventListener('error', () => { shopTrack.ok = false; }); }
   const t = shopTrack; if (!t.ok) return; clearTimeout(t.off);
-  if (on){ t.el.play().catch(() => {}); ramp(t.g.gain, SHOP_MUSIC.vol, 1.6); } else { ramp(t.g.gain, 0, .6); t.off = setTimeout(() => t.el.pause(), 2600); } }
+  if (on){ t.el.playbackRate = SHOP_MUSIC.speed; t.el.play().catch(() => {}); t.el.playbackRate = SHOP_MUSIC.speed; ramp(t.g.gain, SHOP_MUSIC.vol, 1.6); } else { ramp(t.g.gain, 0, .6); t.off = setTimeout(() => t.el.pause(), 2600); } }
 // INSIDE THE SHOP: a slow, hazy dream-pop piece, made here in the browser (original, in the mood of 90s slowcore):
 // strummed acoustic guitar, a slide guitar that drifts and weeps over it, a soft tambourine, all washed in a long reverb.
 // It fades in as you walk in and out as you leave; the sound button mutes it.
@@ -3169,6 +3188,11 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   if (draft.photo) photoImage(draft.photo);
   requestAnimationFrame(draw);
   setMuted(store.get('sideb-muted') === true);
+  { const looks = [{ vinyl:'black' }, { vinyl:'swirl', v1:'#6B3FA0', v2:'#E89AB5' }, { vinyl:'splatter', v1:'#F2C230', v2:'#B3252B' }, { vinyl:'marble', v1:'#2F6B66', v2:'#EDEAE2' }, { vinyl:'translucent', v1:'#B3262E' }, { vinyl:'inner', v1:'#141414', v2:'#E8742A' }];
+    const base = cleanRec(null), pics = [], at = k => pics[k] || (pics[k] = drawVinyl({ ...base, name:'Side B', d:{ ...base.d, ...looks[k] } }, 480, 'A').toDataURL('image/png'));
+    const imgs = [$('introA'), $('introB')]; let k = 0, cur = 0; imgs[0].src = at(0); imgs[0].classList.add('on');
+    const next = () => { if (!$('intro').classList.contains('on')) return; k = (k + 1) % looks.length; const nx = imgs[1 - cur]; nx.src = at(k); nx.classList.add('on'); imgs[cur].classList.remove('on'); cur = 1 - cur; setTimeout(next, 3200); };
+    if (!reduceMotion) setTimeout(next, 3200); }
   const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Walk up to the shop';
   sb.addEventListener('click', () => { ensureAudio(); $('soundBtn').hidden = false; go('outside'); });
   window.__example = async () => { location.hash = 'r=' + await encodeRec(EXAMPLE); };
