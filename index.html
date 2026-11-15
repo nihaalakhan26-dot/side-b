@@ -6,7 +6,7 @@
 <title>Side B: records and pressing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&family=Abril+Fatface&display=swap" rel="stylesheet">
 <style>
 :root{
   --cream:#EFE6D2; --cream2:#E5D9C0; --paper:#F7F1E3; --ink:#231A14; --ink2:#6E5B4B; --walnut:#5B3A22; --walnut2:#7A4E2D;
@@ -49,6 +49,10 @@ button{cursor:pointer}
 #outsideInner.zoom{transform:scale(3.4)}
 #facade{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 #doorHit{cursor:pointer}
+#doorGlow{pointer-events:none;opacity:.2;transition:opacity .25s;animation:doorPulse 2.8s ease-in-out infinite}
+@keyframes doorPulse{0%,100%{opacity:.12}50%{opacity:.5}}
+#doorHit:hover + #doorGlow{opacity:1;animation:none}
+@media (prefers-reduced-motion: reduce){#doorGlow{animation:none;opacity:.4}}
 #facade .fl{animation:leaf var(--d) linear infinite;animation-delay:var(--o)}
 @keyframes leaf{0%{translate:0 -80px;rotate:0deg;opacity:0}8%{opacity:1}50%{translate:50px 230px;rotate:200deg}90%{opacity:1}100%{translate:-10px 520px;rotate:380deg;opacity:0}}
 @media (prefers-reduced-motion: reduce){#facade .fl{animation:none}}
@@ -1193,10 +1197,18 @@ function facadeSVG(){
     if (ac) t += rc(x + w*.18, y + h - 40, w*.64, 44, D('#B9BBB6')) + rc(x + w*.18, y + h - 40, w*.64, 5, D('#D4D6D0')) + Array.from({length:6}, (_, i) => rc(x + w*.22, y + h - 30 + i*5, w*.56, 2, '#000', ' opacity=".28"')).join('') + rc(x + w*.18 + 4, y + h + 4, w*.64, 6, '#000', ' opacity=".2"');
     return t + rc(x - 18, y + h, w + 36, 11, BST_HI) + rc(x - 14, y + h + 11, w + 28, 5, BST_SH); };
   // an iron fire escape: a landing at each floor, stairs zigzagging between them, a drop ladder at the bottom
-  const fesc = (x0, x1, ys) => { let t = `<g stroke="${IRON}" fill="none">`;
-    ys.forEach((y, i) => { t += rc(x0, y, x1 - x0, 7, IRON, ' stroke="none"') + `<path d="M${x0} ${y - 84} H${x1} M${x0} ${y - 44} H${x1}" stroke-width="4"/><path d="${Array.from({length:Math.floor((x1 - x0)/13) + 1}, (_, j) => `M${x0 + j*13} ${y - 84} V${y}`).join(' ')}" stroke-width="2.2"/><path d="M${x0 + 8} ${y + 7} V${y + 52} L${x0 + 54} ${y + 7} M${x1 - 8} ${y + 7} V${y + 52} L${x1 - 54} ${y + 7}" stroke-width="4"/>`;
-      if (i < ys.length - 1){ const y2 = ys[i + 1], a = i % 2 ? x1 - 60 : x0 + 60, b = i % 2 ? x0 + 90 : x1 - 90; t += `<path d="M${a} ${y} L${b} ${y2} M${a + (i % 2 ? -26 : 26)} ${y} L${b + (i % 2 ? -26 : 26)} ${y2}" stroke-width="5"/><path d="M${a} ${y - 70} L${b} ${y2 - 70}" stroke-width="3"/><path d="${Array.from({length:16}, (_, j) => { const f = (j + .5)/16, px = a + (b - a)*f, py = y + (y2 - y)*f; return `M${px.toFixed(1)} ${py.toFixed(1)} h${i % 2 ? -26 : 26}`; }).join(' ')}" stroke-width="3"/>`; } });
-    const lx = x1 - 46, ly = ys[0]; return t + `<path d="M${lx} ${ly - 150} V${ly + 30} M${lx + 24} ${ly - 150} V${ly + 30}" stroke-width="3.5"/><path d="${Array.from({length:10}, (_, j) => `M${lx} ${ly - 140 + j*18} h24`).join(' ')}" stroke-width="2.5"/></g>`; };
+  const fesc = (x0, x1, ys) => { const B = [], add = (d, w) => B.push(`<path d="${d}" stroke-width="${w}"/>`), n = Math.round((x1 - x0)/13), st = (x1 - x0)/n;
+    ys.forEach((y, i) => {
+      add(`M${x0 - 5} ${y + 3} H${x1 + 5}`, 7); add(`M${x0} ${y - 86} H${x1} M${x0} ${y - 44} H${x1}`, 3.5);
+      add(Array.from({ length:n + 1 }, (_, j) => `M${(x0 + j*st).toFixed(1)} ${y - 86} V${y}`).join(' '), 2);
+      add(`M${x0} ${y - 92} V${y + 3} M${x1} ${y - 92} V${y + 3}`, 5);
+      add(`M${x0 + 6} ${y + 6} V${y + 50} L${x0 + 52} ${y + 6} M${x1 - 6} ${y + 6} V${y + 50} L${x1 - 52} ${y + 6}`, 4);
+      if (i < ys.length - 1){ const y2 = ys[i + 1], fx = x0 + 64, hx = x1 - 96, at = f => [fx + (hx - fx)*f, y + (y2 - y)*f];
+        add(`M${fx} ${y} L${hx} ${y2}`, 6); add(`M${fx} ${y - 60} L${hx} ${y2 - 60}`, 3);
+        add([0, .25, .5, .75, 1].map(f => { const [px, py] = at(f); return `M${px.toFixed(1)} ${(py - 60).toFixed(1)} V${py.toFixed(1)}`; }).join(' '), 2.5);
+        add(Array.from({ length:18 }, (_, j) => { const [px, py] = at((j + .5)/18); return `M${(px - 9).toFixed(1)} ${py.toFixed(1)} h18`; }).join(' '), 2.5); } });
+    const lx = x1 - 34, ly = ys[0]; add(`M${lx} ${ly - 150} V${ly + 26} M${lx + 20} ${ly - 150} V${ly + 26}`, 3); add(Array.from({ length:11 }, (_, j) => `M${lx} ${ly - 142 + j*16} h20`).join(' '), 2.2);
+    return `<g stroke="${IRON}" fill="none" stroke-linecap="square">${B.join('')}</g>`; };
 
   // ---- THE NEIGHBOURS: a raw concrete block on one side, brick tenements on the other
   const brut = x0 => { const w = 520; let t = rc(x0, -600, w, GY + 600, 'url(#oConc)') + rc(x0, -600, w, 26, CONC_HI) + rc(x0, -574, w, 8, '#000', ' opacity=".3"');
@@ -1230,11 +1242,11 @@ function facadeSVG(){
 
   // ---- THE SHOP FRONT: painted cast-iron columns, a big hand-painted sign with records on it, plain glass below
   s += rc(S0, 296, S1 - S0, GY - 296, SHOP_DK) + rc(S0 - 10, 290, S1 - S0 + 20, 12, SHOP_HI) + rc(S0 - 4, 302, S1 - S0 + 8, 10, SHOP) + rc(S0, 312, S1 - S0, 6, '#000', ' opacity=".35"');
-  s += rc(S0 + 14, 320, S1 - S0 - 28, 82, '#EFE3C6') + `<rect x="${S0 + 20}" y="326" width="${S1 - S0 - 40}" height="70" fill="none" stroke="#C22A22" stroke-width="2.5"/>` + rc(S0 + 14, 402, S1 - S0 - 28, 6, SHOP_HI) + rc(S0, 408, S1 - S0, 6, '#000', ' opacity=".3"');
-  s += `<text x="778" y="377" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="900" font-size="56" letter-spacing="5" fill="#C22A22">SIDE B RECORDS</text>
-    <text x="778" y="392" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-weight="700" font-size="11.5" letter-spacing="5.5" fill="#1E1A18">NEW AND USED VINYL  ·  RECORDS PRESSED WHILE YOU WAIT</text>`;
-  // a gold record and a black one fixed over the ends of the sign
-  [[S0 + 78, '#E3B548', '#B8862B', '#C22A22'], [S1 - 78, '#1C1C20', '#3A3A40', '#EDB33A']].forEach(([cx, c1, c2, lab]) => { s += `<circle cx="${cx + 5}" cy="366" r="66" fill="#000" opacity=".3"/><circle cx="${cx}" cy="360" r="66" fill="${c1}"/>${[58, 50, 42, 34].map(r => `<circle cx="${cx}" cy="360" r="${r}" fill="none" stroke="${c2}" stroke-width="1.6"/>`).join('')}<circle cx="${cx}" cy="360" r="24" fill="${lab}"/><circle cx="${cx}" cy="360" r="4" fill="#111"/><path d="M${cx - 44} ${360 - 44} A62 62 0 0 1 ${cx + 10} ${360 - 62}" stroke="#fff" stroke-opacity=".3" stroke-width="5" fill="none"/>`; });
+  s += rc(S0 + 14, 318, S1 - S0 - 28, 86, '#EFE3C6') + `<rect x="${S0 + 21}" y="325" width="${S1 - S0 - 42}" height="72" fill="none" stroke="#B3252B" stroke-width="3"/><rect x="${S0 + 27}" y="331" width="${S1 - S0 - 54}" height="60" fill="none" stroke="#B3252B" stroke-width="1"/>` + rc(S0 + 14, 404, S1 - S0 - 28, 5, SHOP_HI) + rc(S0, 409, S1 - S0, 6, '#000', ' opacity=".3"');
+  s += `<g font-family="'Abril Fatface','DM Serif Display',serif" font-size="55" letter-spacing="4" text-anchor="middle"><text x="781.5" y="382.5" fill="#5E1410">SIDE B RECORDS</text><text x="778" y="379" fill="#C22A22">SIDE B RECORDS</text></g>`;
+  // a painted flourish either side of the name, and a whole record at each end of the board
+  [[1, 452], [-1, 1104]].forEach(([k, x]) => { s += `<g transform="translate(${x} 361) scale(${k} 1)" fill="none" stroke="#B3252B" stroke-width="2.2" stroke-linecap="round"><path d="M-62 0 H-14 M14 0 H50 M-62 0 c-10 0 -14 -9 -7 -13 c6 -3 11 3 6 7 M-62 0 c-10 0 -14 9 -7 13 c6 3 11 -3 6 -7"/><path d="M0 -9 L9 0 L0 9 L-9 0Z" fill="#B3252B" stroke="none"/><circle cx="-26" cy="-8" r="2" fill="#B3252B" stroke="none"/><circle cx="-26" cy="8" r="2" fill="#B3252B" stroke="none"/><circle cx="28" cy="-8" r="2" fill="#B3252B" stroke="none"/><circle cx="28" cy="8" r="2" fill="#B3252B" stroke="none"/></g>`; });
+  [[S0 + 76, '#E3B548', '#B8862B', '#C22A22'], [S1 - 76, '#1C1C20', '#3A3A40', '#EDB33A']].forEach(([cx, c1, c2, lab]) => { s += `<circle cx="${cx + 2}" cy="363" r="31" fill="#000" opacity=".25"/><circle cx="${cx}" cy="361" r="31" fill="${c1}"/>${[27, 23, 19, 15].map(r => `<circle cx="${cx}" cy="361" r="${r}" fill="none" stroke="${c2}" stroke-width="1"/>`).join('')}<circle cx="${cx}" cy="361" r="11" fill="${lab}"/><circle cx="${cx}" cy="361" r="2" fill="#111"/>`; });
   const col = (x, w) => rc(x, 414, w, GY - 414, SHOP) + rc(x, 414, 5, GY - 414, SHOP_HI) + rc(x + w - 5, 414, 5, GY - 414, SHOP_SH) + rc(x + w/2 - 5, 440, 10, GY - 520, SHOP_SH) + rc(x - 4, 414, w + 8, 14, SHOP_HI) + rc(x - 4, 428, w + 8, 5, SHOP_DK) + rc(x - 5, GY - 60, w + 10, 60, SHOP_SH) + rc(x - 5, GY - 60, w + 10, 5, SHOP_HI);
   s += col(S0, 48) + col(S1 - 48, 48) + col(608, 40) + col(908, 40);
   // three barn lamps craning over the sign
@@ -1246,11 +1258,7 @@ function facadeSVG(){
   const neonG = (inner, glow) => `<g filter="url(#oNeon)" stroke-linecap="round" stroke-linejoin="round">${inner}</g>`;
   const shopWin = (x, view, sign) => { const w = 310, gx = x + 8, gw = w - 16, gy = 420, gh = 388; let t = rc(x, 414, w, 400, IRON);
     t += `<svg x="${gx}" y="${gy}" width="${gw}" height="${gh}" viewBox="${view}" preserveAspectRatio="xMidYMid slice"><rect x="0" y="0" width="1920" height="1080" fill="#3a2414"/><use href="#roomArt"/></svg>` + rc(gx, gy, gw, gh, '#120A06', ' opacity=".3"');
-    t += `<path d="M${gx} ${gy + 74} Q${gx + gw/2} ${gy + 84} ${gx + gw} ${gy + 74}" stroke="#D9D2C2" stroke-width="1.2" fill="none"/>`;
-    for (let i = 0; i < 5; i++){ const cx = gx + 14 + i*((gw - 28 - 46)/4), cy = gy + 80 - Math.abs(i - 2)*2; t += rc(cx + 20, cy - 5, 6, 9, '#C9A24A') + cover(cx, cy, 46, 0); }
     t += sign(gx, gy, gw, gh);
-    t += `<path d="M${gx} ${gy + gh} L${gx + 12} ${gy + gh - 34} H${gx + gw - 12} L${gx + gw} ${gy + gh}Z" fill="#2A2420"/>`;
-    for (let i = 0; i < 4; i++){ const cw = 56, cx = gx + 22 + i*((gw - 44 - cw)/3), cy = gy + gh - 18 - cw - (i % 2)*8; t += `<ellipse cx="${cx + cw/2 + 4}" cy="${cy + cw + 3}" rx="${cw*.56}" ry="5" fill="#000" opacity=".35"/>${rc(cx + cw*.3, cy + 6, cw*.74, cw - 8, '#111', ' rx="3"')}` + cover(cx, cy, cw, (R() - .5)*7); }
     t += rc(gx, gy, gw, gh, 'url(#oGlassS)') + `<path d="M${gx + gw*.58} ${gy} L${gx + gw*.74} ${gy} L${gx + gw*.4} ${gy + gh} L${gx + gw*.24} ${gy + gh}Z M${gx + gw*.8} ${gy} L${gx + gw*.85} ${gy} L${gx + gw*.51} ${gy + gh} L${gx + gw*.46} ${gy + gh}Z" fill="#fff" opacity=".05"/>`;
     t += rc(gx, gy + 58, gw, 5, IRON) + rc(gx + gw/2 - 2, gy, 4, 58, IRON);
     return t + rc(x, 814, w, GY - 814, SHOP_SH) + rc(x + 12, 826, w - 24, GY - 846, SHOP) + rc(x + 12, 826, w - 24, 3, SHOP_DK) + rc(x + 12, GY - 23, w - 24, 3, SHOP_HI) + rc(x - 4, 808, w + 8, 8, SHOP_HI) + rc(x - 4, GY - 12, w + 8, 12, D('#2A2A30')); };
@@ -1287,29 +1295,37 @@ function facadeSVG(){
   // a fire hydrant, a wire litter bin and a street lamp at the kerb
   { const p = G(1330, -300), k = 1.2; s += `<g transform="translate(${p[0].toFixed(0)} ${p[1].toFixed(0)}) scale(${k})"><ellipse cx="4" cy="1" rx="28" ry="5" fill="#000" opacity=".3"/><path d="M-13 0 V-46 Q-13 -62 0 -62 Q13 -62 13 -46 V0Z" fill="${D('#B3252B')}"/>${rc(-17, -8, 34, 8, D('#8E1D22'))}${rc(-16, -50, 32, 6, D('#8E1D22'))}${rc(-22, -40, 9, 14, D('#8E1D22'))}${rc(13, -40, 9, 14, D('#8E1D22'))}<circle cx="0" cy="-30" r="7" fill="${D('#8E1D22')}"/>${rc(-5, -72, 10, 10, D('#8E1D22'))}${rc(-9, -44, 4, 40, '#fff', ' opacity=".14"')}</g>`; }
   { const p = G(214, -300); s += `<g transform="translate(${p[0].toFixed(0)} ${p[1].toFixed(0)})"><ellipse cx="4" cy="1" rx="40" ry="6" fill="#000" opacity=".3"/><path d="M-28 0 L-34 -92 H34 L28 0Z" fill="${D('#2E3A34')}" opacity=".85"/><path d="${Array.from({length:9}, (_, i) => `M${-28 + i*7} 0 L${-34 + i*8.5} -92`).join(' ')} M-33 -70 H33 M-31 -46 H31 M-30 -22 H30" stroke="${D('#5E7A6A')}" stroke-width="2" fill="none"/>${rc(-37, -98, 74, 8, D('#3E5A4A'), ' rx="3"')}</g>`; }
-  { const x = 1440, y = 962; s += `<ellipse cx="${x + 8}" cy="${y + 2}" rx="40" ry="6" fill="#000" opacity=".3"/><path d="M${x - 14} ${y} L${x - 9} ${y - 80} H${x + 9} L${x + 14} ${y}Z" fill="${IRON}"/>${rc(x - 5, 120, 10, y - 200, IRON)}<path d="M${x} 124 C${x} 60 ${x - 40} 40 ${x - 90} 60" stroke="${IRON}" stroke-width="8" fill="none"/><path d="M${x - 124} 62 H${x - 64} L${x - 74} 78 H${x - 114}Z" fill="${IRON}"/>${rc(x - 112, 78, 36, 6, '#FFE9B8')}`; }
+  { const x = 1440, y = 962, I = IRON; s += `<ellipse cx="${x + 8}" cy="${y + 2}" rx="46" ry="7" fill="#000" opacity=".3"/>
+      <path d="M${x - 22} ${y} L${x - 20} ${y - 14} H${x + 20} L${x + 22} ${y}Z M${x - 16} ${y - 14} L${x - 11} ${y - 96} H${x + 11} L${x + 16} ${y - 14}Z" fill="${I}"/>${rc(x - 15, y - 104, 30, 9, '#22242C', ' rx="3"')}${rc(x - 12, y - 118, 24, 8, I, ' rx="3"')}
+      <path d="${[-8, -3, 3, 8].map(o => `M${x + o} ${y - 20} V${y - 92}`).join(' ')}" stroke="#2C2E38" stroke-width="1.6"/>
+      <path d="M${x - 7} ${y - 118} L${x - 4.5} 190 H${x + 4.5} L${x + 7} ${y - 118}Z" fill="${I}"/>${rc(x - 9, 250, 18, 7, I, ' rx="3"')}${rc(x - 8, 186, 16, 8, I, ' rx="3"')}
+      ${rc(x - 30, 214, 60, 4.5, I, ' rx="2"')}<circle cx="${x - 31}" cy="216" r="4.5" fill="${I}"/><circle cx="${x + 31}" cy="216" r="4.5" fill="${I}"/>
+      <g fill="none" stroke="${I}" stroke-linecap="round"><path d="M${x} 190 C${x} 96 ${x - 26} 44 ${x - 72} 44 C${x - 104} 44 ${x - 112} 66 ${x - 104} 84" stroke-width="8"/>
+        <path d="M${x - 2} 150 C${x - 30} 150 ${x - 52} 128 ${x - 46} 104 C${x - 42} 88 ${x - 20} 88 ${x - 20} 104 C${x - 20} 114 ${x - 32} 116 ${x - 34} 108" stroke-width="4.5"/>
+        <path d="M${x - 40} 62 C${x - 54} 62 ${x - 62} 74 ${x - 56} 84 C${x - 52} 91 ${x - 43} 88 ${x - 45} 81" stroke-width="3.5"/></g>
+      <path d="M${x - 118} 86 H${x - 90} L${x - 94} 96 H${x - 114}Z" fill="${I}"/><path d="M${x - 115} 96 C${x - 124} 112 ${x - 116} 134 ${x - 104} 140 C${x - 92} 134 ${x - 84} 112 ${x - 93} 96Z" fill="#FFF0C8"/>
+      <path d="M${x - 115} 96 C${x - 124} 112 ${x - 116} 134 ${x - 104} 140 C${x - 92} 134 ${x - 84} 112 ${x - 93} 96Z M${x - 104} 96 V140" fill="none" stroke="${I}" stroke-width="1.6"/><circle cx="${x - 104}" cy="143" r="3" fill="${I}"/>`; }
 
   // ---- AUTUMN: a street tree at the left, full of leaf, its crown reaching over the sidewalk; leaves down on the concrete
   { const tx = -70, base = G(tx, -250)[1]; let t = `<ellipse cx="${tx}" cy="${base + 2}" rx="110" ry="13" fill="${D('#2E2622')}"/><path d="M${tx - 34} ${base} C${tx - 26} 760 ${tx - 30} 560 ${tx - 22} 330 L${tx + 22} 330 C${tx + 26} 560 ${tx + 24} 760 ${tx + 32} ${base}Z" fill="${D('#4A3A32')}"/><path d="M${tx - 20} ${base} C${tx - 14} 760 ${tx - 18} 560 ${tx - 12} 330 M${tx + 4} ${base} C${tx + 8} 760 ${tx + 4} 560 ${tx + 8} 330 M${tx + 18} ${base} C${tx + 16} 800 ${tx + 18} 640 ${tx + 16} 480" stroke="#000" stroke-opacity=".28" stroke-width="3" fill="none"/><path d="M${tx - 30} ${base} C${tx - 22} 760 ${tx - 26} 560 ${tx - 18} 330" stroke="#fff" stroke-opacity=".1" stroke-width="5" fill="none"/>`;
-    t += `<g stroke="${IRON}" stroke-width="4" fill="none"><path d="M${tx - 80} ${base + 4} V${base - 60} Q${tx - 80} ${base - 76} ${tx - 64} ${base - 76} H${tx + 64} Q${tx + 80} ${base - 76} ${tx + 80} ${base - 60} V${base + 4} M${tx - 80} ${base - 36} H${tx + 80}"/></g>`;
-    const br = [[[tx, 340], [60, 250], [220, 170], [390, 110]], [[40, 268], [170, 290], [290, 276], [380, 300]], [[110, 220], [170, 110], [260, 40], [320, -40]], [[tx, 340], [-90, 160], [0, 20], [80, -100]], [[-80, 200], [-220, 120], [-350, 90], [-480, 110]], [[tx, 300], [-200, 280], [-320, 300], [-430, 350]], [[0, 20], [130, -40], [230, -70], [300, -150]], [[tx, 330], [-160, 200], [-260, 60], [-300, -80]]];
+    const br = [[[tx, 340], [60, 250], [220, 170], [390, 110]], [[40, 268], [110, 280], [170, 262], [215, 250]], [[110, 220], [170, 110], [260, 40], [320, -40]], [[tx, 340], [-90, 160], [0, 20], [80, -100]], [[-80, 200], [-220, 120], [-350, 90], [-480, 110]], [[tx, 300], [-200, 280], [-320, 300], [-430, 350]], [[0, 20], [130, -40], [230, -70], [300, -150]], [[tx, 330], [-160, 200], [-260, 60], [-300, -80]]];
     br.forEach((b, i) => t += `<path d="M${b[0]} C${b[1]} ${b[2]} ${b[3]}" stroke="${D('#4A3A32')}" stroke-width="${[22, 10, 11, 20, 13, 10, 8, 14][i]}" fill="none" stroke-linecap="round"/>`);
     const bez = (b, u) => { const m = 1 - u; return [m*m*m*b[0][0] + 3*m*m*u*b[1][0] + 3*m*u*u*b[2][0] + u*u*u*b[3][0], m*m*m*b[0][1] + 3*m*m*u*b[1][1] + 3*m*u*u*b[2][1] + u*u*u*b[3][1]]; };
     // the crown in three passes: deep shadowed masses, the body of the leaves, then the ones catching the lamplight
-    const cl = []; for (let k = 0; k < 64; k++){ const p = bez(br[k % br.length], .3 + R()*.75 > 1 ? 1 : .3 + R()*.7), a = R()*6.283, d = R()*50; const c = [p[0] + Math.cos(a)*d, p[1] + Math.sin(a)*d*.7, 44 + R()*40]; if (!(c[0] > 190 && c[1] > 190)) cl.push(c); }
+    const cl = []; for (let k = 0; k < 130; k++){ const p = bez(br[k % br.length], .3 + R()*.75 > 1 ? 1 : .3 + R()*.7), a = R()*6.283, d = R()*74; const c = [p[0] + Math.cos(a)*d, p[1] + Math.sin(a)*d*.75, 40 + R()*44]; if (!(c[0] > 190 && c[1] > 190)) cl.push(c); }
     cl.forEach(([x, y, r]) => t += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${r.toFixed(0)}" ry="${(r*.8).toFixed(0)}" fill="${D(pick(['#7A3418','#8A3E1C','#6E2E16']))}"/>`);
-    cl.forEach(([x, y, r]) => { for (let j = 0; j < 20; j++){ const a = R()*6.283, d = Math.sqrt(R())*r*1.12; t += leaf(x + Math.cos(a)*d, y + Math.sin(a)*d*.8, 1.4 + R()*1.1, D(pick(AUT))); } });
-    cl.forEach(([x, y, r]) => { for (let j = 0; j < 7; j++){ const a = -R()*3.1416, d = Math.sqrt(R())*r; t += leaf(x + Math.cos(a)*d + r*.15, y + Math.sin(a)*d*.8 - r*.1, 1.2 + R()*.9, pick(['#F0BE4E','#F4A640','#F8D06A','#EE8A38'])); } });
+    cl.forEach(([x, y, r]) => { for (let j = 0; j < 16; j++){ const a = R()*6.283, d = Math.sqrt(R())*r*1.12; t += leaf(x + Math.cos(a)*d, y + Math.sin(a)*d*.8, 1.4 + R()*1.1, D(pick(AUT))); } });
+    cl.forEach(([x, y, r]) => { for (let j = 0; j < 5; j++){ const a = -R()*3.1416, d = Math.sqrt(R())*r; t += leaf(x + Math.cos(a)*d + r*.15, y + Math.sin(a)*d*.8 - r*.1, 1.2 + R()*.9, pick(['#F0BE4E','#F4A640','#F8D06A','#EE8A38'])); } });
     s += t; }
   for (let k = 0; k < 240; k++){ const near = R() < .5, x = near ? -600 + R()*1100 : -1400 + R()*4200, z = R() < .25 ? -R()*24 : -R()*640, p = G(x, z); s += leaf(p[0], p[1], (.7 + R()*.6)*(EF/(EF + z))*.9, D(pick(AUT))).replace('scale(', 'scale(1 .5) scale('); }
   s += `<g class="falling">${Array.from({length:14}, (_, k) => `<path class="fl" style="--d:${(8 + R()*7).toFixed(1)}s;--o:${(-R()*14).toFixed(1)}s" d="M0 -7 C5 -5 6 3 0 8 C-6 3 -5 -5 0 -7Z" transform="translate(${(-60 + R()*620).toFixed(0)} ${(120 + R()*380).toFixed(0)})" fill="${pick(AUT)}"/>`).join('')}</g>`;
 
   // ---- THE LIGHT: lamps on the sign, the neon's haze on the glass, the street lamp, grain, the evening closing in
-  s += `<g style="mix-blend-mode:screen;pointer-events:none">${[470, 778, 1086].map(x => `<ellipse cx="${x + 24}" cy="356" rx="170" ry="74" fill="url(#oLamp)" opacity=".5"/>`).join('')}<ellipse cx="490" cy="640" rx="190" ry="110" fill="url(#oPink)" opacity=".5"/><ellipse cx="1103" cy="640" rx="190" ry="110" fill="url(#oCyan)" opacity=".45"/><circle cx="1346" cy="90" r="230" fill="url(#oLamp)" opacity=".8"/><ellipse cx="1360" cy="950" rx="260" ry="50" fill="url(#oLamp)" opacity=".4"/>
+  s += `<g style="mix-blend-mode:screen;pointer-events:none">${[470, 778, 1086].map(x => `<ellipse cx="${x + 24}" cy="356" rx="170" ry="74" fill="url(#oLamp)" opacity=".5"/>`).join('')}<ellipse cx="490" cy="640" rx="190" ry="110" fill="url(#oPink)" opacity=".5"/><ellipse cx="1103" cy="640" rx="190" ry="110" fill="url(#oCyan)" opacity=".45"/><circle cx="1336" cy="118" r="230" fill="url(#oLamp)" opacity=".8"/><ellipse cx="1360" cy="950" rx="260" ry="50" fill="url(#oLamp)" opacity=".4"/>
     ${[[298, 310], [948, 310]].map(([x, w]) => `<rect x="${x - 30}" y="400" width="${w + 60}" height="420" fill="#FFB866" opacity=".08" filter="url(#oBlur)"/>`).join('')}</g>`;
   s += `<rect x="-4000" y="-2600" width="9536" height="3900" fill="url(#grainP)" opacity=".24" style="mix-blend-mode:overlay;pointer-events:none"/>
     <defs><radialGradient id="oVig" gradientUnits="userSpaceOnUse" cx="778" cy="600" r="1500"><stop offset=".45" stop-color="#0A0F24" stop-opacity="0"/><stop offset="1" stop-color="#0A0F24" stop-opacity=".6"/></radialGradient></defs><rect x="-4000" y="-2600" width="9536" height="3900" fill="url(#oVig)" style="pointer-events:none"/>
-    <rect id="doorHit" x="${DOOR.x - 10}" y="${DOOR.y - 10}" width="${DOOR.w + 20}" height="${DOOR.h + 20}" fill="transparent"/></svg>`;
+    <rect id="doorHit" x="${DOOR.x - 10}" y="${DOOR.y - 10}" width="${DOOR.w + 20}" height="${DOOR.h + 20}" fill="transparent"/><g id="doorGlow"><rect x="${DOOR.x - 6}" y="${DOOR.y - 6}" width="${DOOR.w + 12}" height="${DOOR.h + 12}" rx="4" fill="#FFD79A" fill-opacity=".12" stroke="#FFD79A" stroke-width="10" filter="url(#oSoft)"/><rect x="${DOOR.x - 2}" y="${DOOR.y - 2}" width="${DOOR.w + 4}" height="${DOOR.h + 4}" rx="2" fill="none" stroke="#FFE9C4" stroke-width="2"/></g></svg>`;
   return s;
 }
 
@@ -2298,7 +2314,20 @@ function ramp(param, v, tc){ param.setTargetAtTime(v, ctx.currentTime, tc); }
 function setScene(name){ if (!ctx) return;
   const street = { intro:.06, outside:.14, shop:0, studio:0, gift:0 }[name] ?? 0;
   ramp(streetGain.gain, street, .8); ramp(streetLP.frequency, name === 'outside' ? 420 : 260, .5);
-  ambStop(); }
+  ambStop(); shopMusic(name === 'shop'); }
+// THE SHOP'S MUSIC: the owner's own track, audio/shop.mp3, made to sound like a record playing somewhere across the room:
+// quiet, the treble rolled off, a little of the room's echo, fading in as you walk in and out as you leave. The sound button
+// mutes it. If the file isn't there the shop is simply quiet. Tune it with the three numbers below.
+const SHOP_MUSIC = { vol:.42, muffle:2600, room:.5 };
+let shopTrack = null;
+function shopMusic(on){ if (!ctx) return;
+  if (!shopTrack){ if (!on) return; const el = new Audio(sitePath('audio/shop.mp3')); el.loop = true; el.preload = 'auto';
+    let src; try { src = ctx.createMediaElementSource(el); } catch(e){ return; }
+    const g = ctx.createGain(), hp = filt('highpass', 110), lp = filt('lowpass', SHOP_MUSIC.muffle), dry = ctx.createGain(), wet = ctx.createGain(), rv = ambReverb();
+    g.gain.value = 0; g.connect(master); dry.gain.value = .75; wet.gain.value = SHOP_MUSIC.room; src.connect(hp); hp.connect(lp); lp.connect(dry); lp.connect(rv); rv.connect(wet); dry.connect(g); wet.connect(g);
+    shopTrack = { el, g, ok:true, off:0 }; el.addEventListener('error', () => { shopTrack.ok = false; }); }
+  const t = shopTrack; if (!t.ok) return; clearTimeout(t.off);
+  if (on){ t.el.play().catch(() => {}); ramp(t.g.gain, SHOP_MUSIC.vol, 1.6); } else { ramp(t.g.gain, 0, .6); t.off = setTimeout(() => t.el.pause(), 2600); } }
 // INSIDE THE SHOP: a slow, hazy dream-pop piece, made here in the browser (original, in the mood of 90s slowcore):
 // strummed acoustic guitar, a slide guitar that drifts and weeps over it, a soft tambourine, all washed in a long reverb.
 // It fades in as you walk in and out as you leave; the sound button mutes it.
