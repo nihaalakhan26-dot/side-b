@@ -39,21 +39,26 @@ button{cursor:pointer}
 #hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:55;margin:0;color:var(--text);font:700 1.35rem/1.2 'Caveat',cursive;text-shadow:0 2px 10px rgba(0,0,0,.95);pointer-events:none;text-align:center;max-width:calc(100vw - 32px)}
 
 /* ---------- intro + outside ---------- */
-#intro{display:grid;place-items:center;text-align:center;padding:24px;background:#F5EEE0;color:#231A14;z-index:3}
-#intro::before{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.08;pointer-events:none}
-#intro .ibox{position:relative;display:flex;flex-direction:column;align-items:center}
-#intro .irec{width:clamp(96px,18vh,150px);height:auto;margin-bottom:clamp(6px,1.4vh,14px);filter:drop-shadow(6px 10px 0 rgba(24,30,70,.16))}
-#intro .ispin{animation:introSpin 7s linear infinite;transform-origin:0 0}
-@keyframes introSpin{to{transform:rotate(360deg)}}
-#intro h1{margin:0;font-family:'Yellowtail',cursive;font-weight:400;font-size:clamp(5rem,17vw,9.5rem);line-height:.95;color:#7B2A2E}
-#intro .sub{margin:clamp(10px,2vh,18px) 0 clamp(26px,4.6vh,40px);display:flex;flex-direction:column;gap:7px;font:700 .8rem/1 'Archivo Narrow',sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#4A3A2E}
-#intro .sub span{padding-left:.22em}
-#intro .ibtn{border:0;background:#231A14;color:#F3EBDD;font:700 .82rem/1 'Archivo Narrow',sans-serif;letter-spacing:.2em;text-transform:uppercase;padding:19px 34px 19px calc(34px + .2em);cursor:pointer;transition:background .2s}
-#intro .ibtn:hover:not(:disabled){background:#7B2A2E}
-#intro .ibtn:disabled{opacity:.55;cursor:default}
-#intro .ilink{margin-top:20px;border:0;background:none;color:#231A14;font:600 .8rem/1 'Archivo Narrow',sans-serif;letter-spacing:.14em;text-transform:uppercase;text-decoration:underline;text-underline-offset:4px;cursor:pointer;padding:6px 0 6px .14em}
-#intro .ilink:hover{color:#7B2A2E}
-@media (prefers-reduced-motion: reduce){#intro .ispin{animation:none}}
+#intro{display:grid;place-items:center;text-align:center;padding:24px;z-index:3;color:var(--text);
+  background:radial-gradient(ellipse 55% 45% at 50% 42%,rgba(255,95,168,.13),transparent 70%),radial-gradient(ellipse 120% 90% at 50% 40%,transparent 40%,rgba(0,0,0,.6)),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='32'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.42' stroke-width='2'%3E%3Cpath d='M0 1H72M0 17H72M1 1V17M37 17V33'/%3E%3C/g%3E%3Cg fill='%23fff' fill-opacity='.025'%3E%3Crect x='2' y='2' width='70' height='3'/%3E%3Crect x='38' y='18' width='34' height='3'/%3E%3Crect x='0' y='18' width='36' height='3'/%3E%3C/g%3E%3C/svg%3E"),#2E1913}
+#intro::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 45%,rgba(0,0,0,0),rgba(0,0,0,.25));pointer-events:none}
+#intro::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:overlay;opacity:.35;pointer-events:none}
+#intro .ibox{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
+#intro .ineonrec{width:clamp(64px,11vh,96px);margin-bottom:clamp(6px,1.5vh,14px);overflow:visible}
+#intro .glowY{stroke:#FFD27A;stroke-width:3;filter:drop-shadow(0 0 2px #FFE9B0) drop-shadow(0 0 6px #FFB43A) drop-shadow(0 0 16px #FF9A1F);animation:nOn 2.6s .2s both}
+#intro .ineon{margin:0;font:400 clamp(5rem,16vw,9rem)/1 'Yellowtail',cursive;color:#FFE4F0;padding:0 .1em .08em;
+  text-shadow:0 0 2px #fff,0 0 6px #FF8CC6,0 0 14px #FF5FA8,0 0 30px #FF3D8F,0 0 60px #E0206E;animation:nOn 2.2s .5s both}
+#intro .isub{margin:clamp(4px,1vh,10px) 0 0;padding-left:.34em;font:700 clamp(.7rem,2.2vw,.86rem)/1 'Archivo',sans-serif;letter-spacing:.34em;text-transform:uppercase;color:#DFF8FF;white-space:nowrap;
+  text-shadow:0 0 2px #fff,0 0 7px #5FE0FF,0 0 18px #2EB8FF;animation:nOn 2s 1.1s both}
+#intro .iline{margin:clamp(22px,4vh,36px) 0 clamp(20px,3.6vh,30px);max-width:40ch;text-wrap:balance;color:#E9D9BE;font-size:1.02rem;line-height:1.5}
+#intro .ibtn{border:0;border-radius:999px;background:var(--cream);color:var(--ink);font:700 .95rem/1 Archivo,sans-serif;padding:17px 30px;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .2s,box-shadow .2s}
+#intro .ibtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 0 4px rgba(239,230,210,.18)}
+#intro .ibtn:disabled{opacity:.6;cursor:default}
+#intro .ilink{margin-top:16px;border:0;background:none;color:#BFA98A;font:500 .88rem/1 Archivo,sans-serif;text-decoration:underline;text-underline-offset:4px;cursor:pointer;padding:6px}
+#intro .ilink:hover{color:var(--cream)}
+@keyframes nOn{0%,6%{opacity:.08}7%{opacity:1}9%{opacity:.25}12%,30%{opacity:1}31%{opacity:.4}33%,100%{opacity:1}}
+@media (prefers-reduced-motion: reduce){#intro .ineon,#intro .isub,#intro .glowY{animation:none}}
 #outside{background:#1F3A63;overflow:hidden}
 #outsideBg{position:absolute;inset:0;background:#141722}
 #outsideInner{position:absolute;inset:0;transition:transform 1s cubic-bezier(.6,0,.8,.4)}
@@ -812,11 +817,12 @@ body.sheeton{overflow:hidden}
 
 <section id="intro" class="scene on">
   <div class="ibox">
-    <svg class="irec" viewBox="-100 -100 200 200" aria-hidden="true"><g class="ispin"><circle r="96" fill="#161311"/><circle r="40" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="44" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="48" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="52" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="56" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="60" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="64" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="68" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="72" fill="none" stroke="#2C2622" stroke-width="2.2"/><circle r="76" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="80" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="84" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="88" fill="none" stroke="#2C2622" stroke-width="1.4"/><circle r="92" fill="none" stroke="#2C2622" stroke-width="1.4"/><path d="M0 0 L-62 -73 A96 96 0 0 1 -12 -95Z" fill="#fff" opacity=".07"/><path d="M0 0 L62 73 A96 96 0 0 1 12 95Z" fill="#fff" opacity=".05"/><circle r="33" fill="#B3252B"/><circle r="33" fill="none" stroke="#8E1D22" stroke-width="1.5"/><text y="-6" text-anchor="middle" font-family="Yellowtail,cursive" font-size="17" fill="#F3EBDD">Side B</text><text y="12" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-weight="700" font-size="5.2" letter-spacing="1.4" fill="#F3EBDD">33 1/3 RPM</text><circle r="2.6" fill="#F3EBDD"/></g></svg>
-    <h1>Side B</h1>
-    <p class="sub"><span>Records made by you</span><span>sent as a link</span></p>
+    <svg class="ineonrec" viewBox="-60 -60 120 120" aria-hidden="true"><g fill="none" stroke-linecap="round"><g class="glowY"><circle r="50"/><circle r="17"/><path d="M-34 -22 A40 40 0 0 1 -8 -39"/><path d="M34 22 A40 40 0 0 1 8 39"/></g><circle r="3.5" fill="#FFE9B0" stroke="none"/></g></svg>
+    <h1 class="ineon">Side B</h1>
+    <p class="isub">Record shop &middot; pressing booth</p>
+    <p class="iline">Make a record for someone, and send it as a link.</p>
     <button id="startBtn" class="ibtn" disabled>Getting the shop ready</button>
-    <button id="exampleBtn" class="ilink" type="button">Open an example record</button>
+    <button id="exampleBtn" class="ilink" type="button">or open an example record</button>
   </div>
 </section>
 
