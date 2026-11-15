@@ -39,21 +39,29 @@ button{cursor:pointer}
 #hint{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:55;margin:0;color:var(--text);font:700 1.35rem/1.2 'Caveat',cursive;text-shadow:0 2px 10px rgba(0,0,0,.95);pointer-events:none;text-align:center;max-width:calc(100vw - 32px)}
 
 /* ---------- intro + outside ---------- */
-/* the welcome card, over the street when the site opens */
-#welcome{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(10,6,4,.25),rgba(10,6,4,.55));transition:opacity .5s,visibility .5s}
+/* the welcome card, over the street when the site opens: a square cream record sleeve with a record peeking out */
+#welcome{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(10,6,4,.12),rgba(10,6,4,.4));transition:opacity .5s,visibility .5s}
 #welcome.gone{opacity:0;visibility:hidden}
-#welcome .wcard{width:min(500px,100%);padding:clamp(28px,5vh,44px) clamp(22px,5vw,46px) clamp(24px,4vh,36px);text-align:center;border-radius:22px;background:rgba(20,13,9,.78);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 30px 70px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,228,190,.14);color:var(--text);animation:wIn .7s .15s both cubic-bezier(.2,.8,.2,1)}
+#welcome .wsleeve{position:relative;width:min(560px,46vw,74vh);aspect-ratio:1;animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
+@media (min-width:761px){#welcome .wsleeve{margin-right:13%}}
+#welcome .wrec{position:absolute;top:2.5%;left:2.5%;width:95%;height:95%;transform:translateX(26%);filter:drop-shadow(0 16px 20px rgba(0,0,0,.45));animation:wOut 1.4s .6s both cubic-bezier(.3,.7,.3,1)}
+#welcome .wspin{animation:introSpin 7s linear infinite;transform-origin:0 0}
+@keyframes introSpin{to{transform:rotate(360deg)}}
+@keyframes wOut{from{transform:translateX(0)}}
+#welcome .wcard{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9% 10%;text-align:center;background:#F4EDE0;color:#231A14;box-shadow:0 30px 60px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.6) inset}
+#welcome .wcard::before{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.12;pointer-events:none}
+#welcome .wcard::after{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.35),transparent 35%,transparent 70%,rgba(0,0,0,.06));pointer-events:none}
 @keyframes wIn{from{opacity:0;transform:translateY(18px) scale(.97)}}
-#welcome h1{margin:0;font:400 clamp(3.4rem,11vw,5rem)/1 'Yellowtail',cursive;color:#FFE4F0;padding:0 .1em .06em;text-shadow:0 0 2px #fff,0 0 6px #FF8CC6,0 0 16px #FF5FA8,0 0 34px #E0206E;animation:nOn 2s .5s both}
-#welcome .wline{margin:clamp(14px,2.4vh,20px) auto clamp(22px,3.6vh,30px);max-width:34ch;text-wrap:balance;color:#E9D9BE;font-size:1.02rem;line-height:1.5}
-#welcome .wbtn{border:0;border-radius:999px;background:var(--cream);color:var(--ink);font:700 .98rem/1 Archivo,sans-serif;padding:17px 32px;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .2s,box-shadow .2s}
-#welcome .wbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 0 4px rgba(239,230,210,.18)}
+#welcome h1{position:relative;margin:0;font:400 clamp(3.4rem,8vw,6rem)/1 'Yellowtail',cursive;color:#231A14;padding:0 .08em .06em}
+#welcome .wline{position:relative;margin:clamp(12px,2.2vh,20px) auto clamp(22px,4vh,34px);max-width:32ch;text-wrap:balance;color:#4A3A2E;font-size:clamp(.95rem,1.3vw,1.08rem);line-height:1.5}
+#welcome .wbtn{position:relative;border:0;border-radius:999px;background:#231A14;color:#F4EDE0;font:700 .98rem/1 Archivo,sans-serif;padding:17px 34px;cursor:pointer;box-shadow:0 8px 18px rgba(35,26,20,.25);transition:transform .2s,background .2s}
+#welcome .wbtn:hover:not(:disabled){transform:translateY(-2px);background:#7B2A2E}
 #welcome .wbtn:disabled{opacity:.6;cursor:default}
-#welcome .wlink{display:block;margin:16px auto 0;border:0;background:none;color:#C9B595;font:500 .9rem/1 Archivo,sans-serif;text-decoration:underline;text-underline-offset:4px;cursor:pointer;padding:6px}
-#welcome .wlink:hover{color:var(--cream)}
+#welcome .wby{position:absolute;left:0;right:0;bottom:6%;margin:0;font:600 .72rem/1 'Archivo Narrow',sans-serif;letter-spacing:.12em;padding-left:.12em;text-transform:uppercase;color:#8A7660}
+@media (max-width:760px){#welcome .wsleeve{width:min(88vw,62vh)}#welcome .wrec{transform:translateY(-24%)}@keyframes wOut{from{transform:translateY(0)}}#welcome .wsleeve{margin-top:18%}}
 #outside.welcoming .caption{opacity:0}
 @keyframes nOn{0%,6%{opacity:.08}7%{opacity:1}9%{opacity:.25}12%,30%{opacity:1}31%{opacity:.4}33%,100%{opacity:1}}
-@media (prefers-reduced-motion: reduce){#welcome h1,#welcome .wcard{animation:none}}
+@media (prefers-reduced-motion: reduce){#welcome .wsleeve,#welcome .wrec,#welcome .wspin{animation:none}}
 /* THE CRATES: records people chose to share, to browse and play */
 #crates{position:fixed;inset:0;z-index:75;display:none;flex-direction:column;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(246,199,122,.12),transparent 70%),#1A110C;color:var(--text)}
 #crates.on{display:flex}
@@ -833,11 +841,14 @@ body.sheeton{overflow:hidden}
 <section id="outside" class="scene on welcoming" aria-label="Outside the shop">
   <div id="outsideBg"></div><div id="outsideInner"></div>
   <p class="caption">The door's open. Tap it to go in.</p>
-  <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle">
-    <h1 id="wTitle">DigiVinyl</h1>
-    <p class="wline">Design a vinyl record, fill it with songs and send it to someone as a link.</p>
-    <button id="startBtn" class="wbtn" disabled>Getting the shop ready</button>
-    <button id="cratesBtn" class="wlink" type="button">Browse records others made</button>
+  <div id="welcome"><div class="wsleeve">
+    <svg class="wrec" viewBox="-100 -100 200 200" aria-hidden="true"><g class="wspin"><circle r="98" fill="#141110"/><circle r="40" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="44" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="48" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="52" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="56" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="60" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="64" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="68" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="72" fill="none" stroke="#2A2522" stroke-width="2"/><circle r="76" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="80" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="84" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="88" fill="none" stroke="#2A2522" stroke-width="1.2"/><circle r="92" fill="none" stroke="#2A2522" stroke-width="1.2"/><path d="M0 0 L-62 -75 A98 98 0 0 1 -12 -97Z" fill="#fff" opacity=".07"/><path d="M0 0 L62 75 A98 98 0 0 1 12 97Z" fill="#fff" opacity=".05"/><circle r="34" fill="#B3252B"/><text y="5" text-anchor="middle" font-family="Yellowtail,cursive" font-size="15" fill="#F3EBDD">DigiVinyl</text><circle r="2.6" fill="#F3EBDD"/></g></svg>
+    <div class="wcard" role="dialog" aria-labelledby="wTitle">
+      <h1 id="wTitle">DigiVinyl</h1>
+      <p class="wline">A digital record store experience where you can browse the shelves, build your own vinyl and send it to someone special.</p>
+      <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
+      <p class="wby">made by @nihalakhan</p>
+    </div>
   </div></div>
 </section>
 <section id="crates" aria-label="Records others made"><header><div><h2>The crates</h2><p>Records people made here and chose to share. Tap one to play it.</p></div><button class="chrome" id="cratesClose" style="position:static">Back to the street</button></header><div class="grid" id="cratesGrid"></div></section>
@@ -912,7 +923,7 @@ body.sheeton{overflow:hidden}
             <div class="row"><div><label for="fBy">FROM</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
           </div>
           <p class="hintline">These go on the gift tag, the back of the sleeve and the record label.</p>
-          <label class="gopt"><input type="checkbox" id="fGarden"><span><b>Put it in the crates</b> for others to browse and play. Who it's from and who it's for stay private.</span></label>
+          <label class="gopt" hidden><input type="checkbox" id="fGarden"><span><b>Put it in the crates</b> for others to browse and play. Who it's from and who it's for stay private.</span></label>
           <p class="needs" id="pressNeeds" hidden></p>
           <div class="card recap" id="recap"></div>
           <div class="card tracksheet minilist" id="recapTracks"></div>
@@ -3211,10 +3222,9 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   if (draft.photo) photoImage(draft.photo);
   requestAnimationFrame(draw);
   setMuted(store.get('sideb-muted') === true);
-  const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Make a record';
+  const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Enter the store';
   const welcomed = () => { ensureAudio(); $('soundBtn').hidden = false; $('welcome').classList.add('gone'); $('outside').classList.remove('welcoming'); };
   sb.addEventListener('click', () => { welcomed(); setTimeout(enterShop, 350); });
-  $('cratesBtn').addEventListener('click', () => { welcomed(); openCrates(); });
   $('cratesClose').addEventListener('click', () => $('crates').classList.remove('on'));
   window.__example = async () => { location.hash = 'r=' + await encodeRec(EXAMPLE); };
   const short = location.pathname.match(/^\/r\/([A-Za-z0-9]{8})\/?$/);
