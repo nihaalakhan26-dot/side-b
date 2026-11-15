@@ -2425,13 +2425,13 @@ function setScene(name){ if (!ctx) return;
 // THE SHOP'S MUSIC: the owner's own track, audio/shop.mp3, made to sound like a record playing somewhere across the room:
 // quiet, the treble rolled off, a little of the room's echo, fading in as you walk in and out as you leave. The sound button
 // mutes it. If the file isn't there the shop is simply quiet. Tune it with the three numbers below.
-const SHOP_MUSIC = { vol:.336, muffle:2340, room:.5, speed:.8 };
+const SHOP_MUSIC = { vol:.27, muffle:1872, dry:.6, room:.6, speed:.84 };
 let shopTrack = null;
 function shopMusic(on){ if (!ctx) return;
   if (!shopTrack){ if (!on) return; const el = new Audio(sitePath('audio/shop.mp3')); el.loop = true; el.preload = 'auto'; el.preservesPitch = el.mozPreservesPitch = el.webkitPreservesPitch = true;
     let src; try { src = ctx.createMediaElementSource(el); } catch(e){ return; }
     const g = ctx.createGain(), hp = filt('highpass', 110), lp = filt('lowpass', SHOP_MUSIC.muffle), dry = ctx.createGain(), wet = ctx.createGain(), rv = ambReverb();
-    g.gain.value = 0; g.connect(master); dry.gain.value = .75; wet.gain.value = SHOP_MUSIC.room; src.connect(hp); hp.connect(lp); lp.connect(dry); lp.connect(rv); rv.connect(wet); dry.connect(g); wet.connect(g);
+    g.gain.value = 0; g.connect(master); dry.gain.value = SHOP_MUSIC.dry; wet.gain.value = SHOP_MUSIC.room; src.connect(hp); hp.connect(lp); lp.connect(dry); lp.connect(rv); rv.connect(wet); dry.connect(g); wet.connect(g);
     shopTrack = { el, g, ok:true, off:0 }; el.addEventListener('error', () => { shopTrack.ok = false; }); }
   const t = shopTrack; if (!t.ok) return; clearTimeout(t.off);
   if (on){ t.el.playbackRate = SHOP_MUSIC.speed; t.el.play().catch(() => {}); t.el.playbackRate = SHOP_MUSIC.speed; ramp(t.g.gain, SHOP_MUSIC.vol, 1.6); } else { ramp(t.g.gain, 0, .6); t.off = setTimeout(() => t.el.pause(), 2600); } }
