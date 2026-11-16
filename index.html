@@ -3174,6 +3174,13 @@ function svgPoint(e){ const svg = $('deckSvg'), pt = svg.createSVGPoint(); pt.x 
 let deck = null, deckOrigin = null, power = false, running = false, rpm = 33, pitch = 0, tlOn = false, coverClosed = true, holding = false, angle = 0, theta = 0, armState = 'rest', cueUp = false;
 let needleDown = false, onVinyl = false, recTime = 0, nextStep = 0, curK = -1, revPhase = 0, lastNG = -1, lastCG = -1, shownK = -2;
 const pv = new Audio(); pv.preload = 'auto'; if ('preservesPitch' in pv) pv.preservesPitch = false;
+// all sound stops while the page is out of sight (another app or tab, the phone locked) and picks up again on return
+{ let held = [];
+  const quiet = hidden => { const els = [shopTrack && shopTrack.el, sampleAudio, shelfAudio, pv].filter(Boolean);
+    if (hidden){ held = held.concat(els.filter(e => !e.paused && !held.includes(e))); held.forEach(e => e.pause()); if (ctx && ctx.state === 'running') ctx.suspend(); }
+    else { if (ctx && ctx.state === 'suspended') ctx.resume(); held.forEach(e => e.play().catch(() => {})); held = []; } };
+  document.addEventListener('visibilitychange', () => quiet(document.hidden));
+  addEventListener('pagehide', () => quiet(true)); addEventListener('pageshow', () => { if (!document.hidden) quiet(false); }); }
 let pvPlaying = false, pvK = -1;
 const amp = { vol:.75, tone:.75, bal:.5 };
 const toneHz = () => 900 * Math.pow(16, amp.tone);
