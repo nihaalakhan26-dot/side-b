@@ -55,6 +55,8 @@ button{cursor:pointer}
 #welcome .wbtn:disabled{opacity:.55;cursor:default}
 #welcome .wlink{top:67.4%;border:0;background:none;padding:.4cqw;color:#111;font:400 2cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;text-decoration:underline;text-underline-offset:.5cqw;text-decoration-thickness:1px;cursor:pointer;white-space:nowrap}
 #welcome .wfoot{top:80%;font:400 2cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;color:#111;white-space:nowrap}
+#welcome .wfoot a{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
+#welcome .wfoot a:hover,#welcome .wfoot a:focus-visible{border-bottom-color:currentColor}
 /* phones: the sheet as wide as the screen (the paper image has clear margins round the tear, so the card itself runs a little past the edges), words bigger, even gaps */
 @media (max-width:560px){#welcome{padding:0;overflow:hidden}
   #welcome .wcard{width:110vw;max-width:none;aspect-ratio:690/784;justify-self:start;margin-left:-5vw}
@@ -911,7 +913,7 @@ body.sheeton{overflow:hidden}
     <p class="wline">A digital record store experience where<br>you can browse the shelves, build your own<br>vinyl and send it to someone special</p>
     <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
     <button id="cratesBtn" class="wlink" type="button">Browse records others made</button>
-    <p class="wfoot">Made by @nihalakhan</p>
+    <p class="wfoot">Made by <a href="https://x.com/nihala_khan_" target="_blank" rel="noopener">@nihala_khan_</a></p>
   </div></div>
 </section>
 <section id="crates" aria-label="Records others made"><header><div><h2>Records others made</h2><p>Made here by people who chose to share them. Tap one to play it.</p></div><button class="chrome" id="cratesClose" style="position:static">Back to the street</button></header><div class="grid" id="cratesGrid"></div></section>
