@@ -43,19 +43,26 @@ button{cursor:pointer}
 #welcome{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:rgba(10,6,4,.18);transition:opacity .5s,visibility .5s}
 #welcome.gone{opacity:0;visibility:hidden}
 /* the card, laid out to the owner's mock-up: their torn paper (img/paper.webp, 690 by 784), their title image, everything placed by percentage so it scales as one */
-#welcome .wcard{position:relative;width:min(640px,92vw,calc(86vh*690/784));aspect-ratio:690/784;container-type:inline-size;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45));color:#111;text-align:center;animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
+#welcome .wcard{position:relative;width:min(780px,94vw,calc(86vh*.98));aspect-ratio:.98;container-type:inline-size;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45));color:#111;text-align:center;animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
 #welcome .wpaper{position:absolute;inset:0}
 #welcome .wpaper img{display:block;width:100%;height:100%;pointer-events:none;user-select:none}
 #welcome .wcard > :not(.wpaper){position:absolute;left:50%;transform:translateX(-50%);margin:0}
-#welcome .wmark{top:19.6%;width:56.4%;line-height:0}
+#welcome .wmark{top:19.6%;width:52%;line-height:0}
 #welcome .wmark img{display:block;width:100%;height:auto}
-#welcome .wline{top:43.2%;white-space:nowrap;font:400 2.46cqw/1.36 'DM Sans',Archivo,sans-serif;color:#111}
-#welcome .wbtn{top:57.6%;width:27.8cqw;height:6.7cqw;border:0;border-radius:999px;background:#0B0B0B;color:#F4F2EE;font:400 1.95cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+#welcome .wline{top:42%;white-space:nowrap;font:400 2.75cqw/1.4 'DM Sans',Archivo,sans-serif;color:#111}
+#welcome .wbtn{top:58%;width:28.5cqw;height:7cqw;border:0;border-radius:999px;background:#0B0B0B;color:#F4F2EE;font:400 2.15cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:background .2s}
 #welcome .wbtn:hover:not(:disabled){background:#2a2723}
 #welcome .wbtn:disabled{opacity:.55;cursor:default}
-#welcome .wlink{top:66.4%;border:0;background:none;padding:.4cqw;color:#111;font:400 1.95cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;text-decoration:underline;text-underline-offset:.5cqw;text-decoration-thickness:1px;cursor:pointer;white-space:nowrap}
-#welcome .wfoot{top:80%;font:400 1.95cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;color:#111;white-space:nowrap}
-@media (max-width:560px){#welcome .wline{font-size:max(2.46cqw,12px)}#welcome .wlink{top:69%}#welcome .wbtn{top:56.4%;width:max(27.8cqw,142px);height:max(6.7cqw,38px);font-size:max(1.95cqw,11px)}#welcome .wlink,#welcome .wfoot{font-size:max(1.95cqw,10.5px)}}
+#welcome .wlink{top:67.4%;border:0;background:none;padding:.4cqw;color:#111;font:400 2cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;text-decoration:underline;text-underline-offset:.5cqw;text-decoration-thickness:1px;cursor:pointer;white-space:nowrap}
+#welcome .wfoot{top:80%;font:400 2cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;color:#111;white-space:nowrap}
+/* phones: the sheet as wide as the screen (the paper image has clear margins round the tear, so the card itself runs a little past the edges), words bigger, even gaps */
+@media (max-width:560px){#welcome{padding:0;overflow:hidden}
+  #welcome .wcard{width:110vw;max-width:none;aspect-ratio:690/784;justify-self:start;margin-left:-5vw}
+  #welcome .wmark{top:18.5%;width:62%}
+  #welcome .wline{top:41%;font-size:3.35cqw;line-height:1.45}
+  #welcome .wbtn{top:58.5%;width:36cqw;height:8.6cqw;font-size:2.8cqw}
+  #welcome .wlink{top:69%;font-size:2.6cqw}
+  #welcome .wfoot{top:79.5%;font-size:2.6cqw}}
 #outside.welcoming .caption{opacity:0}
 @keyframes wIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
 #facade{transition:opacity .7s ease}
@@ -3247,17 +3254,17 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   let busy = false;
   // Enter the store: the card lifts off the street and flies up into the corner, then the door opens
   const putAway = async () => { if (busy) return; busy = true; ensureAudio(); card.style.pointerEvents = 'none';
-    if (!reduceMotion){ fade(false, 260); const back = $('welcome').animate([{ backgroundColor:'rgba(10,6,4,.18)' }, { backgroundColor:'rgba(10,6,4,0)' }], { duration:700, fill:'forwards' });
-      const a = card.animate(flight(), { duration:880, easing:'cubic-bezier(.55,0,.25,1)', fill:'forwards' }); setTimeout(enterShop, 640); await a.finished; back.cancel(); }
+    if (!reduceMotion){ fade(false, 150); const back = $('welcome').animate([{ backgroundColor:'rgba(10,6,4,.18)' }, { backgroundColor:'rgba(10,6,4,0)' }], { duration:450, fill:'forwards' });
+      const a = card.animate(flight(), { duration:520, easing:'cubic-bezier(.5,0,.3,1)', fill:'forwards' }); setTimeout(enterShop, 300); await a.finished; back.cancel(); }
     else enterShop();
     welcomed(); card.getAnimations().forEach(a => a.cancel()); bits.forEach(b => b.getAnimations().forEach(a => a.cancel())); card.style.pointerEvents = ''; busy = false; };
   // the little sheet flies back out and becomes the card again
   const takeOut = async () => { if (busy) return; busy = true; const w = $('welcome');
     w.style.transition = 'none'; w.classList.remove('gone'); $('outside').classList.add('welcoming'); ballOn = false; $('paperBall').hidden = true;
     if (!reduceMotion){ const k = flight().reverse().map(f => ({ ...f, offset:1 - f.offset })); bits.forEach(b => b.style.opacity = 0);
-      const a = card.animate(k, { duration:820, easing:'cubic-bezier(.4,0,.2,1)' });
+      const a = card.animate(k, { duration:520, easing:'cubic-bezier(.4,0,.2,1)' });
       w.animate([{ backgroundColor:'rgba(10,6,4,0)' }, { backgroundColor:'rgba(10,6,4,.18)' }], { duration:700 });
-      setTimeout(() => { bits.forEach(b => b.style.opacity = ''); fade(true, 320).forEach(x => x.finished.then(() => x.cancel())); }, 560); await a.finished; }
+      setTimeout(() => { bits.forEach(b => b.style.opacity = ''); fade(true, 220).forEach(x => x.finished.then(() => x.cancel())); }, 340); await a.finished; }
     w.style.transition = ''; busy = false; };
   $('paperBall').addEventListener('click', takeOut);
   const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Enter the store';
