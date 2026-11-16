@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
     const data = await r.json();
     const results = (data.results || []).map(t => ({
       trackId: t.trackId, trackName: t.trackName, artistName: t.artistName, collectionName: t.collectionName,
-      artworkUrl100: t.artworkUrl100, previewUrl: t.previewUrl, trackViewUrl: t.trackViewUrl
+      artworkUrl100: t.artworkUrl100, previewUrl: t.previewUrl, trackViewUrl: t.trackViewUrl, releaseDate: t.releaseDate
     }));
     res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=604800');
     res.status(200).json({ results });
