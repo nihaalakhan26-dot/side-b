@@ -6,7 +6,7 @@
 <title>DigiVinyl: make a record for someone</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&family=Cormorant+Garamond:wght@500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&family=Cormorant+Garamond:wght@500;600&family=Great+Vibes&family=DM+Sans:opsz,wght@9..40,400&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root{
   --cream:#EFE6D2; --cream2:#E5D9C0; --paper:#F7F1E3; --ink:#231A14; --ink2:#6E5B4B; --walnut:#5B3A22; --walnut2:#7A4E2D;
@@ -42,29 +42,30 @@ button{cursor:pointer}
 /* the welcome card, over the street when the site opens: a big plain cream card, square-cornered, dead centre */
 #welcome{position:absolute;inset:0;z-index:6;display:grid;place-items:center;padding:20px;background:rgba(10,6,4,.18);transition:opacity .5s,visibility .5s}
 #welcome.gone{opacity:0;visibility:hidden}
-#welcome .wcard{position:relative;width:min(660px,52vw,86vh);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7% 9%;text-align:center;color:#141210;filter:drop-shadow(0 22px 34px rgba(0,0,0,.5));animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
-#welcome .wpaper{position:absolute;inset:0;z-index:-1;}
-#welcome .wmark{margin:0;line-height:0}
-#welcome .wmark img{display:block;width:min(100%,400px);height:auto}
-#welcome .wline{margin:clamp(22px,4vh,36px) auto clamp(22px,4vh,34px);max-width:33ch;color:#141210;font:400 clamp(1.02rem,1.45vw,1.22rem)/1.5 'Times New Roman',Times,Georgia,serif}
-#welcome .wbtn{border:0;border-radius:999px;background:#0E0D0C;color:#F2F0EC;font:400 .84rem/1 var(--typewriter),monospace;letter-spacing:.04em;text-transform:uppercase;padding:16px 32px;cursor:pointer;transition:transform .2s,background .2s}
-#welcome .wbtn:hover:not(:disabled){background:#2a2723;transform:translateY(-1px)}
+/* the card, laid out to the owner's mock-up: their torn paper (img/paper.webp, 690 by 784), their title image, everything placed by percentage so it scales as one */
+#welcome .wcard{position:relative;width:min(640px,92vw,calc(86vh*690/784));aspect-ratio:690/784;container-type:inline-size;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45));color:#111;text-align:center;animation:wIn .8s .15s both cubic-bezier(.2,.8,.2,1)}
+#welcome .wpaper{position:absolute;inset:0}
+#welcome .wpaper img{display:block;width:100%;height:100%;pointer-events:none;user-select:none}
+#welcome .wcard > :not(.wpaper){position:absolute;left:50%;transform:translateX(-50%);margin:0}
+#welcome .wmark{top:19.6%;width:56.4%;line-height:0}
+#welcome .wmark img{display:block;width:100%;height:auto}
+#welcome .wline{top:43.2%;white-space:nowrap;font:400 2.46cqw/1.36 'DM Sans',Archivo,sans-serif;color:#111}
+#welcome .wbtn{top:57.6%;width:27.8cqw;height:6.7cqw;border:0;border-radius:999px;background:#0B0B0B;color:#F4F2EE;font:400 1.95cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+#welcome .wbtn:hover:not(:disabled){background:#2a2723}
 #welcome .wbtn:disabled{opacity:.55;cursor:default}
-#welcome .wlink{margin-top:clamp(18px,3.4vh,30px);border:0;background:none;padding:4px;color:#141210;font:400 .8rem/1 var(--typewriter),monospace;letter-spacing:.04em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-#welcome .wfoot{margin:clamp(30px,6vh,56px) 0 0;font:400 .76rem/1 var(--typewriter),monospace;letter-spacing:.06em;text-transform:uppercase;color:#141210}
-@media (max-width:760px){#welcome .wcard{width:min(92vw,74vh);padding:9% 8%}}
+#welcome .wlink{top:66.4%;border:0;background:none;padding:.4cqw;color:#111;font:400 1.95cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;text-decoration:underline;text-underline-offset:.5cqw;text-decoration-thickness:1px;cursor:pointer;white-space:nowrap}
+#welcome .wfoot{top:80%;font:400 1.95cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;color:#111;white-space:nowrap}
+@media (max-width:560px){#welcome .wline{font-size:max(2.46cqw,12px)}#welcome .wlink{top:69%}#welcome .wbtn{top:56.4%;width:max(27.8cqw,142px);height:max(6.7cqw,38px);font-size:max(1.95cqw,11px)}#welcome .wlink,#welcome .wfoot{font-size:max(1.95cqw,10.5px)}}
 #outside.welcoming .caption{opacity:0}
 @keyframes wIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
 #facade{transition:opacity .7s ease}
 #outside:not(.ready) #facade{opacity:0}
 #outside:not(.ready) #welcome .wcard{visibility:hidden;animation:none}
-#welcome .wpaper img{position:absolute;inset:-4%;width:108%;height:108%;display:block;pointer-events:none;user-select:none}
-#welcome .wcard > :not(.wpaper){position:relative}
-#paperBall{position:fixed;left:16px;top:calc(12px + env(safe-area-inset-top,0px));z-index:59;width:54px;height:54px;padding:0;border:0;background:none;cursor:pointer;transform:rotate(-7deg);filter:drop-shadow(0 6px 8px rgba(0,0,0,.45));transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
+#paperBall{position:fixed;left:16px;top:calc(12px + env(safe-area-inset-top,0px));z-index:59;width:50px;height:57px;padding:0;border:0;background:none;cursor:pointer;transform:rotate(-7deg);filter:drop-shadow(0 6px 8px rgba(0,0,0,.45));transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
 #paperBall:hover,#paperBall:focus-visible{transform:rotate(-2deg) translateY(-3px) scale(1.06)}
 #paperBall img{display:block;width:100%;height:100%}
 #paperBall .pl{position:absolute;left:24%;height:2px;border-radius:1px;background:#3a342c;opacity:.7}
-@media (max-width:760px){#paperBall{width:46px;height:46px;left:12px}}
+@media (max-width:760px){#paperBall{width:42px;height:48px;left:12px}}
 @keyframes nOn{0%,6%{opacity:.08}7%{opacity:1}9%{opacity:.25}12%,30%{opacity:1}31%{opacity:.4}33%,100%{opacity:1}}
 @media (prefers-reduced-motion: reduce){#welcome .wcard{animation:none}}
 /* THE CRATES: records people chose to share, to browse and play */
@@ -848,10 +849,10 @@ body.sheeton{overflow:hidden}
   <p class="caption">The door's open. Tap it to go in.</p>
   <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle"><div class="wpaper" id="wPaper"></div>
     <h1 id="wTitle" class="wmark"><img src="img/digivinyl.png" alt="DigiVinyl" width="432" height="123"></h1>
-    <p class="wline">A digital record store experience where you can browse the shelves, build your own vinyl and send it to someone special</p>
+    <p class="wline">A digital record store experience where<br>you can browse the shelves, build your own<br>vinyl and send it to someone special</p>
     <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
     <button id="cratesBtn" class="wlink" type="button">Browse records others made</button>
-    <p class="wfoot">Built by @nihalakhan</p>
+    <p class="wfoot">Made by @nihalakhan</p>
   </div></div>
 </section>
 <section id="crates" aria-label="Records others made"><header><div><h2>Records others made</h2><p>Made here by people who chose to share them. Tap one to play it.</p></div><button class="chrome" id="cratesClose" style="position:static">Back to the street</button></header><div class="grid" id="cratesGrid"></div></section>
@@ -3226,24 +3227,7 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   requestAnimationFrame(draw);
   setMuted(store.get('sideb-muted') === true);
   const card = $('welcome').querySelector('.wcard'), bits = [...card.children].filter(e => e.id !== 'wPaper');
-  // the torn sheet, drawn once as an image so it stays sharp and cheap to move: a fractal tear (rougher along the top and bottom, as paper tears),
-  // a pale fibrous rim where the fibres pull out, a fine embossed grain and soft mottling
-  const paperURL = (() => { const r = () => Math.floor(Math.random()*999);
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
-      <defs>
-        <filter id="tTB" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".005 .04" numOctaves="5" seed="${r()}"/><feDisplacementMap in="SourceGraphic" scale="50" xChannelSelector="R" yChannelSelector="G"/></filter>
-        <filter id="tRim" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".02 .16" numOctaves="4" seed="${r()}"/><feDisplacementMap in="SourceGraphic" scale="30" xChannelSelector="R" yChannelSelector="G"/></filter>
-        <filter id="tLR" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".05 .008" numOctaves="5" seed="${r()}"/><feDisplacementMap in="SourceGraphic" scale="22" xChannelSelector="R" yChannelSelector="G"/></filter>
-        <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="3" seed="${r()}" result="n"/>
-          <feDiffuseLighting in="n" surfaceScale="1.4" lighting-color="#ECE9E3" result="l"><feDistantLight azimuth="235" elevation="58"/></feDiffuseLighting><feComposite in="l" in2="SourceGraphic" operator="in"/></filter>
-        <filter id="mott" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="3" seed="${r()}"/><feColorMatrix values="0 0 0 0 .55 0 0 0 0 .52 0 0 0 0 .46 0 0 0 -1.1 .62"/><feComposite in2="SourceGraphic" operator="in"/></filter>
-        <mask id="m"><g filter="url(#tLR)"><g filter="url(#tTB)"><rect x="70" y="80" width="940" height="920" fill="#fff"/></g></g></mask>
-        <mask id="mr"><g filter="url(#tLR)"><g filter="url(#tRim)"><rect x="64" y="72" width="952" height="936" fill="#fff"/></g></g></mask>
-      </defs>
-      <rect width="1080" height="1080" fill="#F3F1EC" mask="url(#mr)"/>
-      <g mask="url(#m)"><rect width="1080" height="1080" fill="#E4E1DA"/><rect width="1080" height="1080" fill="#fff" filter="url(#grain)"/><rect width="1080" height="1080" fill="#fff" filter="url(#mott)" opacity=".5"/></g>
-    </svg>`;
-    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); })();
+  const paperURL = 'img/paper.webp';
   $('wPaper').innerHTML = `<img src="${paperURL}" alt="" draggable="false">`;
   // the same sheet, small, waits in the top left corner of the street with a few lines of writing on it
   $('paperBall').innerHTML = `<img src="${paperURL}" alt="" draggable="false">` + [[30, 46], [42, 40], [52, 44], [62, 30]].map(([t, w]) => `<span class="pl" style="top:${t}%;width:${w}%"></span>`).join('');
