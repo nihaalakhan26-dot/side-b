@@ -2284,7 +2284,7 @@ $('recwrap').addEventListener('pointermove', e => { if (!hold.on) return;
   if (hold.kind === 'spin'){ if (Math.abs(hold.v) > 3) sfx.slide(); coast(); }
   else { const dx = e.clientX - hold.x0, sl = $('recwrap').querySelector('.pslv'); sl.style.rotate = '';
     if (Math.abs(dx) > 140){ const f = face === 'F' ? 'B' : 'F'; if (fstep === 'sleeve') tabs.sleeve = f; setFace(f); sfx.flip(); refreshPreview(); renderDock(true); renderTextLayer(); } } }));
-function spinRecord(){ const el = $('pVinI'); el.classList.remove('spin'); void el.offsetWidth; el.classList.add('spin'); }
+function spinRecord(){ if (sliding) return; const el = $('pVinI'); el.classList.remove('spin'); void el.offsetWidth; el.classList.add('spin'); }
 function goStep(id){
   if (!FLOW.some(f => f.id === id)) id = 'shape';
   const F = FLOW[fIdx(id)], moved = id !== fstep;
