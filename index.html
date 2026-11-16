@@ -876,7 +876,8 @@ body.sheeton{overflow:hidden}
   #studio .sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:48% minmax(0,1fr)}
   #studio .bench{padding-bottom:0}
   #studio .caption,#studio .drawbar{bottom:8px}
-  #studio .caption{display:block;bottom:20px}#studio .caption b{font-size:1.15rem;margin:0}
+  #studio .caption{display:block;bottom:20px}
+  @media (min-height:700px){#studio .caption{bottom:30px}}#studio .caption b{font-size:1.15rem;margin:0}
   #studio .bench:has(.drawbar:not([hidden])) .caption{display:none}
   #studio .deck{margin:0 8px;border-radius:16px 16px 0 0;box-shadow:0 -12px 34px rgba(0,0,0,.45)}
   #studio .dbody{padding:18px 16px calc(96px + env(safe-area-inset-bottom,0px))}
