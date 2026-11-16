@@ -879,6 +879,19 @@ body.sheeton{overflow:hidden}
   #studio .dk-press{min-height:46px;padding:0 20px}
   #studio .dk-prog{left:26px;right:26px;bottom:3px;height:2px}
 }
+
+/* our own colour picker, the same on every screen: a colour square and a rainbow strip you can drag along, the record changing as you go */
+#cpick{position:fixed;z-index:95;width:260px;padding:12px;background:var(--paper);color:var(--ink);border-radius:14px;box-shadow:0 16px 44px rgba(0,0,0,.45);touch-action:none;user-select:none;-webkit-user-select:none}
+#cpick[hidden]{display:none}
+#cpick .sv{position:relative;height:150px;border-radius:9px;cursor:crosshair;background:linear-gradient(to top,#000,rgba(0,0,0,0)),linear-gradient(to right,#fff,rgba(255,255,255,0)),var(--h)}
+#cpick .hue{position:relative;height:18px;margin-top:12px;border-radius:9px;cursor:pointer;background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+#cpick .cpk{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.4);pointer-events:none;background:var(--c)}
+#cpick .hue .cpk{top:50%}
+#cpick .row{display:flex;align-items:center;gap:8px;margin-top:12px}
+#cpick .now{flex:none;width:32px;height:32px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+#cpick input{flex:1;min-width:0;height:34px;padding:0 10px;border:1px solid var(--line,#d8ccb6);border-radius:8px;background:#fff;font:600 .9rem/1 Archivo,sans-serif;text-transform:uppercase;color:var(--ink)}
+#cpick button{flex:none;height:34px;padding:0 14px;border:0;border-radius:999px;background:var(--ink);color:var(--paper);font:700 .85rem/1 Archivo,sans-serif;cursor:pointer}
+@media (max-width:760px){#cpick{left:0!important;right:0;top:auto!important;bottom:0;width:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}#cpick .sv{height:46vw;max-height:230px}#cpick .hue{height:26px}#cpick .cpk{width:26px;height:26px;margin:-13px 0 0 -13px}}
 </style>
 </head>
 <body>
@@ -2327,6 +2340,38 @@ function renderDock(now){ if (sliding) return; clearTimeout(dockTimer); if (!now
   const LS = F.id === 'labels' && draft.lab[tabs.labels]; $('labEdit').hidden = !(LS && !LS.texts.length);
   if (!$('allSteps').hidden) renderAllSteps();
 }
+
+// THE COLOUR PICKER: every "any colour" choice opens this instead of the browser's own (which on desktop closed after one click,
+// and on phones was a different thing with three sliders). It feeds the colour into the same <input type="color"> as before, so
+// everything that listens to that input keeps working; the panel holds still while it's open (sliding) and redraws once it closes.
+{ const cp = document.createElement('div'); cp.id = 'cpick'; cp.hidden = true; cp.setAttribute('role', 'dialog'); cp.setAttribute('aria-label', 'Pick a colour');
+  cp.innerHTML = '<div class="sv"><i class="cpk"></i></div><div class="hue"><i class="cpk"></i></div><div class="row"><i class="now"></i><input maxlength="7" spellcheck="false" aria-label="Colour code"><button type="button">Done</button></div>';
+  document.body.appendChild(cp);
+  const sv = cp.querySelector('.sv'), hue = cp.querySelector('.hue'), k1 = sv.querySelector(".cpk"), k2 = hue.querySelector(".cpk"), hexIn = cp.querySelector('input');
+  let target = null, H = 0, S = 1, V = 1, raf = 0;
+  const toHex = (h, s, v) => { const f = n => { const k = (n + h/60) % 6, c = v - v*s*Math.max(0, Math.min(k, 4 - k, 1)); return Math.round(c*255).toString(16).padStart(2, '0'); }; return '#' + f(5) + f(3) + f(1); };
+  const fromHex = x => { const n = parseInt(x.slice(1), 16), r = (n >> 16 & 255)/255, g = (n >> 8 & 255)/255, b = (n & 255)/255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    let h = 0; if (d){ h = mx === r ? ((g - b)/d) % 6 : mx === g ? (b - r)/d + 2 : (r - g)/d + 4; h *= 60; if (h < 0) h += 360; } return [h, mx ? d/mx : 0, mx]; };
+  const paint = () => { const c = toHex(H, S, V); cp.style.setProperty('--h', `hsl(${H} 100% 50%)`); cp.style.setProperty('--c', c);
+    k1.style.left = S*100 + '%'; k1.style.top = (1 - V)*100 + '%'; k2.style.left = H/360*100 + '%'; if (document.activeElement !== hexIn) hexIn.value = c.toUpperCase(); return c; };
+  const send = () => { const c = paint(); if (!target) return; cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { target.value = c; target.dispatchEvent(new Event('input', { bubbles:true })); }); };
+  const drag = (el, fn) => el.addEventListener('pointerdown', e => { e.preventDefault(); el.setPointerCapture(e.pointerId); const r = el.getBoundingClientRect();
+    const mv = ev => { fn(Math.max(0, Math.min(1, (ev.clientX - r.left)/r.width)), Math.max(0, Math.min(1, (ev.clientY - r.top)/r.height))); send(); };
+    mv(e); const up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); };
+    el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); });
+  drag(sv, (x, y) => { S = x; V = 1 - y; }); drag(hue, x => { H = Math.min(359.9, x*360); });
+  hexIn.addEventListener('input', () => { let v = hexIn.value.trim(); if (!v.startsWith('#')) v = '#' + v; if (/^#[0-9a-f]{6}$/i.test(v)){ [H, S, V] = fromHex(v.toLowerCase()); send(); } });
+  const close = () => { if (cp.hidden) return; cp.hidden = true; const t = target; target = null; sliding = false;
+    if (t) t.dispatchEvent(new Event('change', { bubbles:true })); try { renderDock(true); } catch(e){} };
+  cp.querySelector('button').addEventListener('click', close);
+  const open = inp => { target = inp; const v = /^#[0-9a-f]{6}$/i.test(inp.value) ? inp.value.toLowerCase() : '#888888'; [H, S, V] = fromHex(v); sliding = true; cp.hidden = false; paint();
+    if (innerWidth > 760){ const r = (inp.closest('label, button') || inp).getBoundingClientRect(), w = cp.offsetWidth, h = cp.offsetHeight;
+      cp.style.left = Math.max(10, Math.min(innerWidth - w - 10, r.left + r.width/2 - w/2)) + 'px';
+      cp.style.top = (r.bottom + 10 + h < innerHeight ? r.bottom + 10 : Math.max(10, r.top - h - 10)) + 'px'; } };
+  // any colour input anywhere opens this one instead of the browser's
+  document.addEventListener('click', e => { const inp = e.target.closest && e.target.closest('input[type="color"]'); if (!inp) return; e.preventDefault(); e.stopPropagation(); open(inp); }, true);
+  document.addEventListener('pointerdown', e => { if (!cp.hidden && !cp.contains(e.target) && !(e.target.closest && e.target.closest('input[type="color"]'))) close(); }, true);
+  addEventListener('keydown', e => { if (e.key === 'Escape') close(); }); }
 function sleevePickers(){ const el = $('sleevePick');
   if (!el.children.length){ el.innerHTML = [['bg','Background'],['ink','Lettering'],['acc','Accent']].map(([k, l]) => `<label class="pk"><i style="background:var(--c)"></i><span>${l}</span><input type="color" data-k="${k}"></label>`).join('');
     el.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { draft.d[inp.dataset.k] = inp.value.toUpperCase(); changed(); })); }
