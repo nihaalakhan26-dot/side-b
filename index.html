@@ -143,7 +143,7 @@ button{cursor:pointer}
 @keyframes nudgeR{0%,100%{transform:none}50%{transform:translateX(5px)}}@keyframes nudgeL{0%,100%{transform:none}50%{transform:translateX(-5px)}}
 /* a cover pulled off the wall: it lifts out and a card slides up with the album, a few songs to hear and a link to the whole thing */
 #albumSheet{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;justify-content:center;padding:0 12px calc(12px + env(safe-area-inset-bottom,0px))}
-#albumSheet[hidden]{display:none}
+#albumSheet[hidden]{display:none!important}
 #albumSheet .ascard{position:relative;width:min(440px,100%);background:var(--paper);color:var(--ink);border-radius:16px;padding:16px 16px 14px;box-shadow:0 18px 50px rgba(0,0,0,.55);transform:translateY(30px);opacity:0;transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .3s}
 #albumSheet.on .ascard{transform:none;opacity:1}
 /* desktop: the card opens beside the cover it came from */
@@ -163,7 +163,8 @@ button{cursor:pointer}
 #albumSheet .assong{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:10px;background:rgba(0,0,0,.05);padding:8px 10px;text-align:left;font:600 .9rem/1.25 Archivo,sans-serif;color:var(--ink);cursor:pointer}
 #albumSheet .assong i{flex:none;width:28px;height:28px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-style:normal;font-size:11px}
 #albumSheet .assong.on{background:rgba(123,42,46,.12)}
-#albumSheet .asam{display:inline-block;margin-top:12px;font:700 .86rem/1 Archivo,sans-serif;color:var(--burg,#7B2A2E);text-decoration:underline;text-underline-offset:3px}
+#albumSheet .asam{display:block;margin-top:14px;padding:13px 16px;border-radius:999px;background:var(--ink);color:var(--paper);text-align:center;font:700 .92rem/1 Archivo,sans-serif;text-decoration:none}
+#albumSheet .asam:hover{background:#3a2a20}
 .asfly{position:fixed;z-index:71;object-fit:cover;pointer-events:none;box-shadow:0 14px 30px rgba(0,0,0,.5);transform-origin:0 0}
 
 /* ---------- studio ---------- */
@@ -1048,7 +1049,7 @@ body.sheeton{overflow:hidden}
 <div id="tag"><b></b><span></span></div>
 <div id="albumSheet" hidden><div class="ascard" role="dialog" aria-labelledby="asTitle"><button class="asx" id="shelfClose" aria-label="Put it back">&times;</button>
   <div class="astop"><div class="ascov" id="asCov"></div><div class="asmeta"><b id="asTitle"></b><span id="asArtist"></span><small id="asYear"></small></div></div>
-  <div class="assongs" id="asSongs"></div><a class="asam" id="asLink" target="_blank" rel="noopener">Listen on Apple Music</a></div></div>
+  <div class="assongs" id="asSongs"></div><a class="asam" id="asLink" target="_blank" rel="noopener">Listen to the entire album</a></div></div>
 <p id="hint"></p>
 <div id="grain" aria-hidden="true"></div>
 
@@ -2928,10 +2929,12 @@ function stopShelf(){ shelfAudio.pause(); $('asSongs').querySelectorAll('.assong
 shelfAudio.addEventListener('ended', stopShelf);
 async function albumSongs(a){ if (!LIVE_HOST) return null;
   const norm = t => String(t || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const res = await fetch('/api/search?q=' + encodeURIComponent(a.sub + ' ' + a.title)); const all = ((await res.json()).results || []).filter(t => t.previewUrl);
-  let r = all.filter(t => norm(t.collectionName).startsWith(norm(a.title).slice(0, 8)));
-  if (!r.length) r = all.filter(t => norm(t.artistName).includes(norm(a.sub).slice(0, 6)));
-  return r.slice(0, 3); }
+  const res = await fetch('/api/search?q=' + encodeURIComponent(a.sub + ' ' + a.title)), found = (await res.json()).results || [];
+  const hit = found.find(t => t.collectionId && norm(t.collectionName).startsWith(norm(a.title).slice(0, 8)) && norm(t.artistName).includes(norm(a.sub).slice(0, 5)))
+    || found.find(t => t.collectionId && norm(t.collectionName).startsWith(norm(a.title).slice(0, 8)));
+  if (!hit) return null;
+  const al = await (await fetch('/api/search?album=' + hit.collectionId)).json();
+  return { year:(al.releaseDate || '').slice(0, 4), url:al.collectionViewUrl, songs:(al.results || []).slice(0, 3).filter(t => t.previewUrl) }; }
 function openAlbum(el){ if (pulled) return; hideTag(); const a = slotAlbum(+el.dataset.slot), sh = $('albumSheet'), r = el.getBoundingClientRect();
   $('asTitle').textContent = a.title; $('asArtist').textContent = a.sub; $('asYear').textContent = ''; $('asCov').innerHTML = '';
   const link = $('asLink'); if (a.url){ link.href = a.url; link.hidden = false; } else link.hidden = true;
@@ -2950,8 +2953,9 @@ function openAlbum(el){ if (pulled) return; hideTag(); const a = slotAlbum(+el.d
   const land = () => { $('asCov').innerHTML = `<img src="${esc(a.img)}" alt="">`; fly.style.visibility = 'hidden'; };
   go ? go.finished.then(land) : land();
   albumSongs(a).then(list => { if (!pulled || pulled.el !== el) return;
-    if (!list || !list.length){ songs.innerHTML = ''; return; }
-    const y = (list[0].releaseDate || '').slice(0, 4); if (y) $('asYear').textContent = y;
+    if (!list){ songs.innerHTML = ''; return; }
+    if (list.year) $('asYear').textContent = list.year; if (!a.url && list.url){ link.href = list.url; link.hidden = false; }
+    list = list.songs; if (!list.length){ songs.innerHTML = ''; return; }
     songs.innerHTML = list.map((t, i) => `<button class="assong" data-i="${i}"><i>▶</i><span>${esc(t.trackName)}</span></button>`).join('');
     songs.querySelectorAll('.assong').forEach(b => b.addEventListener('click', () => { const t = list[+b.dataset.i], on = b.classList.contains('on');
       stopShelf(); if (on) return; ensureAudio(); shopMusic(false); shelfAudio.src = t.previewUrl; shelfAudio.muted = muted; shelfAudio.play().catch(() => {});
@@ -2959,8 +2963,8 @@ function openAlbum(el){ if (pulled) return; hideTag(); const a = slotAlbum(+el.d
     if (sh.classList.contains('pop')){ const H = card.offsetHeight; card.style.top = clamp(parseFloat(card.style.top), 12, innerHeight - H - 12) + 'px'; } })
   .catch(() => { if (pulled && pulled.el === el) songs.innerHTML = ''; }); }
 function closeAlbum(){ if (!pulled) return; const { el, fly, r } = pulled, sh = $('albumSheet'), t = $('asCov').getBoundingClientRect(); pulled = null; stopShelf();
-  fly.getAnimations().forEach(x => x.cancel()); fly.style.visibility = ''; $('asCov').innerHTML = ''; sh.classList.remove('on');
-  const done = () => { el.style.opacity = ''; fly.remove(); if (!pulled) sh.hidden = true; };
+  fly.getAnimations().forEach(x => x.cancel()); fly.style.visibility = ''; $('asCov').innerHTML = ''; sh.classList.remove('on'); sh.hidden = true; sh.classList.remove('pop');
+  const done = () => { el.style.opacity = ''; fly.remove(); };
   if (reduceMotion){ done(); return; }
   fly.animate([{ transform:`translate(${t.left - r.left}px,${t.top - r.top}px) scale(${t.width/r.width},${t.height/r.height})` }, { transform:`translate(0px,${-Math.max(14, r.height*.4)}px) scale(1.06)`, offset:.7 }, { transform:'none' }], { duration:460, easing:'cubic-bezier(.4,0,.2,1)' }).finished.then(done); }
 $('shelfClose').addEventListener('click', closeAlbum);
