@@ -54,6 +54,19 @@ button{cursor:pointer}
 #welcome .wfoot{margin:clamp(30px,6vh,56px) 0 0;font:400 .76rem/1 var(--typewriter),monospace;letter-spacing:.06em;text-transform:uppercase;color:#141210}
 @media (max-width:760px){#welcome .wcard{width:min(92vw,74vh);padding:9% 8%}}
 #outside.welcoming .caption{opacity:0}
+@keyframes wIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+#facade{transition:opacity .7s ease}
+#outside:not(.ready) #facade{opacity:0}
+#outside:not(.ready) #welcome .wcard{visibility:hidden;animation:none}
+#welcome .wcrease,#welcome .wshade{position:absolute;inset:0;width:100%;height:100%;opacity:0;pointer-events:none}
+#welcome .wshade{background:radial-gradient(circle at 36% 30%,rgba(255,255,255,.35),rgba(255,255,255,0) 38%,rgba(50,40,30,.42) 82%)}
+#paperBall{position:fixed;left:14px;top:calc(10px + env(safe-area-inset-top,0px));z-index:59;width:46px;height:46px;padding:0;border:0;background:none;cursor:pointer;filter:drop-shadow(0 5px 7px rgba(0,0,0,.45));transition:transform .2s}
+#paperBall:hover{transform:scale(1.08) rotate(-8deg)}
+#paperBall svg{display:block;width:100%;height:100%}
+body.sheeton #paperBall{display:none}
+#shopBack{left:70px}
+#studio .shead .logo{margin-left:50px}
+@media (max-width:760px){#paperBall{width:40px;height:40px;left:10px}#studio .shead .logo{margin-left:42px}}
 @keyframes nOn{0%,6%{opacity:.08}7%{opacity:1}9%{opacity:.25}12%,30%{opacity:1}31%{opacity:.4}33%,100%{opacity:1}}
 @media (prefers-reduced-motion: reduce){#welcome .wcard{animation:none}}
 /* THE CRATES: records people chose to share, to browse and play */
@@ -108,7 +121,7 @@ button{cursor:pointer}
 #booth .bring,#booth .nohit,#booth .nohit *{pointer-events:none}
 #booth:hover,#booth:focus-visible{outline:none;filter:brightness(1.12) drop-shadow(0 0 22px rgba(255,205,130,.55))}
 #booth:focus{outline:none}
-#shopBack{left:14px;top:calc(12px + env(safe-area-inset-top,0px))}
+#shopBack{top:calc(12px + env(safe-area-inset-top,0px))}
 #tag{position:fixed;z-index:58;pointer-events:none;background:var(--paper);color:var(--ink);padding:6px 10px 7px;box-shadow:0 6px 14px rgba(0,0,0,.45);transform:translate(-50%,-100%) rotate(-1.5deg);opacity:0;transition:opacity .15s;max-width:240px}
 #tag b{display:block;font:800 13px/1.2 'Archivo',sans-serif}#tag span{display:block;font:500 12px/1.3 'Archivo',sans-serif;color:#6b5646}
 #tag.show{opacity:1}
@@ -828,14 +841,14 @@ body.sheeton{overflow:hidden}
 </style>
 </head>
 <body>
-<button id="soundBtn" class="chrome" aria-pressed="false" hidden>Sound off</button>
+<button id="soundBtn" class="chrome" aria-pressed="false" hidden>Sound off</button><button id="paperBall" aria-label="Open the welcome card again" title="Open the welcome card" hidden></button>
 
 
 
 <section id="outside" class="scene on welcoming" aria-label="Outside the shop">
   <div id="outsideBg"></div><div id="outsideInner"></div>
   <p class="caption">The door's open. Tap it to go in.</p>
-  <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle"><div class="wpaper" id="wPaper"></div>
+  <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle"><div class="wpaper" id="wPaper"><svg class="wcrease" id="wCrease" viewBox="0 0 100 100" preserveAspectRatio="none"></svg><div class="wshade" id="wShade"></div></div>
     <h1 id="wTitle" class="wmark"><img src="img/digivinyl.png" alt="DigiVinyl" width="432" height="123"></h1>
     <p class="wline">A digital record store experience where you can browse the shelves, build your own vinyl and send it to someone special</p>
     <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
@@ -1327,7 +1340,7 @@ function facadeSVG(){
     t += rc(gx, gy + 58, gw, 5, IRON) + rc(gx + gw/2 - 2, gy, 4, 58, IRON);
     return t + rc(x, 814, w, GY - 814, SHOP_SH) + rc(x + 12, 826, w - 24, GY - 846, SHOP) + rc(x + 12, 826, w - 24, 3, SHOP_DK) + rc(x + 12, GY - 23, w - 24, 3, SHOP_HI) + rc(x - 4, 808, w + 8, 8, SHOP_HI) + rc(x - 4, GY - 12, w + 8, 12, D('#2A2A30')); };
   s += shopWin(298, '280 230 480 640', (gx, gy, gw) => { const cx = gx + 62, cy = gy + 206; return neonG(`<g fill="none" stroke="#FFD24A" stroke-width="3.2"><circle cx="${cx}" cy="${cy}" r="38"/><circle cx="${cx}" cy="${cy}" r="26"/><circle cx="${cx}" cy="${cy}" r="9"/></g><text x="${gx + gw*.64}" y="${cy + 20}" text-anchor="middle" font-family="Yellowtail,cursive" font-size="66" fill="#FF5FA8">Vinyl</text><path d="M${gx + gw*.4} ${cy + 36} H${gx + gw*.9}" stroke="#FF5FA8" stroke-width="3.2"/>`) + `<text x="${gx + gw*.64}" y="${cy + 20}" text-anchor="middle" font-family="Yellowtail,cursive" font-size="66" fill="#FFE6F2" opacity=".55">Vinyl</text>`; });
-  s += shopWin(948, '1160 230 480 640', (gx, gy, gw) => { const cy = gy + 190; return neonG(`<g font-family="Archivo,sans-serif" font-weight="800" font-size="40" letter-spacing="5" text-anchor="middle" fill="none" stroke="#5FE0FF" stroke-width="2.4"><text x="${gx + gw/2}" y="${cy}">PRESSING</text><text x="${gx + gw/2}" y="${cy + 46}">BOOTH</text></g><path d="M${gx + gw*.5 - 70} ${cy + 62} h140 m-16 -9 l16 9 l-16 9" stroke="#FFD24A" stroke-width="3" fill="none"/>`); });
+  s += shopWin(948, '1160 230 480 640', (gx, gy, gw) => { const cy = gy + 190; return neonG(`<g font-family="Archivo,sans-serif" font-weight="800" font-size="40" letter-spacing="5" text-anchor="middle" fill="none" stroke="#5FE0FF" stroke-width="2.4"><text x="${gx + gw/2}" y="${cy}">PRESSING</text><text x="${gx + gw/2}" y="${cy + 46}">BOOTH</text></g>`); });
 
   s += signRecords();
   // ---- THE DOORWAY: a steel and glass door between two side lights, red neon over it
@@ -2555,9 +2568,9 @@ function sample(s, btn){ const me = btn.dataset.on === '1'; stopSample(); docume
 /* ============================================================
    SCENES: intro, outside, shop
    ============================================================ */
-let current = 'outside';
+let current = 'outside', ballOn = false;
 function go(name){ document.querySelectorAll('.scene').forEach(s => s.classList.toggle('on', s.id === name)); current = name; setScene(name); hideTag(); $('hint').textContent = '';
-  $('soundBtn').hidden = !ctx || name === 'studio'; if (name === 'shop') requestAnimationFrame(fitShop); if (name === 'studio') goStep(fstep); }
+  $('soundBtn').hidden = !ctx || name === 'studio'; if (name === 'shop') requestAnimationFrame(fitShop); if (name === 'studio') goStep(fstep); if (window.updateBall) updateBall(); }
 function enterShop(){
   ensureAudio(); sfx.bell(); const door = $('doorPanel'), inner = $('outsideInner'), hit = $('doorHit').getBoundingClientRect(), box = inner.getBoundingClientRect();
   inner.style.transformOrigin = `${hit.left - box.left + hit.width/2}px ${hit.top - box.top + hit.height*.45}px`; const t0 = performance.now();
@@ -2720,9 +2733,11 @@ function buildShop(){
 
   // THE RECORD WALL: the whole back wall, floor to ceiling, cut into lit walnut cubbies twenty across and seven high.
   // Nearly every cubby holds an album face out; the rest a stack, a record or a little plant
-  const RW = { x0:-320, x1:2240, y0:-340, y1:640, zf:-44 }, COLS = 30, ROWS = 12, PX = (RW.x1 - RW.x0)/COLS, PY = (RW.y1 - RW.y0)/ROWS;
-  const BU = { x0:640, x1:1280, y0:250, zf:-90 };     // the booth's own shelving, standing in front of the wall
-  s += box(WALL_L, WALL_R, CEIL, FLOOR, BACK, RW.zf, { front:WD.front });
+  const SX0 = 76, SX1 = 1844;     // the shelving stops short of the picture's edges, so a strip of plain wall shows each side
+  const RW = { x0:SX0, x1:SX1, y0:-340, y1:640, zf:-44 }, COLS = 21, ROWS = 12, PX = (RW.x1 - RW.x0)/COLS, PY = (RW.y1 - RW.y0)/ROWS;
+  const BZ = -55, BU = { x0:640, x1:1280, y0:250, zf:-90 + BZ };     // the booth's own shelving, standing well out from the wall (BZ brings it forward)
+  s += poly([PJ(WALL_L,CEIL,BACK), PJ(WALL_R,CEIL,BACK), PJ(WALL_R,FLOOR,BACK), PJ(WALL_L,FLOOR,BACK)], '#6E4B32');
+  s += box(SX0, SX1, CEIL, FLOOR, BACK, RW.zf, { front:WD.front, side:WD.side });
   const cubby = (x0, y0, x1, y1, R, st) => { const cx = (x0 + x1)/2, w = Math.min(70, x1 - x0 - 8, y1 - y0 - 8);
     let o = recess(x0, x1, y0, y1, -4, RW.zf, { side:'#24140A', ceil:'#FFE6B0', floor:'#5A361E', back:'#120904' }) + poly([PJ(x0,y0,-4), PJ(x1,y0,-4), PJ(x1,y1,-4), PJ(x0,y1,-4)], 'url(#nicheGlow)');
     if (R() < .86) return o + coverAt(st.k++, cx - w/2, y1 - 2, -20, w, (R() - .5)*2, { lit:true });
@@ -2737,11 +2752,13 @@ function buildShop(){
       if (x1 > BU.x0 + 10 && x0 < BU.x1 - 10 && y1 > BU.y0 + 30) continue;     // hidden behind the booth's shelving
       s += cubby(x0, y0, x1, y1, R, st); strips.push(`<rect x="${x0 + 4}" y="${y0 + 1}" width="${PX - 16}" height="2.6" fill="#FFF2CC"/>`); }
     s += `<g transform="${plane(-6)}">${strips.join('')}</g>`; }
+  // the booth stands well out from the wall: its shadow falls on the cubbies to its right
+  s += poly([PJ(BU.x1 - 20, BU.y0 + 60, RW.zf - 1), PJ(BU.x1 + 62, BU.y0 + 60, RW.zf - 1), PJ(BU.x1 + 62, FLOOR, RW.zf - 1), PJ(BU.x1 - 20, FLOOR, RW.zf - 1)], 'rgba(12,5,2,.42)');
 
   // THE SIDE COUNTERS along the wall, 95cm high: cabinets of records, a speaker, an amp and clocks below; gear and lamps on top
   const SC = { y0:684, zb:RW.zf, zf:-190 };
   const clock = (x, y, r, z, face) => `<g transform="${plane(z)}"><circle cx="${x}" cy="${y}" r="${r + 4}" fill="#1a1410"/><circle cx="${x}" cy="${y}" r="${r}" fill="${face}"/>${Array.from({length:12}, (_,i) => `<rect x="${x - 1}" y="${y - r + 3}" width="2" height="5" fill="#231A14" transform="rotate(${i*30} ${x} ${y})"/>`).join('')}<line x1="${x}" y1="${y}" x2="${x}" y2="${y - r*.62}" stroke="#231A14" stroke-width="3"/><line x1="${x}" y1="${y}" x2="${x + r*.45}" y2="${y + r*.2}" stroke="#231A14" stroke-width="2.4"/></g>`;
-  [[-320, 600, ['spines','hifi','spines','clock','spines','amp','spines']], [1320, 2240, ['spines','amp','spines','clock','spines','hifi','spines']]].forEach(([x0, x1, kinds], side) => {
+  [[SX0, 600, ['hifi','spines','clock','spines','amp']], [1320, SX1, ['amp','spines','clock','spines','hifi']]].forEach(([x0, x1, kinds], side) => {
     s += poly([PJ(x0, FLOOR, SC.zf), PJ(x1, FLOOR, SC.zf), PJ(x1 + 70, FLOOR, SC.zf + 30), PJ(x0 + 70, FLOOR, SC.zf + 30)], IN.shade);
     s += box(x0, x1, SC.y0, FLOOR, SC.zb, SC.zf, { front:WD.front, top:WD.top, side:WD.side });
     const w = (x1 - x0 - 8)/kinds.length;
@@ -2764,15 +2781,15 @@ function buildShop(){
   // its shelving: walnut, a big speaker in a dark bay at each end, lit shelves of leaning records, and the lit sign over two silver amps
   s += box(BU.x0, BU.x1, BU.y0, FLOOR, BACK, BU.zf, { front:WALN2, side:WALN });
   s += `<g transform="${plane(BU.zf)}"><rect x="${BU.x0}" y="${BU.y0}" width="${BU.x1 - BU.x0}" height="5" fill="#7A4E2C"/></g>`;
-  [BU.x0 + 12, BU.x1 - 128].forEach(x => { s += recess(x, x + 116, BU.y0 + 20, 660, -40, BU.zf, { side:'#140b06', ceil:'#2a1a10', floor:'#2a1a10', back:'#0a0604' });
-    s += `<g transform="${plane(-60)}"><rect x="${x + 8}" y="${BU.y0 + 40}" width="100" height="270" fill="#141414"/><rect x="${x + 8}" y="${BU.y0 + 40}" width="100" height="3" fill="rgba(255,230,190,.18)"/>
+  [BU.x0 + 12, BU.x1 - 128].forEach(x => { s += recess(x, x + 116, BU.y0 + 20, 660, -40 + BZ, BU.zf, { side:'#140b06', ceil:'#2a1a10', floor:'#2a1a10', back:'#0a0604' });
+    s += `<g transform="${plane(-60 + BZ)}"><rect x="${x + 8}" y="${BU.y0 + 40}" width="100" height="270" fill="#141414"/><rect x="${x + 8}" y="${BU.y0 + 40}" width="100" height="3" fill="rgba(255,230,190,.18)"/>
       <circle cx="${x + 58}" cy="${BU.y0 + 110}" r="26" fill="#0b0b0b"/><circle cx="${x + 58}" cy="${BU.y0 + 110}" r="16" fill="#1c1c1c"/><circle cx="${x + 58}" cy="${BU.y0 + 230}" r="42" fill="#0b0b0b"/><circle cx="${x + 58}" cy="${BU.y0 + 230}" r="30" fill="#1d1d1d"/><circle cx="${x + 58}" cy="${BU.y0 + 230}" r="9" fill="#2c2c2c"/></g>`; });
   [[BU.x0 + 140, 880], [1040, BU.x1 - 140]].forEach(([a, b], side) => [[BU.y0 + 20, 380], [392, 512], [524, 660]].forEach(([y0, y1], r) => {
-    s += litRecess(a, b, y0, y1, -30, BU.zf);
+    s += litRecess(a, b, y0, y1, -30 + BZ, BU.zf);
     const R = mulberry32(900 + side*10 + r); let x = a + 6, o = '';
     while (x < b - 16){ const lean = R() < .35, n = 6 + Math.floor(R()*10), w = n*1.6; if (x + w > b - 6) break;
       o += `<g transform="rotate(${lean ? (side ? -8 : 8) : 0} ${x + w/2} ${y1 - 4})">${spines(x, y1 - 4 - (y1 - y0 - 26), w, y1 - y0 - 26, 300 + side*50 + r*7 + Math.floor(x))}</g>`; x += w + 4 + R()*10; }
-    s += `<g transform="${plane(-50)}">${o}</g>`; }));
+    s += `<g transform="${plane(-50 + BZ)}">${o}</g>`; }));
   { const x0 = 892, x1 = 1028;
     // the sign: a lit box with the shop's name
     s += box(x0, x1, BU.y0 + 24, BU.y0 + 112, BU.zf, BU.zf - 14, { front:'#FBF5E6', side:'#E8DFC8' });
@@ -2780,9 +2797,9 @@ function buildShop(){
       <text x="${(x0 + x1)/2}" y="${BU.y0 + 64}" text-anchor="middle" font-family="Yellowtail,cursive" font-size="34" fill="#1d140d">Side B</text><rect x="${x0 + 22}" y="${BU.y0 + 76}" width="${x1 - x0 - 44}" height="1.4" fill="#1d140d"/>
       <text x="${(x0 + x1)/2}" y="${BU.y0 + 95}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="10" letter-spacing="2.4" fill="#1d140d">PRESSING BOOTH</text></g>`;
     // two silver power amps and a receiver below it, each in its own lit cubby
-    [[BU.y0 + 126, BU.y0 + 196], [BU.y0 + 206, BU.y0 + 276], [BU.y0 + 286, 660]].forEach(([y0, y1], i) => { s += litRecess(x0, x1, y0, y1, -30, BU.zf);
-      if (i < 2) s += box(x0 + 10, x1 - 10, y0 + 22, y1 - 4, -36, -70, { front:'#CFCCC4', top:'#E4E1DA', side:'#A9A69E' }) + `<g transform="${plane(-70)}"><rect x="${x0 + 16}" y="${y0 + 30}" width="6" height="${y1 - y0 - 40}" rx="3" fill="#9a978f"/><rect x="${x1 - 22}" y="${y0 + 30}" width="6" height="${y1 - y0 - 40}" rx="3" fill="#9a978f"/><rect x="${x0 + 40}" y="${y0 + 36}" width="${x1 - x0 - 80}" height="3" fill="#a9a69e"/></g>`;
-      else s += ampFront(x0 + 8, y0 + 14, x1 - x0 - 16, 54, -60) + `<g transform="${plane(-50)}">${spines(x0 + 8, y0 + 80, x1 - x0 - 16, y1 - y0 - 86, 1234)}</g>`; }); }
+    [[BU.y0 + 126, BU.y0 + 196], [BU.y0 + 206, BU.y0 + 276], [BU.y0 + 286, 660]].forEach(([y0, y1], i) => { s += litRecess(x0, x1, y0, y1, -30 + BZ, BU.zf);
+      if (i < 2) s += box(x0 + 10, x1 - 10, y0 + 22, y1 - 4, -36 + BZ, -70 + BZ, { front:'#CFCCC4', top:'#E4E1DA', side:'#A9A69E' }) + `<g transform="${plane(-70 + BZ)}"><rect x="${x0 + 16}" y="${y0 + 30}" width="6" height="${y1 - y0 - 40}" rx="3" fill="#9a978f"/><rect x="${x1 - 22}" y="${y0 + 30}" width="6" height="${y1 - y0 - 40}" rx="3" fill="#9a978f"/><rect x="${x0 + 40}" y="${y0 + 36}" width="${x1 - x0 - 80}" height="3" fill="#a9a69e"/></g>`;
+      else s += ampFront(x0 + 8, y0 + 14, x1 - x0 - 16, 54, -60 + BZ) + `<g transform="${plane(-50 + BZ)}">${spines(x0 + 8, y0 + 80, x1 - x0 - 16, y1 - y0 - 86, 1234)}</g>`; }); }
 
   // the counter you walk up to: a slatted walnut front, a thick steel top lit from beneath, a glass screen along its back edge
   const BC = { x0:560, x1:1360, y0:660, zb:-170, zf:-270 }, cx = 960;
@@ -3214,18 +3231,65 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   if (draft.photo) photoImage(draft.photo);
   requestAnimationFrame(draw);
   setMuted(store.get('sideb-muted') === true);
+  const card = $('welcome').querySelector('.wcard'), paper = $('wPaper'), crease = $('wCrease'), shade = $('wShade'), bits = [...card.children].filter(e => e !== paper);
+  // torn paper edge: a jagged outline, fresh each visit, kept as points so it can be crumpled into a ball and opened out again
+  const WP = (() => { const pts = [], N = 110; let w = 1;
+    const j = a => { w = Math.max(.2, Math.min(a, w + (Math.random() - .5)*a*.7 + (Math.random() < .08 ? a*.5 : 0))); return w; };
+    for (let i = 0; i <= N; i++) pts.push([i/N*100, j(2.2)]);
+    for (let i = 1; i <= N; i++) pts.push([100 - j(1.5), i/N*100]);
+    for (let i = N - 1; i >= 0; i--) pts.push([i/N*100, 100 - j(2.4)]);
+    for (let i = N - 1; i > 0; i--) pts.push([j(1.5), i/N*100]);
+    let r = 46; const rb = pts.map(() => (r = Math.max(41, Math.min(49, r + (Math.random() - .5)*2.4))));
+    return { pts, rb }; })();
+  const clipAt = t => 'polygon(' + WP.pts.map(([x, y], i) => { const a = Math.atan2(y - 50, x - 50), tx = 50 + Math.cos(a)*WP.rb[i], ty = 50 + Math.sin(a)*WP.rb[i];
+    return `${(x + (tx - x)*t).toFixed(2)}% ${(y + (ty - y)*t).toFixed(2)}%`; }).join(',') + ')';
+  crease.innerHTML = Array.from({length:16}, () => { let x = Math.random()*100, y = Math.random()*100, d = `M${x.toFixed(1)} ${y.toFixed(1)}`, a = Math.random()*Math.PI*2;
+    for (let k = 0; k < 4; k++){ a += (Math.random() - .5)*1.6; x += Math.cos(a)*(10 + Math.random()*16); y += Math.sin(a)*(10 + Math.random()*16); d += ` L${x.toFixed(1)} ${y.toFixed(1)}`; }
+    return `<path d="${d}" fill="none" stroke="rgba(70,58,46,.42)" stroke-width=".5" vector-effect="non-scaling-stroke"/><path d="${d}" transform="translate(.5 .5)" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".4"/>`; }).join('');
+  const setCard = (t, sc, rot) => { paper.style.clipPath = clipAt(t); crease.style.opacity = Math.min(1, t*1.8); shade.style.opacity = t*t;
+    card.style.transform = t ? `scale(${sc}) rotate(${rot}deg)` : ''; bits.forEach(b => b.style.opacity = t ? Math.max(0, 1 - t*3) : ''); };
+  setCard(0);
+  $('outside').classList.add('ready');
+  // the crumpled ball that waits in the top left corner and opens the card again
+  $('paperBall').innerHTML = (() => { const R = Math.random, n = 13, out = [], mid = [], c = [47 + R()*6, 47 + R()*6];
+    for (let i = 0; i < n; i++){ const a = i/n*Math.PI*2 + (R() - .5)*.25, r = 45 + (R() - .5)*7; out.push([50 + Math.cos(a)*r, 50 + Math.sin(a)*r]);
+      const a2 = (i + .5)/n*Math.PI*2 + (R() - .5)*.5, r2 = 18 + R()*14; mid.push([50 + Math.cos(a2)*r2, 50 + Math.sin(a2)*r2]); }
+    const tone = pts => { const x = pts.reduce((t, p) => t + p[0], 0)/pts.length - 50, y = pts.reduce((t, p) => t + p[1], 0)/pts.length - 50, d = Math.hypot(x, y) || 1;
+      const v = Math.max(140, Math.min(250, 212 + (-(x*.6 + y*.8)/d)*Math.min(1, d/26)*40 + (R() - .5)*40)); return `rgb(${v|0},${(v - 3)|0},${(v - 10)|0})`; };
+    const tri = pts => { const f = tone(pts); return `<path d="M${pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L')}Z" fill="${f}" stroke="${f}" stroke-width=".4" stroke-linejoin="round"/>`; };
+    let o = '';
+    for (let i = 0; i < n; i++){ const j = (i + 1) % n; o += tri([out[i], out[j], mid[i]]) + tri([mid[i], out[j], mid[j]]) + tri([c, mid[i], mid[j]]); }
+    return `<svg viewBox="0 0 100 100" aria-hidden="true">${o}<circle cx="50" cy="50" r="48" fill="url(#pbS)"/><defs><radialGradient id="pbS" cx=".36" cy=".3" r=".75"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#2a1e14" stop-opacity=".35"/></radialGradient></defs></svg>`; })();
+  window.updateBall = () => { $('paperBall').hidden = !(ballOn && ['outside','shop','studio'].includes(current)) || !$('welcome').classList.contains('gone'); };
+  const tween = (ms, fn) => new Promise(res => { const t0 = performance.now(); const f = now => { const k = Math.min(1, (now - t0)/ms); fn(k); if (k < 1) requestAnimationFrame(f); else res(); }; requestAnimationFrame(f); });
+  const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2, BALL = 120;
+  const welcomed = () => { ensureAudio(); $('soundBtn').hidden = false; const w = $('welcome'); w.style.transition = 'none'; w.classList.add('gone'); void w.offsetWidth; w.style.transition = '';
+    $('outside').classList.remove('welcoming'); ballOn = true; updateBall(); };
+  const ballFly = (cx, cy, back) => { const b = $('paperBall'), r = b.getBoundingClientRect(), dx = cx - (r.left + r.width/2), dy = cy - (r.top + r.height/2), s0 = BALL/r.width;
+    const k = [{ transform:`translate(${dx}px,${dy}px) scale(${s0}) rotate(38deg)` }, { transform:`translate(${dx*.4}px,${dy*.4 - 90}px) scale(${(s0 + 1)/2}) rotate(-140deg)`, offset:.5 }, { transform:'translate(0,0) scale(1) rotate(-320deg)' }];
+    return b.animate(back ? k.reverse() : k, { duration:720, easing:'cubic-bezier(.45,0,.3,1)', fill:back ? 'forwards' : 'none' }).finished; };
+  let busy = false;
+  // Enter the store: the card crumples into a ball, the ball flies up to the top left corner, and the door opens
+  const crumple = async () => { if (busy) return; busy = true; const r = card.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2, sEnd = BALL/(r.width*.92);
+    card.style.animation = 'none'; card.style.pointerEvents = 'none'; ensureAudio();
+    if (!reduceMotion) await tween(720, k => { const e = ease(k); setCard(e, 1 + (sEnd - 1)*e, e*38 + Math.sin(k*Math.PI*3)*3*(1 - k)); });
+    welcomed(); setCard(0); card.style.pointerEvents = '';
+    if (!reduceMotion){ const fly = ballFly(cx, cy); setTimeout(enterShop, 320); await fly; } else enterShop();
+    busy = false; };
+  // the ball opens back out into the card, from anywhere
+  const unfurl = async () => { if (busy) return; busy = true; const b = $('paperBall');
+    if (current !== 'outside') go('outside');
+    const w = $('welcome'); w.style.transition = 'none'; w.classList.remove('gone'); $('outside').classList.add('welcoming');
+    card.style.animation = 'none'; card.style.transform = ''; const r = card.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2, sEnd = BALL/(r.width*.92);
+    card.style.visibility = 'hidden'; b.hidden = false;
+    if (!reduceMotion){ await ballFly(cx, cy, true); setCard(1, sEnd, 38); }
+    b.getAnimations().forEach(a => a.cancel()); ballOn = false; b.hidden = true; card.style.visibility = '';
+    if (!reduceMotion) await tween(760, k => { const e = ease(1 - k); setCard(e, 1 + (sEnd - 1)*e, e*38); });
+    setCard(0); w.style.transition = ''; busy = false; };
+  $('paperBall').addEventListener('click', unfurl);
   const sb = $('startBtn'); sb.disabled = false; sb.textContent = 'Enter the store';
-  const welcomed = () => { ensureAudio(); $('soundBtn').hidden = false; $('welcome').classList.add('gone'); $('outside').classList.remove('welcoming'); };
-  sb.addEventListener('click', () => { welcomed(); setTimeout(enterShop, 350); });
+  sb.addEventListener('click', crumple);
   // $('cratesBtn').addEventListener('click', () => { ensureAudio(); openCrates(); }); // crates link switched off for now
-  { // torn paper edge: a jagged outline, fresh each visit
-    const pts = [], N = 110; let w = 1;
-    const j = (a) => { w = Math.max(.2, Math.min(a, w + (Math.random() - .5) * a * .7 + (Math.random() < .08 ? a * .5 : 0))); return w.toFixed(2); };
-    for (let i = 0; i <= N; i++) pts.push(`${(i / N * 100).toFixed(2)}% ${j(2.2)}%`);
-    for (let i = 1; i <= N; i++) pts.push(`${(100 - j(1.5)).toFixed(2)}% ${(i / N * 100).toFixed(2)}%`);
-    for (let i = N - 1; i >= 0; i--) pts.push(`${(i / N * 100).toFixed(2)}% ${(100 - j(2.4)).toFixed(2)}%`);
-    for (let i = N - 1; i > 0; i--) pts.push(`${j(1.5)}% ${(i / N * 100).toFixed(2)}%`);
-    $('wPaper').style.clipPath = `polygon(${pts.join(',')})`; }
   $('cratesClose').addEventListener('click', () => $('crates').classList.remove('on'));
   window.__example = async () => { location.hash = 'r=' + await encodeRec(EXAMPLE); };
   const short = location.pathname.match(/^\/r\/([A-Za-z0-9]{8})\/?$/);
