@@ -1319,6 +1319,10 @@ function facadeSVG(){
   const rc = (x, y, w, h, fill, extra='') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${extra}/>`;
   const leaf = (x, y, sc, col, op=1) => `<path d="M0 -7 C5 -5 6 3 0 8 C-6 3 -5 -5 0 -7Z" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${Math.floor(R()*360)}) scale(${sc.toFixed(2)})" fill="${col}"${op < 1 ? ` opacity="${op}"` : ''}/>`;
   const S0 = 250, S1 = 1306, GY = EG, IRON = '#15161B';
+  // SNOW, when it's snowing: a soft drift on every top that could hold it, drawn with the thing it sits on so whatever stands in front still hides it
+  const SNOWY = WX === 'snow', SNC = '#F4F7FB', SNS = '#B8C4D8';
+  const cap = (x, y, w, h=7) => SNOWY ? `<path d="M${x} ${y} q${w*.25} ${-h*1.5} ${w*.5} ${-h*.8} q${w*.25} ${-h*.9} ${w*.5} ${h*.8} v${h*.6} h${-w}Z" fill="${SNC}"/><path d="M${x} ${y + h*.6} h${w}" stroke="${SNS}" stroke-width="1.2"/>` : '';
+  const snowLine = (d, w) => SNOWY ? `<path d="${d}" stroke="${SNC}" stroke-width="${w}" stroke-linecap="round" fill="none"/>` : '';
   const SHOP = D('#A32E26'), SHOP_HI = D('#C4483C'), SHOP_SH = D('#7A1F1A'), SHOP_DK = D('#4E1512'), BST = D('#A88868'), BST_HI = D('#C4A482'), BST_SH = D('#7E6248');
   const CONC = D('#A8A297'), CONC_HI = D('#BDB7AB'), CONC_SH = D('#827C72'), STEEL = D('#8E949C');
   const AUT = { sun:['#3E7A45','#4E8F52','#2F6238','#5E9A4E','#6EAA58','#2F7D4F'], snow:['#F4F6FA','#E4EAF2','#FFFFFF','#D4DCE8','#C4CEDC'] }[WX] || ['#D86A2C','#E8A23A','#C4572B','#B8452B','#F0BE4E','#A8501E','#D1432F','#E08A30'];
@@ -1361,7 +1365,7 @@ function facadeSVG(){
     t += rc(x - 4, y, w + 8, h, D('#2A1E1C')) + `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${lit ? roomIn(w, h, k) : rc(0, 0, w, h, 'url(#oGlassD)') + rc(0, 0, w, h*(.3 + (k % 3)*.15), '#C9C2D6', ' opacity=".14"') + `<path d="M${w*.55} 0 L${w*.8} 0 L${w*.4} ${h} L${w*.15} ${h}Z" fill="#fff" opacity=".06"/>`}${rc(0, 0, w, h, 'url(#oGlassS)')}</svg>`;
     const F = D('#DAD4C6'); t += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${F}" stroke-width="5"/>` + rc(x, y + h/2 - 3, w, 6, F) + rc(x, y + h/2 + 3, w, 3, '#000', ' opacity=".25"');
     if (ac) t += rc(x + w*.18, y + h - 40, w*.64, 44, D('#B9BBB6')) + rc(x + w*.18, y + h - 40, w*.64, 5, D('#D4D6D0')) + Array.from({length:6}, (_, i) => rc(x + w*.22, y + h - 30 + i*5, w*.56, 2, '#000', ' opacity=".28"')).join('') + rc(x + w*.18 + 4, y + h + 4, w*.64, 6, '#000', ' opacity=".2"');
-    return t + rc(x - 18, y + h, w + 36, 11, BST_HI) + rc(x - 14, y + h + 11, w + 28, 5, BST_SH); };
+    return t + rc(x - 18, y + h, w + 36, 11, BST_HI) + rc(x - 14, y + h + 11, w + 28, 5, BST_SH) + cap(x - 14, y - 25, w + 28, 5) + cap(x - 18, y + h + 1, w + 36, 5) + (ac ? cap(x + w*.18, y + h - 39, w*.64, 4) : ''); };
   // an iron fire escape: a landing at each floor, stairs zigzagging between them, a drop ladder at the bottom
   const fesc = (x0, x1, ys) => { const B = [], add = (d, w) => B.push(`<path d="${d}" stroke-width="${w}"/>`), n = Math.round((x1 - x0)/13), st = (x1 - x0)/n;
     ys.forEach((y, i) => {
@@ -1374,6 +1378,12 @@ function facadeSVG(){
         add([0, .25, .5, .75, 1].map(f => { const [px, py] = at(f); return `M${px.toFixed(1)} ${(py - 60).toFixed(1)} V${py.toFixed(1)}`; }).join(' '), 2.5);
         add(Array.from({ length:18 }, (_, j) => { const [px, py] = at((j + .5)/18); return `M${(px - 9).toFixed(1)} ${py.toFixed(1)} h18`; }).join(' '), 2.5); } });
     const lx = x1 - 34, ly = ys[0]; add(`M${lx} ${ly - 150} V${ly + 26} M${lx + 20} ${ly - 150} V${ly + 26}`, 3); add(Array.from({ length:11 }, (_, j) => `M${lx} ${ly - 142 + j*16} h20`).join(' '), 2.2);
+    let sn = '';
+    if (SNOWY){ ys.forEach((y, i) => { sn += cap(x0 - 5, y - 1, x1 - x0 + 10, 5) + snowLine(`M${x0} ${y - 88.5} H${x1}`, 2.6) + snowLine(`M${x0} ${y - 46.3} H${x1}`, 1.7);
+        if (i < ys.length - 1){ const y2 = ys[i + 1], fx = x0 + 64, hx = x1 - 96, at = f => [fx + (hx - fx)*f, y + (y2 - y)*f];
+          sn += snowLine(`M${fx} ${y - 62.5} L${hx} ${y2 - 62.5}`, 1.6) + snowLine(Array.from({ length:18 }, (_, j) => { const [px, py] = at((j + .5)/18); return `M${(px - 8).toFixed(1)} ${(py - 2.6).toFixed(1)} h16`; }).join(' '), 2.2); } });
+      sn += snowLine(Array.from({ length:11 }, (_, j) => `M${lx + 1} ${ly - 143.8 + j*16} h18`).join(' '), 1.4); }
+    fesc.snow = sn;
     return `<g stroke="${IRON}" fill="none" stroke-linecap="square">${B.join('')}</g>`; };
 
   // ---- THE NEIGHBOURS: a raw concrete block on one side, brick tenements on the other
@@ -1383,14 +1393,16 @@ function facadeSVG(){
     t += rc(x0 + 30, 470, w - 60, GY - 470, D('#1A1E2A')) + rc(x0 + 30, 470, w - 60, GY - 470, '#F2C078', ' opacity=".22"');
     for (let i = 0; i < 5; i++) t += rc(x0 + 30 + i*(w - 60)/5, 470, 6, GY - 470, D('#2E323C')); t += rc(x0 + 30, 600, w - 60, 6, D('#2E323C')) + rc(x0 + w/2 - 5, 606, 10, GY - 606, D('#2E323C')) + rc(x0 + w/2 - 24, 720, 8, 60, STEEL) + rc(x0 + w/2 + 16, 720, 8, 60, STEEL);
     t += rc(x0 + 6, 420, w - 12, 50, CONC_HI) + rc(x0 + 6, 462, w - 12, 8, CONC_SH) + rc(x0 + 30, 470, w - 60, 40, 'url(#oShadeDn)') + rc(x0, 470, 30, GY - 470, CONC) + rc(x0 + w - 30, 470, 30, GY - 470, CONC) + rc(x0 + w - 6, -600, 6, GY + 600, '#000', ' opacity=".25"');
+    t += cap(x0, -599, w, 8) + [-470, -250, -30, 190].map(y => cap(x0 + 24, y + 129, w - 48, 5)).join('') + cap(x0 + 6, 421, w - 12, 7);
     return t; };
   const ten = (x0, i) => { const w = 440, pat = i % 2 ? 'url(#oBrickD)' : 'url(#oBrickR)'; let t = rc(x0, -700, w, GY + 700, pat) + rc(x0 - 8, -730, w + 16, 34, D('#5A4032')) + rc(x0 - 4, -696, w + 8, 10, D('#3E2C22'));
     for (let x = x0 + 8; x < x0 + w - 12; x += 34) t += rc(x, -696, 14, 22, D('#5A4032'));
+    t += cap(x0 - 8, -729, w + 16, 8);
     [-600, -270, 30].forEach((y, f) => [x0 + 34, x0 + 164, x0 + 294].forEach((x, j) => t += sash(x, y, 110, 210, i*9 + f*3 + j, R() < .5, R() < .25)));
-    const fe = fesc(x0 + 150, x0 + 420, [262, -38, -368]); t += `<g transform="translate(10 14)" opacity=".28">${fe}</g>` + fe;
+    const fe = fesc(x0 + 150, x0 + 420, [262, -38, -368]); t += `<g transform="translate(10 14)" opacity=".28">${fe}</g>` + fe + fesc.snow;
     t += rc(x0, 318, w, GY - 318, D('#3A3A42')) + rc(x0, 318, w, 62, D('#2A2A32')) + rc(x0, 380, w, 6, '#000', ' opacity=".4"') + rc(x0 + 20, 400, w - 150, GY - 400, 'url(#oShut)') + rc(x0 + 20, 400, w - 150, 30, D('#5E646C')) + rc(x0 + 20, 400, w - 150, 60, 'url(#oShadeDn)') + rc(x0 + 20, GY - 16, w - 150, 16, D('#4A4E56'));
     const dx = x0 + w - 112; t += rc(dx - 8, 470, 100, GY - 470, D('#22222A')) + rc(dx, 480, 84, 60, '#F2C078') + rc(dx, 548, 84, GY - 548, D(['#2E5488','#7B2A2E','#2F6238'][i % 3])) + rc(dx + 12, 566, 60, 130, 'url(#oGlassD)') + rc(dx + 8, 720, 6, 44, STEEL);
-    return t + rc(x0 + w - 5, -700, 5, GY + 700, '#000', ' opacity=".22"'); };
+    return t + cap(x0, 319, w, 6) + rc(x0 + w - 5, -700, 5, GY + 700, '#000', ' opacity=".22"'); };
   s += brut(S0 - 520) + ten(S0 - 960, 1) + brut(S0 - 1480) + ten(S0 - 1920, 0) + brut(S0 - 2440);
   s += ten(S1, 0) + brut(S1 + 440) + ten(S1 + 960, 1) + brut(S1 + 1400) + ten(S1 + 1920, 0);
 
@@ -1401,10 +1413,12 @@ function facadeSVG(){
   s += rc(S0, -760, S1 - S0, 1060, 'url(#oBrick)');
   s += rc(S0 - 16, -800, S1 - S0 + 32, 16, D('#7A5A44')) + rc(S0 - 10, -784, S1 - S0 + 20, 40, D('#8E6A52')) + rc(S0 - 4, -744, S1 - S0 + 8, 14, D('#6A4A38')) + rc(S0, -730, S1 - S0, 10, '#000', ' opacity=".3"');
   for (let x = S0 + 6; x < S1 - 20; x += 52) s += `<path d="M${x} -744 h22 v34 q-11 12 -22 0Z" fill="${D('#8E6A52')}"/>` + rc(x, -744, 5, 36, '#fff', ' opacity=".12"');
-  [-430, -100, 232].forEach(y => s += rc(S0, y + 12, S1 - S0, 12, BST) + rc(S0, y + 24, S1 - S0, 4, '#000', ' opacity=".22"'));
+  [-430, -100, 232].forEach(y => s += rc(S0, y + 12, S1 - S0, 12, BST) + rc(S0, y + 24, S1 - S0, 4, '#000', ' opacity=".22"') + cap(S0, y + 13, S1 - S0, 4));
+  s += cap(S0 - 16, -799, S1 - S0 + 32, 9);
+  if (SNOWY){ const cx = 1010, ty = -760; s += `<path d="M${cx - 80} ${ty - 298} L${cx} ${ty - 372} L${cx + 80} ${ty - 298} L${cx + 70} ${ty - 304} L${cx} ${ty - 360} L${cx - 70} ${ty - 304}Z" fill="${SNC}"/>` + cap(cx - 68, ty - 283, 136, 3); }
   const BAYS = [300, 520, 916, 1136], FL = [-660, -330, 0];
   FL.forEach((y, f) => BAYS.forEach((x, j) => s += sash(x, y, 120, 220, f*4 + j, [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1][f*4 + j] === 1, (f*4 + j) % 5 === 3)));
-  { const fe = fesc(486, 1070, [250, -80, -410]); s += `<g transform="translate(12 18)" opacity=".3" filter="url(#oSoft)">${fe}</g>` + fe; }
+  { const fe = fesc(486, 1070, [250, -80, -410]); s += `<g transform="translate(12 18)" opacity=".3" filter="url(#oSoft)">${fe}</g>` + fe + fesc.snow; }
 
   // ---- THE SHOP FRONT: painted cast-iron columns, a big hand-painted sign with records on it, plain glass below
   s += rc(S0, 296, S1 - S0, GY - 296, SHOP_DK) + rc(S0 - 10, 290, S1 - S0 + 20, 12, SHOP_HI) + rc(S0 - 4, 302, S1 - S0 + 8, 10, SHOP) + rc(S0, 312, S1 - S0, 6, '#000', ' opacity=".35"');
@@ -1414,7 +1428,7 @@ function facadeSVG(){
   const col = (x, w) => rc(x, 414, w, GY - 414, SHOP) + rc(x, 414, 5, GY - 414, SHOP_HI) + rc(x + w - 5, 414, 5, GY - 414, SHOP_SH) + rc(x + w/2 - 5, 440, 10, GY - 520, SHOP_SH) + rc(x - 4, 414, w + 8, 14, SHOP_HI) + rc(x - 4, 428, w + 8, 5, SHOP_DK) + rc(x - 5, GY - 60, w + 10, 60, SHOP_SH) + rc(x - 5, GY - 60, w + 10, 5, SHOP_HI);
   s += col(S0, 48) + col(S1 - 48, 48) + col(608, 40) + col(908, 40);
   // three barn lamps craning over the sign
-  [470, 778, 1086].forEach(x => { s += `<path d="M${x} 284 C${x} 258 ${x + 24} 258 ${x + 24} 276" stroke="${IRON}" stroke-width="3.5" fill="none"/><path d="M${x + 8} 294 L${x + 40} 294 L${x + 32} 276 L${x + 16} 276Z" fill="${IRON}"/>${rc(x - 5, 282, 10, 6, IRON)}${rc(x + 14, 294, 20, 3, '#FFE9B8')}`; });
+  [470, 778, 1086].forEach(x => { s += cap(x + 15, 277, 18, 3) + `<path d="M${x} 284 C${x} 258 ${x + 24} 258 ${x + 24} 276" stroke="${IRON}" stroke-width="3.5" fill="none"/><path d="M${x + 8} 294 L${x + 40} 294 L${x + 32} 276 L${x + 16} 276Z" fill="${IRON}"/>${rc(x - 5, 282, 10, 6, IRON)}${rc(x + 14, 294, 20, 3, '#FFE9B8')}`; });
 
   // ---- THE WINDOWS: plain glass onto the real shop, records clipped along a wire and stood on the sill, neon
   let slot = 200;
@@ -1463,10 +1477,10 @@ function facadeSVG(){
   { const x = 1150, y = 760, w = 104, h = 136; s += `<ellipse cx="${x + w/2 + 6}" cy="${y + h + 2}" rx="${w*.62}" ry="6" fill="#000" opacity=".3"/><path d="M${x - 4} ${y + h} L${x + 4} ${y - 8} H${x + w - 4} L${x + w + 4} ${y + h}" fill="none" stroke="${D('#B8823E')}" stroke-width="8"/>${rc(x + 6, y, w - 12, h - 22, '#1E221F')}`;
     for (let r = 0; r < 2; r++) for (let c = 0; c < 2; c++) s += cover(x + 13 + c*41, y + 8 + r*50, 37, (R() - .5)*6); }
   // a fire hydrant, a wire litter bin and a street lamp at the kerb
-  { const p = G(1330, -300), k = 1.2; s += `<g transform="translate(${p[0].toFixed(0)} ${p[1].toFixed(0)}) scale(${k})"><ellipse cx="4" cy="1" rx="28" ry="5" fill="#000" opacity=".3"/><path d="M-13 0 V-46 Q-13 -62 0 -62 Q13 -62 13 -46 V0Z" fill="${D('#B3252B')}"/>${rc(-17, -8, 34, 8, D('#8E1D22'))}${rc(-16, -50, 32, 6, D('#8E1D22'))}${rc(-22, -40, 9, 14, D('#8E1D22'))}${rc(13, -40, 9, 14, D('#8E1D22'))}<circle cx="0" cy="-30" r="7" fill="${D('#8E1D22')}"/>${rc(-5, -72, 10, 10, D('#8E1D22'))}${rc(-9, -44, 4, 40, '#fff', ' opacity=".14"')}</g>`; }
-  { const p = G(214, -300); s += `<g transform="translate(${p[0].toFixed(0)} ${p[1].toFixed(0)})"><ellipse cx="4" cy="1" rx="40" ry="6" fill="#000" opacity=".3"/><path d="M-28 0 L-34 -92 H34 L28 0Z" fill="${D('#2E3A34')}" opacity=".85"/><path d="${Array.from({length:9}, (_, i) => `M${-28 + i*7} 0 L${-34 + i*8.5} -92`).join(' ')} M-33 -70 H33 M-31 -46 H31 M-30 -22 H30" stroke="${D('#5E7A6A')}" stroke-width="2" fill="none"/>${rc(-37, -98, 74, 8, D('#3E5A4A'), ' rx="3"')}</g>`; }
+  { const p = G(1330, -300), k = 1.2; s += `<g transform="translate(${p[0].toFixed(0)} ${p[1].toFixed(0)}) scale(${k})"><ellipse cx="4" cy="1" rx="28" ry="5" fill="#000" opacity=".3"/><path d="M-13 0 V-46 Q-13 -62 0 -62 Q13 -62 13 -46 V0Z" fill="${D('#B3252B')}"/>${rc(-17, -8, 34, 8, D('#8E1D22'))}${rc(-16, -50, 32, 6, D('#8E1D22'))}${rc(-22, -40, 9, 14, D('#8E1D22'))}${rc(13, -40, 9, 14, D('#8E1D22'))}<circle cx="0" cy="-30" r="7" fill="${D('#8E1D22')}"/>${rc(-5, -72, 10, 10, D('#8E1D22'))}${rc(-9, -44, 4, 40, '#fff', ' opacity=".14"')}${SNOWY ? `<path d="M-13 -50 Q-13 -64 0 -64 Q13 -64 13 -50 Q0 -56 -13 -50Z" fill="${SNC}"/>` + cap(-6, -71, 12, 3) + cap(-17, -49, 34, 3) : ''}</g>`; }
+  { const p = G(214, -300); s += `<g transform="translate(${p[0].toFixed(0)} ${p[1].toFixed(0)})"><ellipse cx="4" cy="1" rx="40" ry="6" fill="#000" opacity=".3"/><path d="M-28 0 L-34 -92 H34 L28 0Z" fill="${D('#2E3A34')}" opacity=".85"/><path d="${Array.from({length:9}, (_, i) => `M${-28 + i*7} 0 L${-34 + i*8.5} -92`).join(' ')} M-33 -70 H33 M-31 -46 H31 M-30 -22 H30" stroke="${D('#5E7A6A')}" stroke-width="2" fill="none"/>${rc(-37, -98, 74, 8, D('#3E5A4A'), ' rx="3"')}${cap(-37, -97, 74, 6)}</g>`; }
   { const x = 1440, y = 962, I = IRON; s += `<ellipse cx="${x + 8}" cy="${y + 2}" rx="46" ry="7" fill="#000" opacity=".3"/>
-      <path d="M${x - 22} ${y} L${x - 20} ${y - 14} H${x + 20} L${x + 22} ${y}Z M${x - 16} ${y - 14} L${x - 11} ${y - 96} H${x + 11} L${x + 16} ${y - 14}Z" fill="${I}"/>${rc(x - 15, y - 104, 30, 9, '#22242C', ' rx="3"')}${rc(x - 12, y - 118, 24, 8, I, ' rx="3"')}
+      <path d="M${x - 22} ${y} L${x - 20} ${y - 14} H${x + 20} L${x + 22} ${y}Z M${x - 16} ${y - 14} L${x - 11} ${y - 96} H${x + 11} L${x + 16} ${y - 14}Z" fill="${I}"/>${rc(x - 15, y - 104, 30, 9, '#22242C', ' rx="3"')}${rc(x - 12, y - 118, 24, 8, I, ' rx="3"')}${cap(x - 12, y - 117, 24, 4)}${cap(x - 15, y - 103, 30, 3)}
       <path d="${[-8, -3, 3, 8].map(o => `M${x + o} ${y - 20} V${y - 92}`).join(' ')}" stroke="#2C2E38" stroke-width="1.6"/>
       <path d="M${x - 7} ${y - 118} L${x - 4.5} 190 H${x + 4.5} L${x + 7} ${y - 118}Z" fill="${I}"/>${rc(x - 9, 250, 18, 7, I, ' rx="3"')}${rc(x - 8, 186, 16, 8, I, ' rx="3"')}
       ${rc(x - 30, 214, 60, 4.5, I, ' rx="2"')}<circle cx="${x - 31}" cy="216" r="4.5" fill="${I}"/><circle cx="${x + 31}" cy="216" r="4.5" fill="${I}"/>
@@ -1493,8 +1507,8 @@ function facadeSVG(){
   else if (WX === 'snow') FALL = { k:'snow', p:Array.from({ length:150 }, () => ({ d:7 + R()*9, ph:-R()*16, w:-40 + R()*90, x:-1500 + R()*4600, y:-300 + R()*700, r:1.6 + R()*3.6, o:.55 + R()*.45 })) };
   else FALL = { k:'leaf', p:Array.from({ length:WX === 'sun' ? 3 : 14 }, () => ({ d:8 + R()*7, ph:-R()*14, x:-60 + R()*620, y:120 + R()*380, c:pick(AUT) })) };
   // snow lying on everything that has a top
-  if (WX === 'snow'){ const cap = (x, y, w, h=7) => `<path d="M${x} ${y} q${w*.25} ${-h*1.5} ${w*.5} ${-h*.8} q${w*.25} ${-h*.9} ${w*.5} ${h*.8} v${h*.6} h${-w}Z" fill="#F4F7FB"/><path d="M${x} ${y + h*.6} h${w}" stroke="#B8C4D8" stroke-width="1.2"/>`;
-    s += cap(S0 - 10, 290, S1 - S0 + 20, 9) + cap(336, 792, 240, 6) + cap(326, 842, 260, 5) + cap(298, 808, 38, 5) + cap(576, 808, 32, 5) + cap(948, 808, 200, 5) + cap(486, 247, 584, 6) + cap(1150, 752, 104, 5); }
+  // snow on the shop's own tops: its cornice, the bench, the sandwich board, the sills either side of them, the sign
+  s += cap(S0 - 10, 290, S1 - S0 + 20, 9) + cap(336, 792, 240, 6) + cap(326, 842, 260, 5) + cap(298, 808, 38, 5) + cap(576, 808, 32, 5) + cap(948, 808, 200, 5) + cap(1150, 752, 104, 5);
 
   // ---- THE LIGHT: lamps on the sign, the neon's haze on the glass, the street lamp, grain, the evening closing in
   s += `<g style="mix-blend-mode:screen;pointer-events:none" opacity="${LIT}">${[470, 778, 1086].map(x => `<ellipse cx="${x + 24}" cy="356" rx="170" ry="74" fill="url(#oLamp)" opacity=".5"/>`).join('')}<ellipse cx="490" cy="640" rx="190" ry="110" fill="url(#oPink)" opacity=".5"/><ellipse cx="1103" cy="640" rx="190" ry="110" fill="url(#oCyan)" opacity=".45"/><circle cx="1336" cy="118" r="230" fill="url(#oLamp)" opacity=".8"/><ellipse cx="1360" cy="950" rx="260" ry="50" fill="url(#oLamp)" opacity=".4"/>
