@@ -55,6 +55,8 @@ button{cursor:pointer}
 #welcome .wbtn:disabled{opacity:.55;cursor:default}
 #welcome .wlink{top:67.4%;border:0;background:none;padding:.4cqw;color:#111;font:400 2cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;text-decoration:underline;text-underline-offset:.5cqw;text-decoration-thickness:1px;cursor:pointer;white-space:nowrap}
 #welcome .wfoot{top:80%;font:400 2cqw/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.02em;text-transform:uppercase;color:#111;white-space:nowrap}
+#welcome .wfoot a{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
+#welcome .wfoot a:hover,#welcome .wfoot a:focus-visible{border-bottom-color:currentColor}
 /* phones: the sheet as wide as the screen (the paper image has clear margins round the tear, so the card itself runs a little past the edges), words bigger, even gaps */
 @media (max-width:560px){#welcome{padding:0;overflow:hidden}
   #welcome .wcard{width:110vw;max-width:none;aspect-ratio:690/784;justify-self:start;margin-left:-5vw}
@@ -558,7 +560,7 @@ body.sheeton{overflow:hidden}
 /* deck panel */
 .deck{position:relative;display:flex;flex-direction:column;min-height:0;background:var(--paper);border-left:1px solid var(--faded)}
 .deck::before{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.22;pointer-events:none}
-.dbody{flex:1;overflow:auto;padding:20px 22px 26px}
+.dbody{flex:1;overflow:auto;scrollbar-gutter:stable;padding:20px 22px 26px}
 .step{display:none}.step.on{display:block}
 .step h2{margin:0;font:400 2rem/1 'Yellowtail',cursive;color:var(--faded)}
 .step .lede{margin:.25rem 0 1rem;color:var(--ink2);font-size:.9rem;line-height:1.45}
@@ -871,9 +873,12 @@ body.sheeton{overflow:hidden}
 @media (max-width:760px){
   #studio{grid-template-rows:auto minmax(0,1fr) 0}
   #studio .shead{padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0px))}
-  #studio .sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:42% minmax(0,1fr)}
+  #studio .sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:48% minmax(0,1fr)}
   #studio .bench{padding-bottom:0}
   #studio .caption,#studio .drawbar{bottom:8px}
+  #studio .caption{display:block;bottom:20px}
+  @media (min-height:700px){#studio .caption{bottom:30px}}#studio .caption b{font-size:1.15rem;margin:0}
+  #studio .bench:has(.drawbar:not([hidden])) .caption{display:none}
   #studio .deck{margin:0 8px;border-radius:16px 16px 0 0;box-shadow:0 -12px 34px rgba(0,0,0,.45)}
   #studio .dbody{padding:18px 16px calc(96px + env(safe-area-inset-bottom,0px))}
   /* on phones back and next float in a slim dark pill over the bottom of the card */
@@ -911,7 +916,7 @@ body.sheeton{overflow:hidden}
     <p class="wline">A digital record store experience where<br>you can browse the shelves, build your own<br>vinyl and send it to someone special</p>
     <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
     <button id="cratesBtn" class="wlink" type="button">Browse records others made</button>
-    <p class="wfoot">Made by @nihalakhan</p>
+    <p class="wfoot">Made by <a href="https://x.com/nihala_khan_" target="_blank" rel="noopener">@nihala_khan_</a></p>
   </div></div>
 </section>
 <section id="crates" aria-label="Records others made"><header><div><h2>Records others made</h2><p>Made here by people who chose to share them. Tap one to play it.</p></div><button class="chrome" id="cratesClose" style="position:static">Back to the street</button></header><div class="grid" id="cratesGrid"></div></section>
@@ -2335,8 +2340,8 @@ function renderDock(now){ if (sliding) return; clearTimeout(dockTimer); if (!now
       b.addEventListener('click', () => { if (inp) return inp.click(); sfx.click(); after(R.pick(b.dataset.v)); }); }); }
   else box.innerHTML = '';
   const secs = fv(F.sec) || []; document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', secs.includes(p.id)));
-  const nt = F.note && F.note(); $('stNote').hidden = !nt; if (nt) $('stNote').innerHTML = `<b>${esc(nt[0])}</b> ${esc(nt[1])}`;
-  $('caption').innerHTML = nt ? `<b>${esc(nt[0])}</b>${esc(nt[1])}` : ''; $('caption').classList.toggle('on', !!nt);
+  const nt = F.note && F.note(); $('stNote').hidden = true;
+  $('caption').innerHTML = nt ? `<b>${esc(nt[0])}</b>` : ''; $('caption').classList.toggle('on', !!nt);
   const colRow = false;
   document.querySelectorAll('.xtra').forEach(x => x.hidden = !(x.dataset.for === 'colours' ? colRow : x.dataset.for === 'hype' ? F.id === 'sleeve' && tabs.sleeve === 'F' && draft.d.sticker : false));
   if (colRow) sleevePickers();
