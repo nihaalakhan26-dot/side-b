@@ -45,8 +45,8 @@ async function save(req, res) {
     if (await redis('SET', 'rec:' + id, rec, 'EX', TTL, 'NX')) {
       // into the crates too, if the maker asked: a copy without who it's from and for, and a picture of the record
       const gc = String(body.gc || ''), gv = String(body.gv || ''), gt = String(body.gt || '');
-      if (gc && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(gt) && gt.length <= 60000 && /^[zp][A-Za-z0-9_-]{10,}$/.test(gc) && gc.length <= 150000 && /^data:image\/(png|webp);base64,[A-Za-z0-9+/=]+$/.test(gv) && gv.length <= 120000) {
-        await redis('SET', 'gdn:' + id, JSON.stringify({ c: gc, t: gt, v: gv, name: clean(body.name, 80) }), 'EX', TTL);
+      if (gc && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(gt) && gt.length <= 160000 && /^[zp][A-Za-z0-9_-]{10,}$/.test(gc) && gc.length <= 150000 && /^data:image\/(png|webp);base64,[A-Za-z0-9+/=]+$/.test(gv) && gv.length <= 260000) {
+        await redis('SET', 'gdn:' + id, JSON.stringify({ c: gc, t: gt, v: gv, name: clean(body.name, 80), n: Math.max(0, Math.min(24, parseInt(body.gn, 10) || 0)), at: Date.now() }), 'EX', TTL);
         await redis('LPUSH', 'garden', id); await redis('LTRIM', 'garden', 0, CRATE_SIZE - 1);
       }
       return res.status(200).json({ id, days: TTL / 86400 });
@@ -74,8 +74,8 @@ module.exports = async (req, res) => {
     if ('garden' in q) {
       const ids = (await redis('LRANGE', 'garden', 0, 79)) || [];
       const raw = ids.length ? await redis('MGET', ...ids.map(i => 'gdn:' + i)) : [];
-      const records = ids.map((i, k) => { try { const g = JSON.parse(raw[k]); return { id: i, name: g.name, t: g.t, v: g.v }; } catch (e) { return null; } }).filter(Boolean);
-      res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+      const records = ids.map((i, k) => { try { const g = JSON.parse(raw[k]); return { id: i, name: g.name, t: g.t, v: g.v, n: g.n || 0, at: g.at || 0 }; } catch (e) { return null; } }).filter(Boolean);
+      res.setHeader('Cache-Control', 's-maxage=5, stale-while-revalidate=20');
       return res.status(200).json({ records });
     }
     if ('gid' in q) {
