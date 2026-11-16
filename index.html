@@ -127,6 +127,9 @@ button{cursor:pointer}
 #booth .bring,#booth .nohit,#booth .nohit *{pointer-events:none}
 #booth:hover,#booth:focus-visible{outline:none;filter:brightness(1.12) drop-shadow(0 0 22px rgba(255,205,130,.55))}
 #booth:focus{outline:none}
+/* a strip along the top of the shop takes taps near the buttons, so a near miss never pulls an album off the wall behind them */
+#shop .shopbar{position:absolute;left:0;right:0;top:0;height:calc(66px + env(safe-area-inset-top,0px));z-index:6;background:linear-gradient(rgba(12,6,3,.55),rgba(12,6,3,0))}
+#shop .chrome,#soundBtn{min-height:44px;padding:.6rem 1.15rem;font-size:.9rem}
 #shopBack{left:14px;top:calc(12px + env(safe-area-inset-top,0px))}
 #tag{position:fixed;z-index:58;pointer-events:none;background:var(--paper);color:var(--ink);padding:6px 10px 7px;box-shadow:0 6px 14px rgba(0,0,0,.45);transform:translate(-50%,-100%) rotate(-1.5deg);opacity:0;transition:opacity .15s;max-width:240px}
 #tag b{display:block;font:800 13px/1.2 'Archivo',sans-serif}#tag span{display:block;font:500 12px/1.3 'Archivo',sans-serif;color:#6b5646}
@@ -263,7 +266,8 @@ button{cursor:pointer}
 .dock{box-sizing:border-box;height:calc(78px + env(safe-area-inset-bottom,0px))}
 @media (max-width:760px){.dock{height:calc(66px + env(safe-area-inset-bottom,0px))}}
 .dk-name b,.dk-name small{overflow:hidden;text-overflow:ellipsis}
-.dk-back,.dk-next{flex:none;width:46px;height:46px;border-radius:50%;border:0;font:400 1.35rem/1 Archivo,sans-serif;cursor:pointer;display:grid;place-items:center}
+.dk-back,.dk-next{flex:none;width:46px;height:46px;border-radius:50%;border:0;padding:0;font:400 1.35rem/1 Archivo,sans-serif;line-height:0;cursor:pointer;display:grid;place-items:center}
+.dk-back svg,.dk-next svg{display:block}
 .dk-back{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px rgba(43,37,34,.5)}
 .dk-next{width:56px;height:56px;font-size:1.6rem;background:var(--burg);color:#F6EBD6;box-shadow:0 4px 10px rgba(0,0,0,.3)}
 .dk-next:hover{filter:brightness(1.12)}
@@ -915,7 +919,7 @@ body.sheeton{overflow:hidden}
 <section id="shop" class="scene" aria-label="Inside the shop">
   <div id="shopWrap"><div id="shopSizer"><div id="shopStage"></div></div></div>
   <div class="edge l" id="edgeL"><button aria-label="Look left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button></div><div class="edge r" id="edgeR"><button aria-label="Look right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button></div>
-  <button id="shopBack" class="chrome">Back to the street</button>
+  <div class="shopbar" aria-hidden="true"></div><button id="shopBack" class="chrome">Exit the store</button>
 </section>
 
 <section id="studio" class="scene" aria-label="Pressing booth">
@@ -992,10 +996,10 @@ body.sheeton{overflow:hidden}
     </aside>
   </div>
   <div class="dock" id="dock">
-    <button class="dk-back" id="prevStep" aria-label="Back">&larr;</button>
+    <button class="dk-back" id="prevStep" aria-label="Back"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
     <button class="dk-name" id="dkName" aria-label="All steps"><small id="dkGroup"></small><b id="dkTitle"></b></button>
     <span class="dk-fill"></span>
-    <button class="dk-next" id="nextStep" aria-label="Next">&rarr;</button>
+    <button class="dk-next" id="nextStep" aria-label="Next"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     <button class="btn or dk-press" id="pressBtn" hidden>Press the record</button>
     <div class="dk-prog"><i id="dkProg"></i></div>
   </div>
@@ -2665,7 +2669,7 @@ function enterShop(){
   ensureAudio(); sfx.bell(); const door = $('doorPanel'), inner = $('outsideInner'), hit = $('doorHit').getBoundingClientRect(), box = inner.getBoundingClientRect();
   inner.style.transformOrigin = `${hit.left - box.left + hit.width/2}px ${hit.top - box.top + hit.height*.45}px`; const t0 = performance.now();
   const stepA = now => { const k = Math.min(1, (now - t0)/480), e = 1 - Math.pow(1-k, 3); door.setAttribute('transform', `translate(${DOOR.hinge} 0) scale(${1 - e*.82} 1) translate(${-DOOR.hinge} 0)`);
-    if (k < 1) requestAnimationFrame(stepA); else { inner.classList.add('zoom'); setTimeout(() => { go('shop'); setTimeout(() => setHintT('Step into the pressing booth at the back.'), 900); }, reduceMotion ? 0 : 650);
+    if (k < 1) requestAnimationFrame(stepA); else { inner.classList.add('zoom'); setTimeout(() => { go('shop'); setTimeout(() => setHintT((matchMedia('(hover: none)').matches ? 'Tap' : 'Click') + ' the pressing booth to make your own record, or any album to hear it.'), 900); }, reduceMotion ? 0 : 650);
       setTimeout(() => { inner.style.transition = 'none'; inner.classList.remove('zoom'); door.removeAttribute('transform'); void inner.offsetWidth; inner.style.transition = ''; }, 1500); } };
   requestAnimationFrame(stepA);
 }
