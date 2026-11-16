@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DigiVinyl: make a record for someone</title>
-<link rel="preload" href="img/paper.webp" as="image" type="image/webp"><link rel="preload" href="img/digivinyl.png" as="image">
+<link rel="preload" href="/img/paper.webp" as="image" type="image/webp"><link rel="preload" href="/img/digivinyl.png" as="image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&family=Cormorant+Garamond:wght@500;600&family=Great+Vibes&family=DM+Sans:opsz,wght@9..40,400&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
@@ -520,7 +520,10 @@ body.sheeton{overflow:hidden}
 .editing .snote{pointer-events:auto;cursor:grab}
 .snote.sel{outline:2px dashed rgba(35,26,20,.55);outline-offset:3px}
 /* sleeve back */
-.sback{--mono:var(--typewriter);background:#E9DFC9;color:#2A1E17;padding:7% 8%;font-size:clamp(.56rem,.95vw,.84rem);overflow:hidden;display:flex;flex-direction:column}
+.sback{--mono:var(--typewriter);background:#E9DFC9;color:#2A1E17;padding:7% 8%;font-size:clamp(.56rem,.95vw,.84rem);overflow:hidden;display:flex;flex-direction:column;container-type:inline-size}
+.sback > .hd,.sback > .bfoot{font-size:3.1cqw}
+.sback li div{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sback li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sback::after{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.25;pointer-events:none}
 .sback .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:1em}
 .sback h4{margin:0;font-weight:900;font-size:1.45em;line-height:1.02;letter-spacing:-.01em}
@@ -611,9 +614,11 @@ body.sheeton{overflow:hidden}
 .tracksheet .cols{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 .minilist .cols{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .minilist li .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:520px){.tracksheet .cols{grid-template-columns:1fr}}
+@media (max-width:520px){.tracksheet .cols{grid-template-columns:minmax(0,1fr)}}
 .tracksheet h4{margin:0 0 8px;font:600 .72rem/1 var(--mono);letter-spacing:.2em;display:flex;justify-content:space-between;border-bottom:1.5px solid var(--ink);padding-bottom:6px}
 .tracksheet ol{list-style:none;margin:0;padding:0;min-height:40px}
+.tracksheet .cols > div{min-width:0}
+.tracksheet li > button{flex:none}
 .tracksheet li{display:flex;align-items:center;gap:4px;font-size:.78rem;padding:5px 0;border-bottom:1px dotted rgba(35,26,20,.3)}
 .tracksheet li .n{width:24px;color:var(--ink2)}
 .tracksheet li .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -688,6 +693,7 @@ body.sheeton{overflow:hidden}
 .linkrow{display:flex;gap:8px}
 .linkrow input{flex:1;min-width:0;border:0;border-radius:6px;padding:.7rem .9rem;background:#fff;box-shadow:0 0 0 1.5px var(--line);font:500 .8rem/1 var(--mono)}
 .sharecard .row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.sharecard .sharehint{margin:14px 0 0;font-size:.8rem;color:var(--ink2)}
 .sharecard .warn{margin-top:12px;font:500 .74rem/1.45 var(--mono);color:var(--orange)}
 
 /* ---------- listening room ---------- */
@@ -723,7 +729,7 @@ body.sheeton{overflow:hidden}
 .grec::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle,transparent 0 38%,rgba(255,255,255,.09) 39% 41%,transparent 42%),linear-gradient(90deg,rgba(0,0,0,.25),transparent 3%,transparent 97%,rgba(255,255,255,.12));box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
 .grec::after{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.18),transparent 30%,transparent 62%,rgba(255,255,255,.07) 70%,transparent 80%);pointer-events:none}
 .grec.gone{visibility:hidden}
-.dcard{background:var(--paper);padding:14px 18px 12px;transform:rotate(3deg);box-shadow:0 10px 18px rgba(0,0,0,.35);max-width:260px;width:100%}
+.dcard{display:none!important;background:var(--paper);padding:14px 18px 12px;transform:rotate(3deg);box-shadow:0 10px 18px rgba(0,0,0,.35);max-width:260px;width:100%}
 .dcard .to{font:700 1.9rem/1 'Caveat',cursive}
 .dcard .msg{font:600 1.3rem/1.15 'Caveat',cursive;margin:.3rem 0}
 .dcard .from{font:700 1.25rem/1 'Caveat',cursive;text-align:right;color:var(--ink2)}
@@ -915,6 +921,7 @@ body.sheeton{overflow:hidden}
 #st-press .gopt input{margin:2px 0 0;width:18px;height:18px}
 #st-press .gopt b{display:block;margin-bottom:3px;color:var(--ink);font:700 .9rem/1.3 Archivo,sans-serif}
 #st-press .gopt span{font:400 .82rem/1.45 Archivo,sans-serif;color:var(--ink2)}
+#st-press .needs[hidden]{display:none}
 #st-press .needs{display:block;margin:0 0 16px;padding:14px 16px;border:0;border-radius:10px;background:rgba(123,42,46,.09);box-shadow:inset 3px 0 0 var(--burg,#7B2A2E)}
 #st-press .needs b{display:block;margin-bottom:3px;color:var(--burg,#7B2A2E);font:700 .9rem/1.3 Archivo,sans-serif}
 #st-press .needs span{display:block;font:400 .86rem/1.45 Archivo,sans-serif;color:var(--ink)}
@@ -922,6 +929,33 @@ body.sheeton{overflow:hidden}
 #st-press .needs .btn{margin:0;border-radius:999px;box-shadow:none;padding:.55rem 1rem;font-size:.82rem}
 #st-press .recap{border-radius:10px;overflow:hidden;margin-bottom:16px}
 #st-press .tracksheet{border-radius:10px}
+
+/* WHAT'S PLAYING, under the turntable: side and track, the song, the artist, and a link to the whole song */
+.nowtag{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 16px;text-align:left!important;transform:none!important;width:min(440px,92%);min-width:0!important;max-width:none!important;padding:14px 16px 14px 18px!important;border-radius:14px}
+.nowtag small{grid-column:1;font:600 .66rem/1.3 'Archivo Narrow',sans-serif!important;letter-spacing:.14em!important;color:#8a735f!important}
+.nowtag b{grid-column:1;font:800 1.02rem/1.25 Archivo,sans-serif!important;color:var(--ink);display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.nowtag span{grid-column:1;font:500 .84rem/1.35 Archivo,sans-serif!important;color:var(--ink2)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nowtag a{grid-column:2;grid-row:1 / span 3;align-self:center;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:var(--ink);color:var(--paper)!important;font:700 .78rem/1 Archivo,sans-serif!important;text-decoration:none;white-space:nowrap}
+.nowtag a::after{content:"";width:9px;height:9px;background:currentColor;clip-path:polygon(25% 0,100% 0,100% 75%,80% 75%,80% 34%,14% 100%,0 86%,66% 20%,25% 20%)}
+
+/* RECORDS OTHERS MADE: a back button, the title on one line, then sleeves with their records sliding out, two across on phones */
+#crates{overflow:auto}
+#crates header{display:block;position:relative;padding:calc(16px + env(safe-area-inset-top,0px)) clamp(18px,4vw,48px) 6px}
+#crates header .chrome{margin-bottom:18px;min-height:40px;padding:.5rem 1.1rem}
+#crates h2{font-size:clamp(2.3rem,9.5vw,3.6rem)!important;white-space:nowrap;line-height:1.05!important}
+#crates header p{margin:8px 0 0!important;max-width:34ch;font-size:.92rem!important;line-height:1.45}
+#crates .ccount{display:block;margin-top:14px;font:600 .7rem/1 'Archivo Narrow',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#9C8870}
+#crates .grid{flex:none!important;overflow:visible!important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important;gap:30px 18px!important;padding:22px clamp(18px,4vw,48px) calc(48px + env(safe-area-inset-bottom,0px))!important}
+#crates .crec{display:flex;flex-direction:column;min-width:0}
+#crates .crec .art{aspect-ratio:1.22!important;margin-bottom:12px!important}
+#crates .crec .sl{height:100%!important;width:auto;box-shadow:0 10px 22px rgba(0,0,0,.55)!important}
+#crates .crec .vn{height:94%!important;top:3%!important;right:0}
+#crates .crec b{font:700 .95rem/1.25 Archivo,sans-serif!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#crates .crec small{margin-top:4px!important;font:500 .78rem/1.3 Archivo,sans-serif!important}
+#crates .crec:hover .sl,#crates .crec:focus-visible .sl{transform:translateY(-3px)}
+#crates .crec .sl{transition:transform .3s}
+#crates .empty{grid-column:1/-1;max-width:34ch;line-height:1.5}
+@media (max-width:420px){#crates .grid{grid-template-columns:1fr 1fr!important;gap:26px 14px!important}}
 </style>
 </head>
 <body>
@@ -933,14 +967,14 @@ body.sheeton{overflow:hidden}
   <div id="outsideBg"></div><div id="outsideInner"></div>
   <p class="caption">The door's open. Tap it to go in.</p>
   <div id="welcome"><div class="wcard" role="dialog" aria-labelledby="wTitle"><div class="wpaper" id="wPaper"></div>
-    <h1 id="wTitle" class="wmark"><img src="img/digivinyl.png" alt="DigiVinyl" width="432" height="123"></h1>
+    <h1 id="wTitle" class="wmark"><img src="/img/digivinyl.png" alt="DigiVinyl" width="432" height="123"></h1>
     <p class="wline">A digital record store experience where<br>you can browse the shelves, build your own<br>vinyl and send it to someone special</p>
     <button id="startBtn" class="wbtn" disabled>Getting the store ready</button>
     <button id="cratesBtn" class="wlink" type="button">Browse records others made</button>
     <p class="wfoot">Made by <a href="https://x.com/nihala_khan_" target="_blank" rel="noopener">@nihala_khan_</a></p>
   </div></div>
 </section>
-<section id="crates" aria-label="Records others made"><header><div><h2>Records others made</h2><p>Made here by people who chose to share them. Tap one to play it.</p></div><button class="chrome" id="cratesClose" style="position:static">Back to the street</button></header><div class="grid" id="cratesGrid"></div></section>
+<section id="crates" aria-label="Records others made"><header><button class="chrome" id="cratesClose" style="position:static">Back</button><h2>Records others made</h2><p>Made here by people who chose to share them. Tap one to play it.</p><span class="ccount" id="cratesCount"></span></header><div class="grid" id="cratesGrid"></div></section>
 
 <section id="shop" class="scene" aria-label="Inside the shop">
   <div id="shopWrap"><div id="shopSizer"><div id="shopStage"></div></div></div>
@@ -1040,7 +1074,8 @@ body.sheeton{overflow:hidden}
     <div class="linkrow"><input id="shareLink" readonly aria-label="Your link"><button class="btn" id="copyBtn">Copy</button></div>
     <p class="warn" id="previewWarn" hidden>This is a test copy of the site, so other people may not be able to open this link. Press your record on the main site to share it.</p>
     <p class="warn" id="shareWarn" hidden>Your photo is packed into the link, which makes it very long. On the real site, photos would be stored separately so links stay short.</p>
-    <div class="row"><button class="btn or" id="openAsThem">Open it as them</button><button class="btn ghost" id="keepEditing">Keep editing</button><button class="btn ghost" id="newRecord">Make another record</button></div>
+    <div class="row"><button class="btn or" id="openAsThem">Preview</button><button class="btn ghost" id="newRecord">Make another record</button></div>
+    <p class="sharehint">Tap anywhere outside to keep editing.</p>
   </div>
 </div>
 
@@ -1898,7 +1933,7 @@ const recSize = r => (r.A.length + r.B.length) > 10 ? 12 : 10;
 function backHTML(r, A, B){
   const li = (arr, sd) => arr.length ? arr.map((s,i) => `<li><em>${sd}${i+1}</em><div>${esc(s.name)}<span>${esc(s.artist)}</span></div></li>`).join('') : `<li><em></em><div><span>Nothing here yet</span></div></li>`;
   return `<div class="hd"><div><h4>${esc(r.name || 'Untitled')}</h4>${r.line ? `<p class="sub">${esc(r.line)}</p>` : ''}</div><div class="cat">${esc(r.cat || '')}<br>${recSize(r)}-INCH, 33 1/3</div></div>
-    <div class="cols${Math.max(A.length, B.length) > 7 ? ' tight' : ''}" style="font-size:${Math.min(1, 7/Math.max(7, A.length, B.length)).toFixed(3)}em"><div><b>SIDE A</b><ol>${li(A,'A')}</ol></div><div><b>SIDE B</b><ol>${li(B,'B')}</ol></div></div>
+    <div class="cols${Math.max(A.length, B.length) > 6 ? ' tight' : ''}" style="font-size:calc(3.1cqw * ${Math.min(1, 7/Math.max(7, A.length, B.length)).toFixed(3)})"><div><b>SIDE A</b><ol>${li(A,'A')}</ol></div><div><b>SIDE B</b><ol>${li(B,'B')}</ol></div></div>
     <div class="bfoot">${r.d.credits ? `<div class="credits"><span>${r.by ? 'PRESSED BY ' + esc(r.by).toUpperCase() : 'PRESSED AT SIDE B'}${r.to ? '<br>FOR ' + esc(r.to).toUpperCase() : ''}</span><span>&copy; ${esc(r.year || '')} SIDE B RECORDS<br>ONE OF ONE</span></div>` : ''}
     ${r.d.legal || r.d.barcode || r.d.half ? `<div class="fine"><p>${r.d.legal ? `&#8471; &amp; &copy; ${esc(r.year || '')} ${esc(r.by || 'Side B Records')}. All rights of the producer and of the owner of the recorded work reserved. Unauthorised copying, hiring, lending, public performance and broadcasting of this record prohibited. Pressed one of one at Side B.` : ''}</p>
       <span class="slot">${r.d.half ? `<span class="hsm"><b>HALF-SPEED</b>MASTERED</span>` : ''}</span><span class="slot bc">${r.d.barcode ? barcodeSVG(r) : ''}</span></div>` : ''}</div>
@@ -2510,20 +2545,21 @@ async function decodeRec(str){ const bytes = unb64url(str.slice(1)); let out = b
 // If storage isn't set up or doesn't answer, the record is packed into the link itself instead.
 async function shareLink(r){ const code = await encodeRec(r);
   try { const t = drawSleeve(r, 300).toDataURL('image/jpeg', .62), ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000), body = { c:code, t, name:r.name, by:r.by, to:r.to };
-    if ($('fGarden').checked){ const pub = { ...r, by:'', to:'', notes:[] }; body.gc = await encodeRec(pub); body.gt = drawSleeve(pub, 300).toDataURL('image/jpeg', .62); body.gv = drawVinyl(pub, 200, 'A').toDataURL('image/png'); }
+    if ($('fGarden').checked){ const pub = { ...r, by:'', to:'', notes:[] }; body.gc = await encodeRec(pub); body.gt = drawSleeve(pub, 300).toDataURL('image/jpeg', .55); const vc = drawVinyl(pub, 180, 'A'), vw = vc.toDataURL('image/webp', .82); body.gv = vw.startsWith('data:image/webp') ? vw : vc.toDataURL('image/png'); body.gn = pub.A.length + pub.B.length; }
     const res = await fetch('/api/record', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body), signal:ctl.signal }); clearTimeout(to);
     const data = await res.json(); if (res.ok && /^[A-Za-z0-9]{8}$/.test(data.id)) return { url: location.origin + '/r/' + data.id, short:true }; } catch(e){}
   return { url: location.origin + (location.pathname.startsWith('/r/') ? '/' : location.pathname) + (code.length < 6000 ? '?r=' : '#r=') + code, short:false }; }
 let fromMaker = false, fromCrates = false;
 // THE CRATES: records their makers chose to share, newest first, with the shop's example always in the front
-async function openCrates(){ const box = $('cratesGrid'); $('crates').classList.add('on');
-  const ex = cleanRec(EXAMPLE), tile = (k, name, sub, sl, vn) => `<button class="crec" data-k="${esc(k)}"><span class="art"><img class="vn" src="${esc(vn)}" alt=""><img class="sl" src="${esc(sl)}" alt=""></span><b>${esc(name || 'Untitled')}</b><small>${esc(sub)}</small></button>`;
-  let html = ''; box.innerHTML = '<p class="empty">Finding the records...</p>';
-  let list = []; try { const res = await fetch('/api/record?garden'); if (res.ok) list = (await res.json()).records || []; } catch(e){}
+async function openCrates(){ const box = $('cratesGrid'); $('crates').classList.add('on'); $('crates').scrollTop = 0;
+  const ago = t => { const m = Math.max(1, Math.round((Date.now() - t)/60000)); return m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m/60)} h ago` : `${Math.round(m/1440)} day${Math.round(m/1440) === 1 ? '' : 's'} ago`; };
+  const tile = x => `<button class="crec" data-k="${esc(x.id)}"><span class="art"><img class="vn" src="${esc(x.v)}" alt="" loading="lazy"><img class="sl" src="${esc(x.t)}" alt="" loading="lazy"></span><b>${esc(x.name || 'Untitled record')}</b><small>${[x.n ? `${x.n} songs` : '', x.at ? ago(x.at) : ''].filter(Boolean).join(' · ') || 'Shared here'}</small></button>`;
+  box.innerHTML = '<p class="empty">Finding the records...</p>'; $('cratesCount').textContent = '';
+  let list = []; try { const res = await fetch('/api/record?garden', { cache:'no-store' }); if (res.ok) list = (await res.json()).records || []; } catch(e){}
   list = list.filter(x => /^[A-Za-z0-9]{8}$/.test(x.id) && /^data:image\//.test(x.t || '') && /^data:image\//.test(x.v || ''));
-  box.innerHTML = html + list.map(x => tile(x.id, x.name, 'Made here', x.t, x.v)).join('') + (list.length ? '' : '<p class="empty">No one has shared a record yet. Make one and tick "Share it with others" when you press it.</p>');
+  $('cratesCount').textContent = list.length ? `${list.length} record${list.length === 1 ? '' : 's'}` : '';
+  box.innerHTML = list.length ? list.map(tile).join('') : '<p class="empty">No one has shared a record yet. Make one and tick "Share it with others" when you press it.</p>';
   box.querySelectorAll('.crec').forEach(b => b.addEventListener('click', async () => { ensureAudio(); const k = b.dataset.k; $('crates').classList.remove('on'); fromCrates = true;
-    if (k === 'example'){ window.__example(); return; }
     try { const res = await fetch(`/api/record?gid=${k}&json`), data = await res.json(); if (res.ok && data.c){ location.hash = 'r=' + data.c; return; } } catch(e){}
     fromCrates = false; openCrates(); setHintT('That record has come off the shelf.', 6000); })); }
 $('pressBtn').addEventListener('click', async () => { const btn = $('pressBtn'), label = btn.textContent; btn.disabled = true; btn.textContent = 'Pressing...';
@@ -2531,7 +2567,8 @@ $('pressBtn').addEventListener('click', async () => { const btn = $('pressBtn'),
   $('shareNote').textContent = link.short ? 'Send this link to them. It lasts 30 days, so tell them not to leave it too long.' : "Send this link to them. The whole record lives inside it, so there's nothing to sign up for.";
   $('shareWarn').hidden = link.short || !draft.photo; $('previewWarn').hidden = !/-git-/.test(location.hostname); $('copyBtn').textContent = 'Copy'; $('share').classList.add('on'); });
 $('copyBtn').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('shareLink').value); } catch(e){ $('shareLink').select(); } $('copyBtn').textContent = 'Copied'; });
-$('keepEditing').addEventListener('click', () => $('share').classList.remove('on'));
+$('share').addEventListener('click', e => { if (e.target === $('share')) $('share').classList.remove('on'); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && $('share').classList.contains('on')) $('share').classList.remove('on'); });
 $('newRecord').addEventListener('click', () => { $('share').classList.remove('on'); lastDraft = cleanRec(null); loadDraft(cleanRec(null)); saveDraft(); });
 $('openAsThem').addEventListener('click', async () => { $('share').classList.remove('on'); fromMaker = true; location.hash = 'r=' + await encodeRec(draft); });
 $('backEdit').addEventListener('click', () => { location.hash = ''; });
@@ -3369,8 +3406,8 @@ function unloadDeck(){ deck = null; deckOrigin = null; needleDown = false; onVin
   $('nowTag').innerHTML = '<small>NOTHING PLAYING</small><b>The turntable is empty</b><span>Pick up the record and bring it here.</span>'; }
 function updateNow(){ if (!deck) return; const list = sideSongs(), k = (needleDown && onVinyl) ? trackAt(recTime) : -1; if (k === shownK) return; shownK = k;
   if (k < 0){ $('nowTag').innerHTML = `<small>SIDE ${deck.side}, ${list.length} SONGS</small><b>${esc(recv.name || 'Untitled')}</b><span>Each ring is a song. Tap the label to flip the record.</span>`; return; }
-  const s = list[k], link = s.u ? `<a href="${esc(s.u)}" target="_blank" rel="noopener">Listen to the full song</a>` : '';
-  $('nowTag').innerHTML = `<small>SIDE ${deck.side}, TRACK ${k+1}</small><b>${esc(s.name)}</b><span>${esc(s.artist)}</span>${link}`; }
+  const s = list[k], link = s.u ? `<a href="${esc(s.u)}" target="_blank" rel="noopener">Full song</a>` : '';
+  $('nowTag').innerHTML = `<small>SIDE ${deck.side} · TRACK ${k+1}</small><b>${esc(s.name)}</b><span>${esc(s.artist)}</span>${link}`; }
 const radiusFor = t => t <= DUR() ? R_OUT - (t/DUR())*(R_OUT-R_IN) : Math.max(R_END, R_IN - (t-DUR())*1.5);
 const timeForDist = d => d >= R_IN ? (R_OUT-d)/(R_OUT-R_IN)*DUR() : DUR() + (R_IN-d)/1.5;
 function liftArm(){ needleDown = false; onVinyl = false; armState = 'lifted'; syncDeckUI(); }
@@ -3457,7 +3494,7 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   requestAnimationFrame(draw);
   setMuted(store.get('sideb-muted') === true);
   const card = $('welcome').querySelector('.wcard'), bits = [...card.children].filter(e => e.id !== 'wPaper');
-  const paperURL = 'img/paper.webp';
+  const paperURL = sitePath('img/paper.webp'); document.querySelector('#wTitle img').src = sitePath('img/digivinyl.png');
   $('wPaper').innerHTML = `<img src="${paperURL}" alt="" draggable="false">`;
   // the same sheet, small, waits in the top left corner of the street with a few lines of writing on it
   $('paperBall').innerHTML = `<img src="${paperURL}" alt="" draggable="false">` + [[30, 46], [42, 40], [52, 44], [62, 30]].map(([t, w]) => `<span class="pl" style="top:${t}%;width:${w}%"></span>`).join('');
