@@ -560,7 +560,7 @@ body.sheeton{overflow:hidden}
 /* deck panel */
 .deck{position:relative;display:flex;flex-direction:column;min-height:0;background:var(--paper);border-left:1px solid var(--faded)}
 .deck::before{content:"";position:absolute;inset:0;background-image:var(--noise);background-size:256px;mix-blend-mode:multiply;opacity:.22;pointer-events:none}
-.dbody{flex:1;overflow:auto;padding:20px 22px 26px}
+.dbody{flex:1;overflow:auto;scrollbar-gutter:stable;padding:20px 22px 26px}
 .step{display:none}.step.on{display:block}
 .step h2{margin:0;font:400 2rem/1 'Yellowtail',cursive;color:var(--faded)}
 .step .lede{margin:.25rem 0 1rem;color:var(--ink2);font-size:.9rem;line-height:1.45}
@@ -876,6 +876,8 @@ body.sheeton{overflow:hidden}
   #studio .sbody{grid-template-columns:minmax(0,1fr);grid-template-rows:42% minmax(0,1fr)}
   #studio .bench{padding-bottom:0}
   #studio .caption,#studio .drawbar{bottom:8px}
+  #studio .caption{display:block}#studio .caption b{font-size:1.15rem;margin:0}
+  #studio .bench:has(.drawbar:not([hidden])) .caption{display:none}
   #studio .deck{margin:0 8px;border-radius:16px 16px 0 0;box-shadow:0 -12px 34px rgba(0,0,0,.45)}
   #studio .dbody{padding:18px 16px calc(96px + env(safe-area-inset-bottom,0px))}
   /* on phones back and next float in a slim dark pill over the bottom of the card */
@@ -2337,8 +2339,8 @@ function renderDock(now){ if (sliding) return; clearTimeout(dockTimer); if (!now
       b.addEventListener('click', () => { if (inp) return inp.click(); sfx.click(); after(R.pick(b.dataset.v)); }); }); }
   else box.innerHTML = '';
   const secs = fv(F.sec) || []; document.querySelectorAll('.step').forEach(p => p.classList.toggle('on', secs.includes(p.id)));
-  const nt = F.note && F.note(); $('stNote').hidden = !nt; if (nt) $('stNote').innerHTML = `<b>${esc(nt[0])}</b> ${esc(nt[1])}`;
-  $('caption').innerHTML = nt ? `<b>${esc(nt[0])}</b>${esc(nt[1])}` : ''; $('caption').classList.toggle('on', !!nt);
+  const nt = F.note && F.note(); $('stNote').hidden = true;
+  $('caption').innerHTML = nt ? `<b>${esc(nt[0])}</b>` : ''; $('caption').classList.toggle('on', !!nt);
   const colRow = false;
   document.querySelectorAll('.xtra').forEach(x => x.hidden = !(x.dataset.for === 'colours' ? colRow : x.dataset.for === 'hype' ? F.id === 'sleeve' && tabs.sleeve === 'F' && draft.d.sticker : false));
   if (colRow) sleevePickers();
