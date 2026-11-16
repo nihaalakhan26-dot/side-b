@@ -901,6 +901,22 @@ body.sheeton{overflow:hidden}
 #cpick input{flex:1;min-width:0;height:34px;padding:0 10px;border:1px solid var(--line,#d8ccb6);border-radius:8px;background:#fff;font:600 .9rem/1 Archivo,sans-serif;text-transform:uppercase;color:var(--ink)}
 #cpick button{flex:none;height:34px;padding:0 14px;border:0;border-radius:999px;background:var(--ink);color:var(--paper);font:700 .85rem/1 Archivo,sans-serif;cursor:pointer}
 @media (max-width:760px){#cpick{left:0!important;right:0;top:auto!important;bottom:0;width:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}#cpick .sv{height:46vw;max-height:230px}#cpick .hue{height:26px}#cpick .cpk{width:26px;height:26px;margin:-13px 0 0 -13px}}
+
+/* READY TO PRESS: one rhythm, everything on the same left edge, 16px between blocks */
+#st-press .credit{padding:18px 18px 20px;border-radius:10px}
+#st-press .credit > label:first-child{margin-top:0}
+#st-press .credit + .hintline{margin:8px 0 16px;padding:0}
+#st-press .gopt{margin:0 0 16px;padding:14px 16px;gap:12px;align-items:flex-start;background:#FBF5E8;border-radius:10px;box-shadow:0 0 0 1px rgba(43,37,34,.2)}
+#st-press .gopt input{margin:2px 0 0;width:18px;height:18px}
+#st-press .gopt b{display:block;margin-bottom:3px;color:var(--ink);font:700 .9rem/1.3 Archivo,sans-serif}
+#st-press .gopt span{font:400 .82rem/1.45 Archivo,sans-serif;color:var(--ink2)}
+#st-press .needs{display:block;margin:0 0 16px;padding:14px 16px;border:0;border-radius:10px;background:rgba(123,42,46,.09);box-shadow:inset 3px 0 0 var(--burg,#7B2A2E)}
+#st-press .needs b{display:block;margin-bottom:3px;color:var(--burg,#7B2A2E);font:700 .9rem/1.3 Archivo,sans-serif}
+#st-press .needs span{display:block;font:400 .86rem/1.45 Archivo,sans-serif;color:var(--ink)}
+#st-press .needs .ndb{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+#st-press .needs .btn{margin:0;border-radius:999px;box-shadow:none;padding:.55rem 1rem;font-size:.82rem}
+#st-press .recap{border-radius:10px;overflow:hidden;margin-bottom:16px}
+#st-press .tracksheet{border-radius:10px}
 </style>
 </head>
 <body>
@@ -992,8 +1008,8 @@ body.sheeton{overflow:hidden}
             <div class="row"><div><label for="fBy">FROM</label><input id="fBy" maxlength="28" placeholder="your name"></div><div><label for="fTo">FOR</label><input id="fTo" maxlength="28" placeholder="their name"></div></div>
           </div>
           <p class="hintline">These go on the gift tag, the back of the sleeve and the record label.</p>
-          <label class="gopt"><input type="checkbox" id="fGarden"><span><b>Share it with others</b> so anyone can find it under Records others made and play it. Who it's from and who it's for stay private.</span></label>
-          <p class="needs" id="pressNeeds" hidden></p>
+          <label class="gopt"><input type="checkbox" id="fGarden"><span><b>Share it with others</b>Anyone can find it under Records others made and play it. Who it's from and who it's for stay private.</span></label>
+          <div class="needs" id="pressNeeds" hidden></div>
           <div class="card recap" id="recap"></div>
           <div class="card tracksheet minilist" id="recapTracks"></div>
         </section>
@@ -2407,7 +2423,7 @@ const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 function renderRecap(){ if (fstep !== 'press') return; const n = draft.A.length + draft.B.length;
   $('recap').innerHTML = live().filter(f => f.id !== 'press').map(f => `<button class="rrow" data-go="${f.id}"><span class="rl">${f.short || f.name}</span><span class="rv">${f.val()}</span><span class="rp" aria-label="Change">&#9998;</span></button>`).join('');
   const need = [n < MINS ? [`${plural(MINS - n, 'more song')}`, 'songs', 'Add songs'] : null, draft.d.cover === 'photo' && !draft.photo ? ['a cover picture', 'sleeve', 'Add a picture'] : null].filter(Boolean);
-  $('pressNeeds').hidden = !need.length; $('pressNeeds').innerHTML = need.length ? `It needs ${need.map(x => x[0]).join(' and ')} before it can be pressed. ` + need.map(x => `<button class="btn sm" data-go="${x[1]}">${x[2]}</button>`).join(' ') : '';
+  $('pressNeeds').hidden = !need.length; $('pressNeeds').innerHTML = need.length ? `<b>Almost ready</b><span>Add ${need.map(x => x[0]).join(' and ')}, then it's ready to press.</span><div class="ndb">` + need.map(x => `<button class="btn sm" data-go="${x[1]}">${x[2]}</button>`).join('') + '</div>' : '';
   const side = (sd, list) => `<div><h4><span>SIDE ${sd}</span><span>${list.length}</span></h4><ol>${list.length ? list.map((t, i) => `<li><span class="n">${sd}${i+1}</span><span class="nm">${esc(t.name)}<em> ${esc(t.artist)}</em></span></li>`).join('') : '<li class="empty">No songs yet.</li>'}</ol></div>`;
   $('recapTracks').innerHTML = `<div class="cols">${side('A', draft.A.map(hydrateSong))}${side('B', draft.B.map(hydrateSong))}</div>`;
   document.querySelectorAll('#st-press [data-go]').forEach(b => b.onclick = () => { sfx.click(); goStep(b.dataset.go); }); }
