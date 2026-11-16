@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DigiVinyl: make a record for someone</title>
+<link rel="preload" href="img/paper.webp" as="image" type="image/webp"><link rel="preload" href="img/digivinyl.png" as="image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;700&family=Yellowtail&family=DM+Serif+Display:ital@0;1&family=Cormorant+Garamond:wght@500;600&family=Great+Vibes&family=DM+Sans:opsz,wght@9..40,400&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
@@ -68,7 +69,8 @@ button{cursor:pointer}
 #outside.welcoming .caption{opacity:0}
 @keyframes wIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
 #facade{transition:opacity .7s ease}
-#outside:not(.ready) #facade{opacity:0}
+#outside:not(.ready) #facade,#outside:not(.ready) .flayer{opacity:0}
+#outside .flayer{transition:opacity .7s ease}
 #outside:not(.ready) #welcome .wcard{visibility:hidden;animation:none}
 #paperBall{position:fixed;left:16px;top:calc(12px + env(safe-area-inset-top,0px));z-index:59;width:50px;height:57px;padding:0;border:0;background:none;cursor:pointer;transform:rotate(-7deg);filter:drop-shadow(0 6px 8px rgba(0,0,0,.45));transition:transform .25s cubic-bezier(.3,1.4,.5,1)}
 #paperBall:hover,#paperBall:focus-visible{transform:rotate(-2deg) translateY(-3px) scale(1.06)}
@@ -3432,7 +3434,10 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   notes:[{t:'Side A is for the way there.',c:0,x:52,y:56,r:-4,f:'F'},{t:'B3 is the one I kept replaying after you left.',c:1,x:54,y:58,r:3,f:'B'}] };
 
 (async () => {
-  try { await Promise.race([Promise.all(['900 20px Archivo','800 20px Archivo','600 20px Archivo','700 20px "Archivo Narrow"','600 20px "IBM Plex Mono"','500 20px "IBM Plex Mono"','400 20px Yellowtail','700 20px Caveat','400 20px "DM Serif Display"','italic 400 20px "DM Serif Display"'].map(f => document.fonts.load(f))), new Promise(r => setTimeout(r, 2800))]); } catch(e){}
+  // the street only needs its sign and neon fonts, so it waits for just those (a second at most); the builder's fonts keep loading behind it
+  const allFonts = Promise.all(['900 20px Archivo','800 20px Archivo','600 20px Archivo','700 20px "Archivo Narrow"','600 20px "IBM Plex Mono"','500 20px "IBM Plex Mono"','400 20px Yellowtail','700 20px Caveat','400 20px "DM Serif Display"','italic 400 20px "DM Serif Display"','400 20px "DM Sans"','400 20px "DM Mono"'].map(f => document.fonts.load(f).catch(() => {})));
+  try { await Promise.race([Promise.all(['900 20px Archivo','800 20px Archivo','400 20px Yellowtail','400 20px "DM Sans"','400 20px "DM Mono"'].map(f => document.fonts.load(f))), new Promise(r => setTimeout(r, 1000))]); } catch(e){}
+  allFonts.then(() => { try { refreshPreview(); } catch(e){} });
   document.documentElement.style.setProperty('--floor', `url(${floorURL()})`);
   [['--walnut', woodURL('#5a3820', 3)],['--walnutD', woodURL('#3a2314', 5)],['--walnutH', woodURL('#6d4426', 7, true)],['--oak', woodURL('#9a6a3e', 9)],['--plaster', plasterURL('#DACDB0')],['--plasterD', plasterURL('#6a563f')],['--plasterW', plasterURL('#D4C5A6')]]
     .forEach(([k,v]) => document.documentElement.style.setProperty(k, `url(${v})`));
