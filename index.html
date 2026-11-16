@@ -2955,7 +2955,8 @@ function openAlbum(el){ if (pulled) return; hideTag(); const a = slotAlbum(+el.d
     songs.innerHTML = list.map((t, i) => `<button class="assong" data-i="${i}"><i>▶</i><span>${esc(t.trackName)}</span></button>`).join('');
     songs.querySelectorAll('.assong').forEach(b => b.addEventListener('click', () => { const t = list[+b.dataset.i], on = b.classList.contains('on');
       stopShelf(); if (on) return; ensureAudio(); shopMusic(false); shelfAudio.src = t.previewUrl; shelfAudio.muted = muted; shelfAudio.play().catch(() => {});
-      b.classList.add('on'); b.querySelector('i').textContent = '❚❚'; })); })
+      b.classList.add('on'); b.querySelector('i').textContent = '❚❚'; }));
+    if (sh.classList.contains('pop')){ const H = card.offsetHeight; card.style.top = clamp(parseFloat(card.style.top), 12, innerHeight - H - 12) + 'px'; } })
   .catch(() => { if (pulled && pulled.el === el) songs.innerHTML = ''; }); }
 function closeAlbum(){ if (!pulled) return; const { el, fly, r } = pulled, sh = $('albumSheet'), t = $('asCov').getBoundingClientRect(); pulled = null; stopShelf();
   fly.getAnimations().forEach(x => x.cancel()); fly.style.visibility = ''; $('asCov').innerHTML = ''; sh.classList.remove('on');
