@@ -146,6 +146,10 @@ button{cursor:pointer}
 #albumSheet[hidden]{display:none}
 #albumSheet .ascard{position:relative;width:min(440px,100%);background:var(--paper);color:var(--ink);border-radius:16px;padding:16px 16px 14px;box-shadow:0 18px 50px rgba(0,0,0,.55);transform:translateY(30px);opacity:0;transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .3s}
 #albumSheet.on .ascard{transform:none;opacity:1}
+/* desktop: the card opens beside the cover it came from */
+#albumSheet.pop{display:block;padding:0}
+#albumSheet.pop .ascard{position:fixed;width:400px;transform:scale(.96);transform-origin:var(--ox,0) 50%}
+#albumSheet.pop.on .ascard{transform:none}
 #albumSheet .astop{display:flex;gap:14px;align-items:center;padding-right:28px}
 #albumSheet .ascov{flex:none;width:112px;height:112px;background:#ddd2bb}
 #albumSheet .ascov img{display:block;width:100%;height:100%;object-fit:cover;box-shadow:0 6px 14px rgba(0,0,0,.3)}
@@ -2910,7 +2914,8 @@ function showTag(a, el){ const b = el.getBoundingClientRect(); tag.querySelector
   tag.style.left = clamp(b.left + b.width/2, 130, innerWidth - 130) + 'px'; tag.style.top = Math.max(60, b.top - 8) + 'px'; tag.classList.add('show'); }
 function hideTag(){ tag.classList.remove('show'); }
 // the edges of the shop on phones: a soft fade and an arrow wherever there's more wall to see
-function edges(){ const w = $('shopWrap'), max = w.scrollWidth - w.clientWidth;
+const touchOnly = matchMedia('(hover: none), (pointer: coarse)');
+function edges(){ const w = $('shopWrap'), max = touchOnly.matches ? w.scrollWidth - w.clientWidth : 0;
   $('edgeL').classList.toggle('on', max > 4 && w.scrollLeft > 4); $('edgeR').classList.toggle('on', max > 4 && w.scrollLeft < max - 4); }
 $('shopWrap').addEventListener('scroll', edges, { passive:true });
 $('edgeL').querySelector('button').addEventListener('click', () => $('shopWrap').scrollBy({ left:-$('shopWrap').clientWidth*.7, behavior:'smooth' }));
@@ -2932,7 +2937,10 @@ function openAlbum(el){ if (pulled) return; hideTag(); const a = slotAlbum(+el.d
   const link = $('asLink'); if (a.url){ link.href = a.url; link.hidden = false; } else link.hidden = true;
   const songs = $('asSongs'); songs.innerHTML = LIVE_HOST ? '<p>Finding songs from it...</p>' : '';
   // where the cover will land: measured with the card already in place
-  sh.hidden = false; const card = sh.querySelector('.ascard'); card.style.transition = 'none'; sh.classList.add('on'); const t = $('asCov').getBoundingClientRect();
+  sh.hidden = false; const card = sh.querySelector('.ascard'), pop = !touchOnly.matches && innerWidth > 760; sh.classList.toggle('pop', pop);
+  if (pop){ const W = 400, H = card.offsetHeight || 260, right = r.right + 18 + W < innerWidth - 12;
+    card.style.left = (right ? r.right + 18 : Math.max(12, r.left - 18 - W)) + 'px'; card.style.top = clamp(r.top + r.height/2 - H/2, 12, innerHeight - H - 12) + 'px'; card.style.setProperty('--ox', right ? '0' : '100%'); }
+  else { card.style.left = card.style.top = ''; } card.style.transition = 'none'; sh.classList.add('on'); const t = $('asCov').getBoundingClientRect();
   sh.classList.remove('on'); void card.offsetWidth; card.style.transition = ''; requestAnimationFrame(() => sh.classList.add('on'));
   const fly = document.createElement('img'); fly.className = 'asfly'; fly.src = a.img; fly.alt = '';
   Object.assign(fly.style, { left:r.left + 'px', top:r.top + 'px', width:r.width + 'px', height:r.height + 'px' }); document.body.append(fly); el.style.opacity = 0;
