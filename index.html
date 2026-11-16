@@ -510,6 +510,7 @@ body.sheeton{overflow:hidden}
 @media (min-width:761px){#stNote{display:none!important}}
 @media (prefers-reduced-motion: reduce){.recwrap .pvinI.spin,.recwrap[data-mode="disc"] .pvinI,.plabel.flip{animation:none}}
 .pslv .fc{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:center/cover;box-shadow:0 16px 30px rgba(0,0,0,.35)}
+.pslv .fc.sback{background:#E9DFC9}
 .pslv .bk{transform:rotateY(180deg)}
 .pill{background:var(--paper);border:0;border-radius:999px;padding:.4rem .85rem;font:600 .75rem/1 var(--mono);letter-spacing:.06em;box-shadow:0 4px 10px rgba(0,0,0,.25)}
 .sizebadge{background:#1a1714;color:#efe6d2}
@@ -956,6 +957,8 @@ body.sheeton{overflow:hidden}
 #crates .crec .sl{transition:transform .3s}
 #crates .empty{grid-column:1/-1;max-width:34ch;line-height:1.5}
 @media (max-width:420px){#crates .grid{grid-template-columns:1fr 1fr!important;gap:26px 14px!important}}
+
+.tagcard[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -1109,7 +1112,7 @@ body.sheeton{overflow:hidden}
           <text font-family="Archivo,sans-serif" font-weight="800" font-size="10.5" fill="#7A1E18"><textPath href="#bmArc" startOffset="0" textLength="432" lengthAdjust="spacing">SIDE B RECORDS ✦ PRESSED BY HAND ✦ MADE FOR YOU ✦</textPath></text>
           <g fill="#7A1E18"><circle cx="100" cy="62" r="7.5"/><path d="M68 62 H88 M112 62 H132" stroke="#7A1E18" stroke-width="1.3"/></g><circle cx="100" cy="62" r="2.7" fill="#C9A26B"/><circle cx="100" cy="62" r=".8" fill="#7A1E18"/>
           <text x="100" y="112" text-anchor="middle" font-family="Yellowtail,cursive" font-size="42" fill="#7A1E18">Side B</text><path d="M72 122 H128" stroke="#7A1E18" stroke-width="1"/><text x="100" y="136" text-anchor="middle" font-family="Archivo Narrow,sans-serif" font-weight="700" font-size="8" letter-spacing="2.4" fill="#7A1E18">PRESSING BOOTH</text></svg></div>
-      <div class="tagcard"><b id="bagTo"></b><span id="bagSub"></span></div>
+      <div class="tagcard" hidden><b id="bagTo"></b><span id="bagSub"></span></div>
     </div>
     <div class="bagcta">Tap to open</div>
   </div>
@@ -1994,8 +1997,8 @@ function cleanRec(r){
   const vcol = (v, def) => hex(v, Number.isInteger(v) && VCOLS[v] ? VCOLS[v] : def);
   return { name:str(r.name, 80), line:str(r.line, 120), by:str(r.by, 60), to:str(r.to, 60), year:str(r.year, 10, b.year), cat:str(r.cat, 20, b.cat), photo,
     d:{ bg:hex(d.bg, old ? old.bg : b.d.bg), ink:hex(d.ink, old ? old.ink : b.d.ink), acc:hex(d.acc, old ? old.acc : b.d.acc), filt:pick(filt, FILTERS, b.d.filt), lay:pick(d.lay, LAYOUTS, ot ? ot[1] : b.d.lay), font:pick(d.font, TITLE_FONTS, ot ? ot[0] : b.d.font), ts:num(d.ts, .6, 1.5, d.type === 'minimal' ? .6 : 1),
-      showTitle:!fresh && d.type !== 'none' && d.showTitle !== false, showLine:!fresh && d.showLine !== false, showCredit:!fresh && d.showCredit !== false, credits:d.credits !== false, obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
-      stereo:d.stereo === true, g180:d.g180 === true, half:d.half === true, barcode:d.barcode !== false, legal:false,
+      showTitle:!fresh && d.type !== 'none' && d.showTitle !== false, showLine:!fresh && d.showLine !== false, showCredit:!fresh && d.showCredit !== false, credits:true, obi:d.obi === true, sticker:d.sticker === true, worn:d.worn === true,
+      stereo:d.stereo === true, g180:d.g180 === true, half:false, barcode:true, legal:false,
       pm:pick(pm === 'circle' ? 'framed' : pm, PHOTOMODES, b.d.pm), cover:pick(d.cover, COVERS, fresh || photo ? 'photo' : 'plain'), vinyl:pick(d.vinyl, VINYLS, b.d.vinyl), v1:vcol(d.v1, b.d.v1), v2:vcol(d.v2, b.d.v2),
       shape:pick(d.shape, SHAPES, b.d.shape), label:pick(d.label, LABELS, b.d.label), lab:hex(d.lab, oldLab || b.d.lab), amt:typeof d.amt === 'number' && d.amt >= 0 && d.amt <= 2 ? Math.round(d.amt*20)/20 : 1, pfilt:pick(d.pfilt, FILTERS, 'none'), stk:['burst', 'bar', 'round'].includes(d.stk) ? d.stk : (d.sticker === true && !d.stk ? 'round' : 'burst') },
     hype, draw, texts, lab, pdisc:img(r.pdisc), A:side(r.A), B:side(r.B),
@@ -2321,8 +2324,7 @@ const FLOW = [
     tabs:{ key:'labels', items:[['A','Side A'],['B','Side B']] },
     val:() => `${nameOf(LABEL_LAYOUTS, draft.lab.A.st || 'solid')} ${chip(draft.d.lab)}` + (['A','B'].some(k => draft.lab[k].texts.length || draft.lab[k].img) ? ', your own words' : ''),
     rows:[            { l:'Paper colour', items:() => colourChips(SLEEVE_SWATCHES.slice(0, 10), 'lab'), pick:setKey('lab') } ] },
-  { id:'sleeve', name:'Sleeve', mode:'front', lede:() => tabs.sleeve === 'F' ? 'Upload your own picture or artwork, or draw straight onto the sleeve. Then add words on top if you like.' : 'The back of the sleeve: your tracklist, and what goes around it.',
-    tabs:{ key:'sleeve', items:[['F','Front'],['B','Back']] },
+  { id:'sleeve', name:'Sleeve', mode:'front', lede:() => tabs.sleeve === 'F' ? 'Upload your own picture or artwork, or draw straight onto the sleeve. Then add words on top if you like.' : 'The back shows your tracklist, filled in as you add songs. Tap Show the front to keep designing.',
     sec:() => tabs.sleeve !== 'F' ? [] : ['st-layers'],
     val:() => `${draft.d.cover === 'draw' ? 'Drawn on' : draft.photo ? 'Your picture' : 'No picture yet'}${draft.d.cover === 'photo' && draft.photo && draft.d.filt !== 'none' ? ', ' + nameOf(FILTERS, draft.d.filt).toLowerCase() : ''}${draft.texts.length ? ', ' + plural(draft.texts.length, 'bit') + ' of text' : ''}`,
     rows:[ { l:'Cover', cards:1, show:() => tabs.sleeve === 'F', items:() => COVERS.filter(c => c[0] !== 'plain').map(([k, l, desc]) => ({ v:k, l, desc, on:draft.d.cover === k })),
@@ -2332,7 +2334,7 @@ const FLOW = [
            { l:'Picture', show:() => tabs.sleeve === 'F' && draft.d.cover === 'photo', items:() => [{ v:'add', l:draft.photo ? 'Change the picture' : '+ Upload a picture', on:!draft.photo }], pick:() => $('photoIn').click() },
            { l:'Filter', tiles:1, show:() => tabs.sleeve === 'F' && draft.d.cover === 'photo' && !!draft.photo, items:() => FILTERS.map(([k, l]) => ({ v:k, l, img:sleeveURL(variant({ filt:k, texts:[] }), 120), on:draft.d.filt === k })), pick:setKey('filt') },
            { l:'Finishing touches', multi:1, show:() => tabs.sleeve === 'F', items:() => FRONT_EXTRAS.filter(([k]) => ['obi','sticker'].includes(k)).map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; } },
-           { l:'On the back', multi:1, show:() => tabs.sleeve === 'B', items:() => BACK_EXTRAS.filter(([k]) => k !== 'legal').map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; } } ] },
+           ] },
   { id:'songs', name:'Pick the songs', short:'Songs', sec:['st-songs'], lede:'At least 6. Up to 10 makes a 10-inch, more makes a 12-inch LP.', mode:'front',
     val:() => { const n = draft.A.length + draft.B.length; return n ? `${plural(n, 'song')}, ${n < MINS ? `${MINS - n} more to press` : recSize(draft) === 12 ? '12-inch LP' : '10-inch'}` : 'None yet'; } },
   { id:'press', name:'Ready to press', short:'Press', sec:['st-press'], mode:'front', lede:'Give it a name, look it over, then press it. Tap any line to change it.', val:() => '' } ];
