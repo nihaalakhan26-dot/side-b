@@ -959,10 +959,14 @@ body.sheeton{overflow:hidden}
 @media (max-width:420px){#crates .grid{grid-template-columns:1fr 1fr!important;gap:26px 14px!important}}
 
 .tagcard[hidden]{display:none!important}
+
+#paperBall{width:64px!important;height:72px!important}
+#paperBall .pmenu{position:absolute;inset:0;display:grid;place-items:center;padding-top:4%;font:400 11.5px/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.08em;text-transform:uppercase;color:#141210}
+@media (max-width:760px){#paperBall{width:56px!important;height:63px!important}#paperBall .pmenu{font-size:10.5px}}
 </style>
 </head>
 <body>
-<button id="soundBtn" class="chrome" aria-pressed="false" hidden>Sound off</button><button id="paperBall" aria-label="Open the welcome card again" title="Open the welcome card" hidden></button>
+<button id="soundBtn" class="chrome" aria-pressed="false">Sound on</button><button id="paperBall" aria-label="Menu" title="Menu" hidden></button>
 
 
 
@@ -1321,18 +1325,27 @@ const songThumb = s => s.s === 'd' ? albumCover(DEMO[s.al]) : s.c;
 const SHELF_SAVED = /*SHELF*/[{"t":"Positions","a":"Ariana Grande","img":"img/covers/ariana-grande-positions.jpg","url":"https://music.apple.com/in/album/positions/1537486662?uo=4"},{"t":"Sweetener","a":"Ariana Grande","img":"img/covers/ariana-grande-sweetener.jpg","url":"https://music.apple.com/in/album/sweetener/1399202900?uo=4"},{"t":"thank u, next","a":"Ariana Grande","img":"img/covers/ariana-grande-thank-u-next.jpg","url":"https://music.apple.com/in/album/thank-u-next/1450333975?uo=4"},{"t":"eternal sunshine","a":"Ariana Grande","img":"img/covers/ariana-grande-eternal-sunshine.jpg","url":"https://music.apple.com/in/album/eternal-sunshine/1725913366?uo=4"},{"t":"Currents","a":"Tame Impala","img":"img/covers/tame-impala-currents.jpg","url":"https://music.apple.com/in/album/currents-b-sides-remixes-ep/1440875696?uo=4"},{"t":"Lonerism","a":"Tame Impala","img":"img/covers/tame-impala-lonerism.jpg","url":"https://music.apple.com/in/album/lonerism/1440825369?uo=4"},{"t":"The Slow Rush","a":"Tame Impala","img":"img/covers/tame-impala-the-slow-rush.jpg","url":"https://music.apple.com/in/album/the-slow-rush/1497230760?uo=4"},{"t":"InnerSpeaker","a":"Tame Impala","img":"img/covers/tame-impala-innerspeaker.jpg","url":"https://music.apple.com/in/album/innerspeaker/1439752048?uo=4"},{"t":"Abbey Road","a":"The Beatles","img":"img/covers/the-beatles-abbey-road.jpg","url":"https://music.apple.com/in/album/abbey-road-remastered/1441164426?uo=4"},{"t":"Revolver","a":"The Beatles","img":"img/covers/the-beatles-revolver.jpg","url":"https://music.apple.com/in/album/revolver/1441164670?uo=4"},{"t":"Rubber Soul","a":"The Beatles","img":"img/covers/the-beatles-rubber-soul.jpg","url":"https://music.apple.com/in/album/rubber-soul/1441164359?uo=4"},{"t":"Let It Be","a":"The Beatles","img":"img/covers/the-beatles-let-it-be.jpg","url":"https://music.apple.com/in/album/let-it-be/1441164495?uo=4"},{"t":"Sgt. Pepper's Lonely Hearts Club Band","a":"The Beatles","img":"img/covers/the-beatles-sgt-pepper-s-lonely-hearts-club-band.jpg","url":"https://music.apple.com/in/album/sgt-peppers-lonely-hearts-club-band/1441164604?uo=4"},{"t":"The Divine Feminine","a":"Mac Miller","img":"img/covers/mac-miller-the-divine-feminine.jpg","url":"https://music.apple.com/in/album/the-divine-feminine/1147227630?uo=4"},{"t":"Diamond Life","a":"Sade","img":"img/covers/sade-diamond-life.jpg","url":"https://music.apple.com/in/album/diamond-life/211429791?uo=4"},{"t":"Love Deluxe","a":"Sade","img":"img/covers/sade-love-deluxe.jpg","url":"https://music.apple.com/in/album/love-deluxe/158796559?uo=4"},{"t":"Promise","a":"Sade","img":"img/covers/sade-promise.jpg","url":"https://music.apple.com/in/album/promise/211677347?uo=4"},{"t":"Lovers Rock","a":"Sade","img":"img/covers/sade-lovers-rock.jpg","url":"https://music.apple.com/in/album/lovers-rock/193532145?uo=4"},{"t":"Back to Black","a":"Amy Winehouse","img":"img/covers/amy-winehouse-back-to-black.jpg","url":"https://music.apple.com/in/album/back-to-black/1440856219?uo=4"},{"t":"Frank","a":"Amy Winehouse","img":"img/covers/amy-winehouse-frank.jpg","url":"https://music.apple.com/in/album/frank/1442611379?uo=4"},{"t":"Rumours","a":"Fleetwood Mac","img":"img/covers/fleetwood-mac-rumours.jpg","url":"https://music.apple.com/in/album/rumours/594061854?uo=4"},{"t":"Thriller","a":"Michael Jackson","img":"img/covers/michael-jackson-thriller.jpg","url":"https://music.apple.com/in/album/thriller/269572838?uo=4"},{"t":"Off the Wall","a":"Michael Jackson","img":"img/covers/michael-jackson-off-the-wall.jpg","url":"https://music.apple.com/in/album/off-the-wall/186166282?uo=4"},{"t":"Starboy","a":"The Weeknd","img":"img/covers/the-weeknd-starboy.jpg","url":"https://music.apple.com/in/album/starboy/1440870373?uo=4"},{"t":"After Hours","a":"The Weeknd","img":"img/covers/the-weeknd-after-hours.jpg","url":"https://music.apple.com/in/album/after-hours/1499385848?uo=4"},{"t":"good kid, m.A.A.d city","a":"Kendrick Lamar","img":"img/covers/kendrick-lamar-good-kid-m-a-a-d-city.jpg","url":"https://music.apple.com/in/album/good-kid-m-a-a-d-city-deluxe-version/1440860389?uo=4"},{"t":"To Pimp a Butterfly","a":"Kendrick Lamar","img":"img/covers/kendrick-lamar-to-pimp-a-butterfly.jpg","url":"https://music.apple.com/in/album/to-pimp-a-butterfly/1440871877?uo=4"},{"t":"SOS","a":"SZA","img":"img/covers/sza-sos.jpg","url":"https://music.apple.com/in/album/sos/1658650093?uo=4"},{"t":"Ctrl","a":"SZA","img":"img/covers/sza-ctrl.jpg","url":"https://music.apple.com/in/album/ctrl/1239977075?uo=4"},{"t":"Random Access Memories","a":"Daft Punk","img":"img/covers/daft-punk-random-access-memories.jpg","url":"https://music.apple.com/in/album/random-access-memories/617154241?uo=4"},{"t":"Discovery","a":"Daft Punk","img":"img/covers/daft-punk-discovery.jpg","url":"https://music.apple.com/in/album/discovery/697194953?uo=4"},{"t":"AM","a":"Arctic Monkeys","img":"img/covers/arctic-monkeys-am.jpg","url":"https://music.apple.com/in/album/am/663097964?uo=4"},{"t":"In Rainbows","a":"Radiohead","img":"img/covers/radiohead-in-rainbows.jpg","url":"https://music.apple.com/in/album/in-rainbows/1109714933?uo=4"},{"t":"OK Computer","a":"Radiohead","img":"img/covers/radiohead-ok-computer.jpg","url":"https://music.apple.com/in/album/ok-computer/1097861387?uo=4"},{"t":"Songs in the Key of Life","a":"Stevie Wonder","img":"img/covers/stevie-wonder-songs-in-the-key-of-life.jpg","url":"https://music.apple.com/in/album/songs-in-the-key-of-life/1440788438?uo=4"},{"t":"What's Going On","a":"Marvin Gaye","img":"img/covers/marvin-gaye-what-s-going-on.jpg","url":"https://music.apple.com/in/album/whats-going-on/1538081586?uo=4"},{"t":"Purple Rain","a":"Prince","img":"img/covers/prince-purple-rain.jpg","url":"https://music.apple.com/in/album/purple-rain/1746833068?uo=4"},{"t":"Happier Than Ever","a":"Billie Eilish","img":"img/covers/billie-eilish-happier-than-ever.jpg","url":"https://music.apple.com/in/album/happier-than-ever/1564530526?uo=4"},{"t":"Harry's House","a":"Harry Styles","img":"img/covers/harry-styles-harry-s-house.jpg","url":"https://music.apple.com/in/album/harrys-house/1615584999?uo=4"},{"t":"Fine Line","a":"Harry Styles","img":"img/covers/harry-styles-fine-line.jpg","url":"https://music.apple.com/in/album/fine-line/1485802965?uo=4"},{"t":"Born to Die","a":"Lana Del Rey","img":"img/covers/lana-del-rey-born-to-die.jpg","url":"https://music.apple.com/in/album/born-to-die/1779781213?uo=4"},{"t":"folklore","a":"Taylor Swift","img":"img/covers/taylor-swift-folklore.jpg","url":"https://music.apple.com/in/album/folklore/1524793738?uo=4"},{"t":"Gemini Rights","a":"Steve Lacy","img":"img/covers/steve-lacy-gemini-rights.jpg","url":"https://music.apple.com/in/album/gemini-rights/6788150539?uo=4"},{"t":"A Night at the Opera","a":"Queen","img":"img/covers/queen-a-night-at-the-opera.jpg","url":"https://music.apple.com/in/album/a-night-at-the-opera/6781023399?uo=4"},{"t":"The Rise and Fall of Ziggy Stardust and the Spiders from Mars","a":"David Bowie","img":"img/covers/david-bowie-the-rise-and-fall-of-ziggy-stardust-and-the-spid.jpg","url":"https://music.apple.com/in/album/the-rise-and-fall-of-ziggy-stardust-and-the/1039796877?uo=4"},{"t":"The Miseducation of Lauryn Hill","a":"Lauryn Hill","img":"img/covers/lauryn-hill-the-miseducation-of-lauryn-hill.jpg","url":"https://music.apple.com/in/album/the-miseducation-of-lauryn-hill/1276760743?uo=4"},{"t":"Come Away With Me","a":"Norah Jones","img":"img/covers/norah-jones-come-away-with-me.jpg","url":"https://music.apple.com/in/album/come-away-with-me-remastered/1624173298?uo=4"},{"t":"Demon Days","a":"Gorillaz","img":"img/covers/gorillaz-demon-days.jpg","url":"https://music.apple.com/in/album/demon-days/850571319?uo=4"},{"t":"Bloom","a":"Beach House","img":"img/covers/beach-house-bloom.jpg","url":"https://music.apple.com/in/album/bloom/1247719362?uo=4"},{"t":"Future Nostalgia","a":"Dua Lipa","img":"img/covers/dua-lipa-future-nostalgia.jpg","url":"https://music.apple.com/in/album/future-nostalgia-single/1489975831?uo=4"},{"t":"Legend","a":"Bob Marley & The Wailers","img":"img/covers/bob-marley-the-wailers-legend.jpg","url":"https://music.apple.com/in/album/legend-the-best-of-bob-marley-the-wailers/1469575763?uo=4"},{"t":"Salad Days","a":"Mac DeMarco","img":"img/covers/mac-demarco-salad-days.jpg","url":"https://music.apple.com/in/album/salad-days/6789834398?uo=4"},{"t":"Planet Her","a":"Doja Cat","img":"img/covers/doja-cat-planet-her.jpg","url":"https://music.apple.com/in/album/planet-her/1573475827?uo=4"},{"t":"Parachutes","a":"Coldplay","img":"img/covers/coldplay-parachutes.jpg","url":"https://music.apple.com/in/album/parachutes/1122782080?uo=4"},{"t":"cold/mess","a":"Prateek Kuhad","img":"img/covers/prateek-kuhad-cold-mess.jpg","url":"https://music.apple.com/in/album/cold-mess/1534546275?uo=4"}]/*SHELF_END*/;
 const sitePath = p => (/^https?:$/.test(location.protocol) ? '/' : '') + p;
 let shelf = SHELF_SAVED.length ? shuffle(SHELF_SAVED.map(a => ({ t:a.t, a:a.a, art:sitePath(a.img), url:a.url })), 2026) : [];
-function slotAlbum(k){ if (shelf.length){ const a = shelf[k % shelf.length]; return { img:a.art, title:a.t, sub:a.a, url:a.url }; }
+const NOWREC = { title:'Now playing in the shop', sub:'Sienna Spiro', img:'', url:'' };
+function slotAlbum(k){ if (k === -1) return NOWREC; if (shelf.length){ const a = shelf[k % shelf.length]; return { img:a.art, title:a.t, sub:a.a, url:a.url }; }
   const d = WALL[k % WALL.length]; return { img:albumCover(d), title:d.title, sub:`${d.band}, ${d.year}`, url:'' }; }
 function paintSlots(root = document){ root.querySelectorAll('[data-slot]').forEach(el => { const a = slotAlbum(+el.dataset.slot);
-  if (el instanceof SVGImageElement){ if (el.getAttribute('href') !== a.img) el.setAttribute('href', a.img); } else el.style.backgroundImage = `url("${a.img}")`; }); }
+  if (el instanceof SVGImageElement){ if (a.img && el.getAttribute('href') !== a.img) el.setAttribute('href', a.img); } else el.style.backgroundImage = `url("${a.img}")`; }); }
+async function loadNowRec(){ if (!LIVE_HOST) return;
+  try { const res = await fetch('/api/search?q=' + encodeURIComponent('Sienna Spiro')), r = ((await res.json()).results || []).filter(t => /sienna spiro/i.test(t.artistName || '') && t.artworkUrl100);
+    const t = r.find(x => !/\(from /i.test(x.collectionName || '')) || r[0]; if (!t) return;
+    Object.assign(NOWREC, { title:String(t.collectionName || '').replace(/ - (EP|Single)$/i, ''), img:t.artworkUrl100.replace('100x100bb', '400x400bb'), url:String(t.trackViewUrl || '').replace(/[?&]i=\d+/, '') });
+    paintSlots(); } catch(e){} }
 async function loadShelf(){
-  if (shelf.length) return;
+  // the saved covers show at once; on the live host the function adds any albums that aren't saved yet, so the wall repeats itself less
+  if (shelf.length && !LIVE_HOST) return;
   try { const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 12000); const res = await fetch('/api/albums', { signal:ctl.signal }); clearTimeout(to);
-    const data = await res.json(), list = (Array.isArray(data.albums) ? data.albums : []).map(a => ({ t:String(a.t || '').slice(0, 120), a:String(a.a || '').slice(0, 80), art:safeURL(a.art), url:safeURL(a.url) })).filter(a => a.t && a.art);
-    if (list.length < 12) return;
+    const data = await res.json(), have = new Set(shelf.map(a => (a.a + '|' + a.t).toLowerCase()));
+    const list = (Array.isArray(data.albums) ? data.albums : []).map(a => ({ t:String(a.t || '').slice(0, 120), a:String(a.a || '').slice(0, 80), art:safeURL(a.art), url:safeURL(a.url) })).filter(a => a.t && a.art && !have.has((a.a + '|' + a.t).toLowerCase()));
+    if (!shelf.length && list.length < 12) return;
+    if (!list.length) return;
     // load the covers before swapping, so the shelves never flash empty
     await Promise.race([Promise.all(list.map(a => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = a.art; }))), new Promise(r => setTimeout(r, 15000))]);
-    shelf = shuffle(list, 2026); paintSlots(); } catch(e){}
+    shelf = shuffle(shelf.concat(list), 2026); paintSlots(); } catch(e){}
 }
 
 /* ============================================================
@@ -1773,15 +1786,25 @@ function vinylBase(r, N, seed){
       g.font = `700 ${N*.05}px Archivo, sans-serif`; g.fillText('YOUR PICTURE', h, h*.42); g.fillText('GOES HERE', h, h*.42 + N*.06); } return c; }
   // finishes from older records, kept as they were pressed
   if (type === 'splatter' || type === 'clouds' || type === 'stripe'){ g.fillStyle = c1; g.fillRect(0, 0, N, N);
-    if (type === 'splatter'){ const R0 = R, drop = (col, k, R = R0) => { const a = R()*6.283, d0 = h*(.2 + Math.pow(R(), .7)*.85), big = R() < .2, w = N*(big ? .008 + R()*.014 : .002 + R()*.005), len = w*(1.2 + R()*(big ? 5 : 2.5));
-        g.fillStyle = col; g.save(); g.translate(h + Math.cos(a)*d0, h + Math.sin(a)*d0); g.rotate(a + (R() - .5)*.5); g.beginPath(); g.ellipse(0, 0, len, w, 0, 0, 7); g.fill();
-        if (big){ g.beginPath(); g.ellipse(len*1.1, (R() - .5)*w, len*.45, w*.5, 0, 0, 7); g.fill(); for (let q = 0; q < 4; q++){ g.beginPath(); g.arc(len*(1.4 + R()*1.6), (R() - .5)*w*4, w*(.15 + R()*.3), 0, 7); g.fill(); } } g.restore(); };
-      for (let k = 0; k < lv([80, 230, 520]); k++) drop(c2, k); const third = lum(c1) > .5 ? '#141414' : '#F7EEDB', R3 = mulberry32(seed + 7); for (let k = 0; k < lv([24, 70, 150]); k++) drop(third, k, R3); }
+    if (type === 'splatter'){ const R0 = R, drop = (col, R = R0) => { const a = R()*6.283, d0 = h*(.16 + Math.pow(R(), .6)*.88), sz = R(),
+        r0 = N*(sz < .07 ? .011 + R()*.017 : sz < .4 ? .0042 + R()*.006 : .0013 + R()*.0028), x = h + Math.cos(a)*d0, y = h + Math.sin(a)*d0, out = a + (R() - .5)*.35;
+        g.fillStyle = col; g.save(); g.translate(x, y); g.rotate(out);
+        // the drop: nearly round, a little stretched the way it was flung
+        g.beginPath(); g.ellipse(0, 0, r0*(1 + R()*.45), r0*(.85 + R()*.2), 0, 0, 7); g.fill();
+        // some bigger drops trail a tapering tail outwards, and throw off little satellites
+        if (r0 > N*.0035 && R() < .45){ const L = r0*(2 + R()*3.2); g.beginPath(); g.moveTo(0, -r0*.62); g.quadraticCurveTo(L*.55, -r0*.18, L, 0); g.quadraticCurveTo(L*.55, r0*.18, 0, r0*.62); g.fill();
+          g.beginPath(); g.arc(L*1.08, 0, r0*.22, 0, 7); g.fill(); }
+        if (r0 > N*.006){ for (let q = 0; q < 3 + R()*5; q++){ const aa = (R() - .5)*1.6, dd = r0*(1.5 + R()*3.5); g.beginPath(); g.arc(Math.cos(aa)*dd, Math.sin(aa)*dd, r0*(.08 + R()*.2), 0, 7); g.fill(); } }
+        g.restore(); };
+      for (let k = 0; k < lv([110, 280, 600]); k++) drop(c2);
+      const third = lum(c1) > .5 ? '#141414' : '#F7EEDB', R3 = mulberry32(seed + 7); for (let k = 0; k < lv([20, 55, 120]); k++) drop(third, R3);
+      // a fine mist of the main splatter colour
+      g.fillStyle = c2; for (let k = 0; k < lv([200, 500, 900]); k++){ const a = R()*6.283, d0 = h*(.16 + Math.pow(R(), .5)*.86); g.globalAlpha = .5 + R()*.5; g.beginPath(); g.arc(h + Math.cos(a)*d0, h + Math.sin(a)*d0, N*(.0006 + R()*.0011), 0, 7); g.fill(); } g.globalAlpha = 1; }
     else if (type === 'clouds'){ g.filter = `blur(${N*.025}px)`; for (let k = 0; k < 22; k++){ g.fillStyle = hexA(c2, .35 + R()*.3); g.beginPath(); g.ellipse(R()*N, R()*N, N*(.06 + R()*.12), N*(.04 + R()*.08), R()*3, 0, 7); g.fill(); } g.filter = 'none'; }
     else { g.fillStyle = c2; g.fillRect(0, h - N*.14, N, N*.28); g.fillStyle = '#F4EFE6'; g.fillRect(0, h - N*.15, N, N*.012); g.fillRect(0, h + N*.138, N, N*.012); }
     return c; }
   if (type === 'eco'){ g.fillStyle = '#2A2422'; g.fillRect(0, 0, N, N); const cols = VCOLS.slice(1);
-    for (let k = 0; k < 9; k++){ g.fillStyle = hexA(cols[Math.floor(R()*cols.length)], .16); g.beginPath(); g.ellipse(R()*N, R()*N, N*(.12 + R()*.2), N*(.06 + R()*.1), R()*3, 0, 7); g.fill(); }
+    for (let k = 0; k < 2600; k++){ g.fillStyle = R() < .5 ? 'rgba(0,0,0,.18)' : 'rgba(255,240,220,.06)'; g.fillRect(R()*N, R()*N, N*.004, N*.004); }
     for (let k = 0; k < lv([200, 620, 1300]); k++){ const x = R()*N, y = R()*N, big = R() < .14, rr = N*(big ? .011 + R()*.016 : .003 + R()*.008), pts = 5 + Math.floor(R()*3), a0 = R()*7;
       g.fillStyle = hexA(cols[Math.floor(R()*cols.length)], .8 + R()*.2); g.beginPath();
       for (let q = 0; q < pts; q++){ const a = a0 + q/pts*6.283, d2 = rr*(.55 + R()*.6), X = x + Math.cos(a)*d2*(1 + (big ? .5 : 0)), Y = y + Math.sin(a)*d2; q ? g.lineTo(X, Y) : g.moveTo(X, Y); } g.closePath(); g.fill(); }
@@ -1807,12 +1830,17 @@ function vinylBase(r, N, seed){
       case 'swirl': { const q = fbm(nx*1.6 + 5, ny*1.6, 3), u = ang + 2.3*Math.log(rad + .09) + (q - .5)*1.1, band = Math.sin(3*u)*.5 + .5;
         t = sstep(.4, .6, band + (fbm(Math.cos(u)*4 + rad*3, Math.sin(u)*4 - rad*3, 3) - .5)*.22); mix(A, B, t); break; }
       // marbled: one colour, with thin veins of the other running through it like stone
-      case 'marble': { const q1 = fbm(nx*1.4 + 3, ny*1.4 + 7, 4), q2 = fbm(nx*1.4 - 5, ny*1.4 + 2, 4), m1 = fbm(nx*1.7 + 2.6*q1, ny*1.7 + 2.6*q2, 5), m2 = fbm(nx*3.6 - 2.2*q2 + 9, ny*3.6 + 2.2*q1, 4);
-        const r1 = 1 - Math.abs(2*m1 - 1), r2 = 1 - Math.abs(2*m2 - 1), lo = lv([.95, .9, .86]), vein = Math.max(sstep(lo, lo + .085, r1), sstep(lo + lv([.03, .03, -.02]), lo + .09, r2)*lv([.3, .7, 1]));
-        mix(A, B, .1*q1 + sstep(.72, .95, r1)*lv([.08, .16, .26])); add(B, vein); break; }
+      case 'marble': { const q1 = fbm(nx*1.1 + 3, ny*1.1 + 7, 4), q2 = fbm(nx*1.1 - 5, ny*1.1 + 2, 4), w = fbm(nx*1.5 + 2.6*q1, ny*1.5 + 2.6*q2, 5);
+        const band = Math.sin(rad*17 + ang*2 + w*15 + q2*4), th = lv([.55, .2, -.2]), fine = Math.sin(rad*52 + ang*3 + w*34 + q1*9);
+        t = sstep(th - .28, th + .28, band + fine*.26); mix(A, B, t);
+        // fine streaks of each colour dragged through the other, strongest where the two meet
+        const edge = 1 - Math.abs(t - .5)*2; add(t > .5 ? A : B, sstep(.55, .95, fine)*edge*.55);
+        // a thin pale line where the ribbons fold over each other
+        add([255, 250, 240], sstep(.965, 1, 1 - Math.abs(band - th))*.18); break; }
       // smoke: clear plastic with a few soft clouds drifting in it
-      case 'smoke': { const q1 = fbm(nx*.9 + 2, ny*.9 + 5, 3), q2 = fbm(nx*.9 - 7, ny*.9 + 1, 3), v = fbm(nx*1.05 + 2.2*q1, ny*1.05 + 2.2*q2, 4);
-        { const sh = lv([-.08, 0, .1]); t = sstep(.4 - sh, .64 - sh, v); } mix(A, B, t); ca = 70 + t*185; break; }
+      case 'smoke': { const q1 = fbm(nx*1.2 + 2, ny*1.2 + 5, 4), q2 = fbm(nx*1.2 - 7, ny*1.2 + 1, 4), v = fbm(nx*1.4 + 3*q1 + Math.cos(ang + rad*3)*.4, ny*1.4 + 3*q2 + Math.sin(ang + rad*3)*.4, 5);
+        const wisp = Math.pow(1 - Math.abs(2*fbm(nx*2.6 + 4*v, ny*2.6 - 4*v, 4) - 1), 3), cloud = sstep(.42, .78, v + lv([-.08, 0, .1]));
+        t = Math.min(1, cloud*.75 + wisp*lv([.35, .55, .75])*(.4 + cloud)); mix(A, B, t); ca = 95 + t*150; break; }
       case 'metallic': { const br = .62 + .5*Math.pow(Math.abs(Math.cos(ang - .8)), 3) + (fbm(Math.cos(ang)*14, Math.sin(ang)*14 + rad*.6, 3) - .5)*.35, fl = n2(x*1.9 + 40, y*1.9);
         cr = A[0]*br; cg = A[1]*br; cb = A[2]*br; if (fl > .78) add([255, 252, 244], (fl - .78)*2.6*br); else if (fl < .2) { const k = 1 - (.2 - fl)*1.4; cr *= k; cg *= k; cb *= k; } break; }
       case 'iridescent': { const hu = ang/6.2832*2 + rad*1.15 + fbm(nx*1.8, ny*1.8, 4)*.9, k = 6.2832;
@@ -2747,7 +2775,7 @@ function sample(s, btn){ const me = btn.dataset.on === '1'; stopSample(); docume
    ============================================================ */
 let current = 'outside', ballOn = false;
 function go(name){ document.querySelectorAll('.scene').forEach(s => s.classList.toggle('on', s.id === name)); current = name; setScene(name); hideTag(); $('hint').textContent = '';
-  $('soundBtn').hidden = !ctx || name === 'studio'; if (name === 'shop') requestAnimationFrame(fitShop); if (name === 'studio') goStep(fstep); if (window.updateBall) updateBall(); if (name !== 'shop') { try { if (pulled) closeAlbum(); } catch(e){} } if (name === 'outside') startWeather(); else stopWeather(); }
+  $('soundBtn').hidden = name === 'studio'; if (name === 'shop') requestAnimationFrame(fitShop); if (name === 'studio') goStep(fstep); if (window.updateBall) updateBall(); if (name !== 'shop') { try { if (pulled) closeAlbum(); } catch(e){} } if (name === 'outside') startWeather(); else stopWeather(); }
 function enterShop(){
   ensureAudio(); sfx.bell(); const inner = $('outsideInner'), fac = $('facade'), door = $('doorPanel'), hit = $('doorHit').getBoundingClientRect(), box = inner.getBoundingClientRect();
   inner.style.transformOrigin = `${hit.left - box.left + hit.width/2}px ${hit.top - box.top + hit.height*.45}px`;
@@ -2755,7 +2783,7 @@ function enterShop(){
   const copy = door.cloneNode(true); copy.removeAttribute('id'); lay.appendChild(copy); fac.after(lay); door.style.visibility = 'hidden';
   const m = fac.getScreenCTM(); lay.style.transformOrigin = `${m.a*DOOR.hinge + m.e - box.left}px 0px`;
   const swing = reduceMotion ? null : lay.animate([{ transform:'scaleX(1)' }, { transform:'scaleX(.18)' }], { duration:480, easing:'cubic-bezier(.33,1,.68,1)', fill:'forwards' });
-  const zoom = () => { inner.classList.add('zoom'); setTimeout(() => { go('shop'); setTimeout(() => setHintT((matchMedia('(hover: none)').matches ? 'Tap' : 'Click') + ' the pressing booth to make your own record, or any album to hear it.'), 900); }, reduceMotion ? 0 : 650);
+  const zoom = () => { inner.classList.add('zoom'); setTimeout(() => { go('shop'); setTimeout(() => setHintT((matchMedia('(hover: none)').matches ? 'Tap' : 'Click') + ' any album to hear it, or the pressing booth to make your own record.', 9000), 900); }, reduceMotion ? 0 : 650);
     setTimeout(() => { inner.style.transition = 'none'; inner.classList.remove('zoom'); lay.remove(); door.style.visibility = ''; void inner.offsetWidth; inner.style.transition = ''; }, 1500); };
   swing ? swing.finished.then(zoom) : zoom();
 }
@@ -2938,7 +2966,7 @@ function buildShop(){
   s += box(WALL_L, WALL_R, CEIL, FLOOR, BACK, RW.zf, { front:WD.front });
   const cubby = (x0, y0, x1, y1, R, st) => { const cx = (x0 + x1)/2, w = Math.min(70, x1 - x0 - 8, y1 - y0 - 8);
     let o = recess(x0, x1, y0, y1, -4, RW.zf, { side:'#24140A', ceil:'#FFE6B0', floor:'#5A361E', back:'#120904' }) + poly([PJ(x0,y0,-4), PJ(x1,y0,-4), PJ(x1,y1,-4), PJ(x0,y1,-4)], 'url(#nicheGlow)');
-    if (R() < .86) return o + coverAt(st.k++, cx - w/2, y1 - 2, -20, w, (R() - .5)*2, { lit:true });
+    if (R() < .8) return o + coverAt(st.k++, cx - w/2, y1 - 2, -20, w, (R() - .5)*2, { lit:true });
     const kind = ['stack','disc','spines','plant','stack','spines'][st.d++ % 6];
     if (kind === 'stack') o += `<g transform="${plane(-14)}">${Array.from({length:7}, (_,i) => `<rect x="${x0 + 6 + (i % 2)*3}" y="${y1 - 6 - i*6}" width="${x1 - x0 - 14}" height="5" fill="${['#E9DCC0','#1F3A63','#B3252B','#EDB33A','#2a2a2a','#6E8B5A','#D86A2C'][(i + st.d) % 7]}"/>`).join('')}</g>`;
     else if (kind === 'spines') o += `<g transform="${plane(-12)}">${spines(x0 + 3, y0 + 12, x1 - x0 - 6, y1 - y0 - 14, 60 + st.d)}</g>`;
@@ -2969,7 +2997,17 @@ function buildShop(){
   const reel = (x0, zb) => { const x1 = x0 + 110, y0 = SC.y0 - 92, zf = zb - 30; let o = box(x0, x1, y0, SC.y0, zb, zf, { front:'#C9C7C0', top:'#E2E0DA', side:'#9c9a94' });
     return o + `<g transform="${plane(zf)}"><rect x="${x0 + 4}" y="${y0 + 4}" width="102" height="56" fill="#2a2a2a"/>${[x0 + 30, x1 - 30].map(cx => `<circle cx="${cx}" cy="${y0 + 32}" r="23" fill="#9a9890"/><circle cx="${cx}" cy="${y0 + 32}" r="21" fill="#1a1a1a"/>${[0, 120, 240].map(a => `<path d="M${cx} ${y0 + 32} L${cx + 15*Math.cos(a*Math.PI/180)} ${y0 + 32 + 15*Math.sin(a*Math.PI/180)}" stroke="#c9c7c0" stroke-width="6"/>`).join('')}<circle cx="${cx}" cy="${y0 + 32}" r="5" fill="#e8e6e0"/>`).join('')}
       <rect x="${x0 + 12}" y="${y0 + 66}" width="22" height="10" fill="#F2E7C8"/><rect x="${x1 - 34}" y="${y0 + 66}" width="22" height="10" fill="#F2E7C8"/>${[50, 62, 74].map(o => `<circle cx="${x0 + o}" cy="${y0 + 80}" r="3" fill="#2a2a2a"/>`).join('')}</g>`; };
-  s += reel(150, -66) + turntable(330, SC.y0, -70, { lid:true, lidH:80, label:IN.mustard }) + lamp(540, SC.y0, -120, '#C9302C', '#EF6A5A');
+  // what the shop is playing: the record of the track you can hear, on a little stand beside the record player (Sienna Spiro's,
+  // looked up on Apple by the site; its cover fills in when it arrives) with a NOW PLAYING card on its ledge
+  const nowStand = (x0, z) => { const w = 76, y = SC.y0, xc = x0 + w/2;
+    let o = poly([PJ(x0 + 4, y, z + 2), PJ(x0 + w + 26, y, z + 2), PJ(x0 + w + 30, y, z - 22), PJ(x0 + 8, y, z - 22)], IN.shade);
+    o += box(x0 - 6, x0 + w + 6, y - 9, y, z + 6, z - 16, { front:'#5A3620', top:'#7A4E2C', side:'#3B2112' });
+    o += `<g transform="${plane(z)}"><rect x="${x0 + 3}" y="${y - 9 - w + 3}" width="${w}" height="${w}" fill="rgba(0,0,0,.45)"/><rect x="${x0}" y="${y - 9 - w}" width="${w}" height="${w}" fill="#1c1410"/>
+      <image class="tagme" data-slot="-1" x="${x0}" y="${y - 9 - w}" width="${w}" height="${w}" preserveAspectRatio="xMidYMid slice"/><rect class="nohit" x="${x0}" y="${y - 9 - w}" width="${w}" height="${w}" fill="url(#coverLit)"/></g>`;
+    o += `<g transform="${plane(z - 17)}" class="nohit"><rect x="${xc - 30}" y="${y - 22}" width="60" height="15" fill="#F4EAD4"/><rect x="${xc - 30}" y="${y - 22}" width="60" height="2" fill="#C22A22"/>
+      <text x="${xc}" y="${y - 11}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600" font-size="7.2" letter-spacing="1" fill="#231A14">NOW PLAYING</text></g>`;
+    return o; };
+  s += reel(100, -66) + turntable(240, SC.y0, -70, { lid:true, lidH:80, label:IN.mustard }) + nowStand(392, -60) + lamp(540, SC.y0, -120, '#C9302C', '#EF6A5A');
   s += lamp(1382, SC.y0, -120, '#E9A62A', '#F7CE6A') + turntable(1480, SC.y0, -70, { lid:true, lidH:80, label:'#6FB3C9' }) + reel(1662, -66);
 
   // THE PRESSING BOOTH, in the middle of the room
@@ -3129,8 +3167,8 @@ addEventListener('keydown', e => { if (e.key === 'Escape' && pulled) closeAlbum(
 $('shopBack').addEventListener('click', () => { sfx.bell(); go('outside'); });
 $('toShop').addEventListener('click', () => go('shop'));
 function setMuted(m){ muted = m; if (ctx) ramp(master.gain, muted ? 0 : amp.vol*1.1, .05); pv.muted = sampleAudio.muted = muted;
-  $('soundBtn').textContent = muted ? 'Sound on' : 'Sound off'; $('soundBtn').setAttribute('aria-pressed', muted); store.set('sideb-muted', muted); }
-$('soundBtn').addEventListener('click', () => { ensureAudio(); setMuted(!muted); });
+  $('soundBtn').textContent = muted || !ctx ? 'Sound on' : 'Sound off'; $('soundBtn').setAttribute('aria-pressed', muted); store.set('sideb-muted', muted); }
+$('soundBtn').addEventListener('click', () => { if (!ctx){ ensureAudio(); setScene(current); setMuted(false); return; } ensureAudio(); setMuted(!muted); });
 
 /* ============================================================
    LISTENING ROOM (receiver)
@@ -3331,7 +3369,7 @@ let needleDown = false, onVinyl = false, recTime = 0, nextStep = 0, curK = -1, r
 const pv = new Audio(); pv.preload = 'auto'; if ('preservesPitch' in pv) pv.preservesPitch = false;
 // all sound stops while the page is out of sight (another app or tab, the phone locked) and picks up again on return
 { let held = [];
-  const quiet = hidden => { const els = [shopTrack && shopTrack.el, sampleAudio, shelfAudio, pv].filter(Boolean);
+  const quiet = hidden => { if (!matchMedia('(hover: none), (pointer: coarse)').matches) return; const els = [shopTrack && shopTrack.el, sampleAudio, shelfAudio, pv].filter(Boolean);
     if (hidden){ held = held.concat(els.filter(e => !e.paused && !held.includes(e))); held.forEach(e => e.pause()); if (ctx && ctx.state === 'running') ctx.suspend(); }
     else { if (ctx && ctx.state === 'suspended') ctx.resume(); held.forEach(e => e.play().catch(() => {})); held = []; } };
   document.addEventListener('visibilitychange', () => quiet(document.hidden));
@@ -3480,7 +3518,7 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   document.documentElement.style.setProperty('--floor', `url(${floorURL()})`);
   [['--walnut', woodURL('#5a3820', 3)],['--walnutD', woodURL('#3a2314', 5)],['--walnutH', woodURL('#6d4426', 7, true)],['--oak', woodURL('#9a6a3e', 9)],['--plaster', plasterURL('#DACDB0')],['--plasterD', plasterURL('#6a563f')],['--plasterW', plasterURL('#D4C5A6')]]
     .forEach(([k,v]) => document.documentElement.style.setProperty(k, `url(${v})`));
-  loadShelf();
+  loadShelf(); loadNowRec();
   $('outsideInner').innerHTML = facadeSVG() + `<svg id="doorGlowSvg" class="flayer" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMax meet" xmlns="${NS}">${DOOR_GLOW}</svg><canvas id="wxCanvas" class="flayer" aria-hidden="true"></canvas>`; paintSlots($('outsideInner'));
   // the whole shop front shows on every screen, and the street carries on past it
   window.fitFacade = () => { const vb = innerWidth/innerHeight < .8 ? '230 0 1096 1024' : '0 0 1536 1024'; ['facade','doorGlowSvg'].forEach(id => { const f = $(id); if (f) f.setAttribute('viewBox', vb); }); wxMap(); }; window.fitFacade();
@@ -3499,11 +3537,11 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   const paperURL = sitePath('img/paper.webp'); document.querySelector('#wTitle img').src = sitePath('img/digivinyl.png');
   $('wPaper').innerHTML = `<img src="${paperURL}" alt="" draggable="false">`;
   // the same sheet, small, waits in the top left corner of the street with a few lines of writing on it
-  $('paperBall').innerHTML = `<img src="${paperURL}" alt="" draggable="false">` + [[30, 46], [42, 40], [52, 44], [62, 30]].map(([t, w]) => `<span class="pl" style="top:${t}%;width:${w}%"></span>`).join('');
+  $('paperBall').innerHTML = `<img src="${paperURL}" alt="" draggable="false"><span class="pmenu">Menu</span>`;
   const ready = () => $('outside').classList.add('ready');
   { const im = new Image(); im.onload = im.onerror = ready; im.src = paperURL; setTimeout(ready, 1500); }
   window.updateBall = () => { $('paperBall').hidden = !(ballOn && current === 'outside') || !$('welcome').classList.contains('gone'); };
-  const welcomed = () => { ensureAudio(); $('soundBtn').hidden = false; const w = $('welcome'); w.style.transition = 'none'; w.classList.add('gone'); void w.offsetWidth; w.style.transition = '';
+  const welcomed = () => { ensureAudio(); setMuted(muted); const w = $('welcome'); w.style.transition = 'none'; w.classList.add('gone'); void w.offsetWidth; w.style.transition = '';
     $('outside').classList.remove('welcoming'); ballOn = true; updateBall(); };
   // the flight between the card and the little sheet in the corner: the card lifts, its words fade, it turns a little in the air and settles as the icon
   const flight = () => { card.style.animation = 'none'; card.style.transform = ''; const r = card.getBoundingClientRect(), ic = $('paperBall'), was = ic.hidden; ic.hidden = false;
@@ -3533,6 +3571,7 @@ const EXAMPLE = { name:'Songs for the Drive Home', line:'Summer 2026', by:'Nihal
   sb.addEventListener('click', putAway);
   $('cratesBtn').addEventListener('click', () => { ensureAudio(); openCrates(); });
   $('cratesClose').addEventListener('click', () => $('crates').classList.remove('on'));
+  window.__t = { drawVinyl, get draft(){ return draft; } };   // for checking the drawing in tests
   window.__example = async () => { location.hash = 'r=' + await encodeRec(EXAMPLE); };
   const short = location.pathname.match(/^\/r\/([A-Za-z0-9]{8})\/?$/);
   if (short){ try { const res = await fetch(`/api/record?id=${short[1]}&json`), data = await res.json();
