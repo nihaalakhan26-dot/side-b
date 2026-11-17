@@ -12,8 +12,15 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+// The storage address and key. Vercel's newer storage setup can add these with a prefix of its own (STORAGE_KV_REST_API_URL,
+// MYDB_UPSTASH_REDIS_REST_URL...), and pasted values sometimes carry spaces or quotes, so any name that ends the right way is
+// accepted and the value is tidied. Never the read-only key: it can't save records.
+const ENV = process.env, tidy = v => String(v || '').trim().replace(/^["']|["']$/g, '').trim();
+const pickEnv = ends => { for (const e of ends){ if (ENV[e]) return [e, tidy(ENV[e])]; }
+  for (const e of ends){ const k = Object.keys(ENV).find(n => n.endsWith('_' + e) && !/READ_ONLY/.test(n) && ENV[n]); if (k) return [k, tidy(ENV[k])]; } return ['', '']; };
+const [URL_NAME, URL_RAW] = pickEnv(['KV_REST_API_URL', 'UPSTASH_REDIS_REST_URL']);
+const [TOKEN_NAME, TOKEN] = pickEnv(['KV_REST_API_TOKEN', 'UPSTASH_REDIS_REST_TOKEN']);
+const URL_ = URL_RAW && !/^https?:\/\//.test(URL_RAW) ? 'https://' + URL_RAW : URL_RAW;
 const TTL = 60 * 60 * 24 * 30;      // records last 30 days
 const PER_HOUR = 20;                // records one person can press in an hour
 const ID = /^[A-Za-z0-9]{8}$/;
@@ -68,6 +75,13 @@ function sitePage() {
 
 module.exports = async (req, res) => {
   try {
+    // /api/record?health: which settings were found (names only, never values) and whether the storage answers
+    if (req.query && 'health' in req.query) {
+      const out = { address: URL_NAME || 'missing', key: TOKEN_NAME || 'missing', storage: 'not tried', gardenKey: ENV.GARDEN_KEY ? 'set' : 'not set (optional)' };
+      if (URL_ && TOKEN) { try { out.storage = (await redis('PING')) === 'PONG' ? 'working' : 'answered oddly'; } catch (e) { out.storage = 'not working: ' + String(e.message).slice(0, 120); } }
+      res.setHeader('Cache-Control', 'no-store');
+      return res.status(200).json(out);
+    }
     if (!URL_ || !TOKEN) return res.status(503).json({ error: 'Record storage is not set up.' });
     if (req.method === 'POST') return await save(req, res);
     const q = req.query || {}, id = String(q.id || '');
