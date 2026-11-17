@@ -1022,6 +1022,27 @@ body.sheeton{overflow:hidden}
 #crates .crec b{white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:700 1.05rem/1.3 Archivo,sans-serif!important;color:var(--cream)}
 #crates .crec small{margin-top:6px!important;font:500 .8rem/1.3 Archivo,sans-serif!important;color:#A8927A!important}
 @media (max-width:420px){#crates .grid{grid-template-columns:1fr 1fr!important;gap:30px 16px!important;padding-top:24px!important}#crates .crec b{font-size:.95rem!important}}
+
+/* THE LISTENING ROOM IN PROPORTION: a 12-inch sleeve is about 70% as wide as a turntable and a receiver about the same,
+   so the side columns grow and the turntable is a touch smaller (5% on desktop), which lifts the card under it */
+@media (min-width:901px){
+  .ltop{grid-template-columns:minmax(0,.95fr) minmax(0,1.37fr) minmax(0,.95fr)!important;padding-bottom:6vh!important}
+  #deckSvg{max-width:570px}
+  .grec{width:min(100%,380px)}
+  .amp{width:min(100%,350px)}
+}
+@media (max-width:900px){.grec{width:min(72%,300px)}}
+/* WHAT'S PLAYING: always the same size and shape, whatever the song: one line each for the song and the artist */
+.nowtag{width:min(460px,100%)!important;height:88px;box-sizing:border-box;align-content:center;grid-template-rows:auto auto auto;padding:12px 14px 12px 20px!important}
+.nowtag small,.nowtag b,.nowtag span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.nowtag b{display:block!important;-webkit-line-clamp:unset}
+.nowtag a{min-width:96px;justify-content:center}
+/* THE RECEIVER'S KNOBS: machined aluminium caps with a knurled grip, sat in a dark collar, with a cut line to read them by */
+.knob i{width:50px!important;height:50px!important;border-radius:50%;background:repeating-conic-gradient(from 0deg,#e2e2df 0 3deg,#8d8c88 3deg 6deg)!important;box-shadow:0 0 0 3px #26221f,0 0 0 4.5px rgba(255,255,255,.35),4px 6px 8px rgba(24,30,70,.35)!important}
+.knob.big i{width:62px!important;height:62px!important}
+.knob i::before{content:"";position:absolute;inset:14%;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.18) 0 1px,rgba(0,0,0,.05) 1px 2px),radial-gradient(circle at 36% 30%,#ffffff,#dcdcd8 42%,#a9a8a3 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,.9),inset 0 -2px 3px rgba(0,0,0,.25),0 1px 2px rgba(0,0,0,.4)}
+.knob i::after{top:16%!important;width:2.5px!important;height:26%!important;margin-left:-1.25px!important;background:#1f1b18!important;z-index:1;box-shadow:0 0 0 .5px rgba(255,255,255,.4)}
+.knob span{margin-top:4px}
 </style>
 </head>
 <body>
