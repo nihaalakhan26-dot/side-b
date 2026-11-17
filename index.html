@@ -989,6 +989,39 @@ body.sheeton{overflow:hidden}
   #studio .drawbar.drawing .dtip:empty{display:none}
   #studio .bench:has(.drawbar.drawing) .caption{display:none}
 }
+
+/* THE BACK OF THE SLEEVE: printed like a real LP back. A thin frame, the title with the catalogue number boxed beside it,
+   a double rule, both sides of the tracklist under dark tabs, and a footer of credits, the Side B mark and the barcode */
+.sback{padding:8.5% 9% 7.5%}
+.sback::before{content:"";position:absolute;inset:3.4%;border:1px solid rgba(42,30,23,.32);pointer-events:none}
+.sback .hd{align-items:flex-end;padding-bottom:.9em;border-bottom:3px double rgba(42,30,23,.55)}
+.sback h4{font-size:1.75em;line-height:1}
+.sback .cat{padding:.45em .6em;border:1px solid rgba(42,30,23,.45);color:#5a4636;line-height:1.45}
+.sback .cols{margin-top:1.3em;gap:1.6em}
+.sback .cols b{display:inline-block;margin-bottom:.9em;padding:.42em .7em .38em;border:0;background:#2A1E17;color:#E9DFC9;letter-spacing:.2em}
+.sback li{grid-template-columns:2em 1fr;margin-bottom:.55em}
+.sback li div{font-weight:600;font-size:1.02em}
+.sback li span{font-weight:400;margin-top:.12em;letter-spacing:.01em}
+.sback .bfoot{display:grid;grid-template-columns:1fr auto auto;align-items:end;gap:1.4em;padding-top:1em;border-top:3px double rgba(42,30,23,.55)}
+.sback .bfoot .credits{padding:0;border:0;display:block;font:500 .72em/1.6 var(--mono);color:#6b5646}
+.sback .bmark{text-align:center;line-height:1}
+.sback .bmark b{display:block;font:400 1.5em/1 Yellowtail,cursive;color:#7A1E18}
+.sback .bmark span{display:block;margin-top:.25em;font:600 .5em/1 var(--mono);letter-spacing:.3em;color:#7A1E18}
+.sback .bbar .barcode{width:6.2em}
+
+/* RECORDS OTHERS MADE, laid out like a gallery: one centred column, the count above the title, bigger records, names on up to two lines */
+#crates header,#crates .grid{padding-left:max(clamp(18px,4vw,48px),calc((100% - 1160px)/2))!important;padding-right:max(clamp(18px,4vw,48px),calc((100% - 1160px)/2))!important}
+#crates header{padding-top:calc(22px + env(safe-area-inset-top,0px))!important;padding-bottom:10px!important}
+#crates header .chrome{margin-bottom:28px}
+#crates .ccount{margin:0 0 8px!important;color:var(--amber,#E8A84E)!important;font:700 .72rem/1 'Archivo Narrow',sans-serif!important;letter-spacing:.18em!important}
+#crates .ccount:empty{display:none!important}
+#crates h2{font-size:clamp(2.6rem,6vw,4.4rem)!important}
+#crates header p{margin-top:12px!important;max-width:46ch!important;font:400 1rem/1.55 Archivo,sans-serif!important;color:#C9B497!important}
+#crates .grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important;gap:44px 30px!important;padding-top:34px!important}
+#crates .crec .art{margin-bottom:16px!important}
+#crates .crec b{white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:700 1.05rem/1.3 Archivo,sans-serif!important;color:var(--cream)}
+#crates .crec small{margin-top:6px!important;font:500 .8rem/1.3 Archivo,sans-serif!important;color:#A8927A!important}
+@media (max-width:420px){#crates .grid{grid-template-columns:1fr 1fr!important;gap:30px 16px!important;padding-top:24px!important}#crates .crec b{font-size:.95rem!important}}
 </style>
 </head>
 <body>
@@ -1007,7 +1040,7 @@ body.sheeton{overflow:hidden}
     <p class="wfoot">Made by <a href="https://x.com/nihala_khan_" target="_blank" rel="noopener">@nihala_khan_</a></p>
   </div></div>
 </section>
-<section id="crates" aria-label="Records others made"><header><button class="chrome" id="cratesClose" style="position:static">Back</button><h2>Records others made</h2><p>Made here by people who chose to share them. Tap one to play it.</p><span class="ccount" id="cratesCount"></span></header><div class="grid" id="cratesGrid"></div></section>
+<section id="crates" aria-label="Records others made"><header><button class="chrome" id="cratesClose" style="position:static">Back</button><span class="ccount" id="cratesCount"></span><h2>Records others made</h2><p>Made in this shop by people who chose to share them. Pick one and play it from the start.</p></header><div class="grid" id="cratesGrid"></div></section>
 
 <section id="shop" class="scene" aria-label="Inside the shop">
   <div id="shopWrap"><div id="shopSizer"><div id="shopStage"></div></div></div>
@@ -1991,9 +2024,8 @@ function backHTML(r, A, B){
   const li = (arr, sd) => arr.length ? arr.map((s,i) => `<li><em>${sd}${i+1}</em><div>${esc(s.name)}<span>${esc(s.artist)}</span></div></li>`).join('') : `<li><em></em><div><span>Nothing here yet</span></div></li>`;
   return `<div class="hd"><div><h4>${esc(r.name || 'Untitled')}</h4>${r.line ? `<p class="sub">${esc(r.line)}</p>` : ''}</div><div class="cat">${esc(r.cat || '')}<br>${recSize(r)}-INCH, 33 1/3</div></div>
     <div class="cols${Math.max(A.length, B.length) > 6 ? ' tight' : ''}" style="font-size:calc(3.1cqw * ${Math.min(1, 7/Math.max(7, A.length, B.length)).toFixed(3)})"><div><b>SIDE A</b><ol>${li(A,'A')}</ol></div><div><b>SIDE B</b><ol>${li(B,'B')}</ol></div></div>
-    <div class="bfoot">${r.d.credits ? `<div class="credits"><span>${r.by ? 'PRESSED BY ' + esc(r.by).toUpperCase() : 'PRESSED AT SIDE B'}${r.to ? '<br>FOR ' + esc(r.to).toUpperCase() : ''}</span><span>&copy; ${esc(r.year || '')} SIDE B RECORDS<br>ONE OF ONE</span></div>` : ''}
-    ${r.d.legal || r.d.barcode || r.d.half ? `<div class="fine"><p>${r.d.legal ? `&#8471; &amp; &copy; ${esc(r.year || '')} ${esc(r.by || 'Side B Records')}. All rights of the producer and of the owner of the recorded work reserved. Unauthorised copying, hiring, lending, public performance and broadcasting of this record prohibited. Pressed one of one at Side B.` : ''}</p>
-      <span class="slot">${r.d.half ? `<span class="hsm"><b>HALF-SPEED</b>MASTERED</span>` : ''}</span><span class="slot bc">${r.d.barcode ? barcodeSVG(r) : ''}</span></div>` : ''}</div>
+    <div class="bfoot"><div class="credits"><span>${r.by ? 'PRESSED BY ' + esc(r.by).toUpperCase() : 'PRESSED AT SIDE B'}${r.to ? '<br>FOR ' + esc(r.to).toUpperCase() : ''}<br>&copy; ${esc(r.year || '')} &middot; ONE OF ONE</span></div>
+      <div class="bmark"><b>Side B</b><span>RECORDS</span></div><div class="bbar">${barcodeSVG(r)}</div></div>
     <div class="notes" data-face="B"></div>`;
 }
 // a real EAN-13 barcode, using the 20-29 prefix that shops keep for their own use, made from the catalogue number
