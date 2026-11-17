@@ -963,6 +963,32 @@ body.sheeton{overflow:hidden}
 #paperBall{width:64px!important;height:72px!important}
 #paperBall .pmenu{position:absolute;inset:0;display:grid;place-items:center;padding-top:4%;font:400 11.5px/1 'DM Mono',var(--typewriter),monospace;letter-spacing:.08em;text-transform:uppercase;color:#141210}
 @media (max-width:760px){#paperBall{width:56px!important;height:63px!important}#paperBall .pmenu{font-size:10.5px}}
+
+/* DRAWING ON DESKTOP: the record tucks away, the sleeve moves over, and the tools stand in a tidy rail beside it like a paint app:
+   colours in a grid, brush sizes and the eraser, undo and clear, then Done */
+@media (min-width:761px){
+  #studio .recwrap.drawing .pvin{opacity:0;transition:opacity .3s}
+  #studio .recwrap.drawing{transition:transform .45s cubic-bezier(.3,.7,.3,1)}
+  @media (max-width:1300px){#studio .recwrap.drawing{transform:translateX(-80px) scale(.86)}}
+  #studio .drawbar.drawing .dtools > *,#studio .drawbar.drawing > *{flex:none}
+  #studio .drawbar.drawing{flex-wrap:nowrap;left:auto;right:22px;top:50%;bottom:auto;transform:translateY(-50%);width:204px;max-width:none;display:flex;flex-direction:column;align-items:stretch;gap:0;padding:16px 16px 14px;border-radius:18px;background:#F4EBDA;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  #studio .drawbar.drawing .dtools{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:0}
+  #studio .drawbar.drawing #drawInks{display:grid!important;grid-template-columns:repeat(4,1fr)!important;grid-auto-rows:auto;gap:8px;height:auto}
+  #studio .drawbar.drawing #drawInks::before,#studio .drawbar.drawing #drawSizes::before{content:"Colour";grid-column:1/-1;font:600 .62rem/1 'Archivo Narrow',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--burg,#7B2A2E);margin-bottom:2px}
+  #studio .drawbar.drawing #drawInks button,#studio .drawbar.drawing #drawInks .pick{width:100%;height:auto;aspect-ratio:1}
+  #studio .drawbar.drawing #drawSizes{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:8px;margin-top:18px;height:auto}
+  #studio .drawbar.drawing #drawSizes::before{content:"Brush"}
+  #studio .drawbar.drawing #drawSizes button{width:100%;height:38px;border-radius:10px}
+  #studio .drawbar.drawing #drawErase{margin-top:8px;height:36px;width:100%}
+  #studio .drawbar.drawing #drawUndo,#studio .drawbar.drawing #drawWipe{height:36px}
+  #studio .drawbar.drawing #drawUndo{margin-top:18px}
+  #studio .drawbar.drawing #drawWipe{margin-top:8px}
+  #studio .drawbar.drawing #drawErase,#studio .drawbar.drawing #drawUndo,#studio .drawbar.drawing #drawWipe,#studio .drawbar.drawing #drawBtn{margin-left:0;margin-right:0;width:100%}
+  #studio .drawbar.drawing #drawBtn{order:5;margin-top:16px;height:42px;width:100%}
+  #studio .drawbar.drawing .dtip{order:6;margin-top:8px;font-size:.72rem;text-align:center}
+  #studio .drawbar.drawing .dtip:empty{display:none}
+  #studio .bench:has(.drawbar.drawing) .caption{display:none}
+}
 </style>
 </head>
 <body>
@@ -1031,7 +1057,7 @@ body.sheeton{overflow:hidden}
         </section>
         <!-- LAYERS: words and a picture, on the sleeve front or on a label -->
         <section class="step" id="st-layers">
-          <p class="minihead">Your words and pictures</p>
+          <p class="minihead">Words and pictures</p>
           <div class="addrow"><button class="addbtn" id="addText"><b>T</b>Add text</button><button class="addbtn" id="addImg"><b>&#9638;</b><span id="addImgL">Add image</span></button></div>
           <div class="imgpad" id="imgPad" hidden><div class="stepper"><span>Picture size</span><button id="imgLess" aria-label="Smaller">&minus;</button><output id="imgZoomV"></output><button id="imgMore" aria-label="Bigger">+</button></div><div class="layerops"><button id="imgFill">Fill the label</button><button id="imgDel" class="danger">Remove the picture</button></div></div>
           <button class="editwords" id="labEdit" hidden>Change the printed words <small>or double-click them on the label</small></button>
@@ -1606,7 +1632,7 @@ const SHAPES = [['round','Round'],['heart','Heart'],['star','Star'],['hex','Hexa
 const PLAY = { round:.97, heart:.6, star:.56, hex:.84, oct:.88 };
 const LABELS = [['solid','Solid'],['split','Two-tone'],['ring','Ring'],['art','Cover art'],['minimal','Minimal']];
 const PHOTOMODES = [['full','Full bleed'],['framed','Framed']];
-const COVERS = [['photo','Upload a picture','A photo, a painting, a scan, any artwork from your device.'],['plain','Plain colour','A colour of your choosing, with your words on it.'],['draw','Draw on it','A blank sleeve to draw on, with your brushes right on the canvas.']];
+const COVERS = [['photo','Upload a picture','A photo or any artwork from your phone or computer.'],['plain','Plain colour','A colour of your choosing, with your words on it.'],['draw','Draw on it','A blank sleeve and a set of brushes. Draw it yourself.']];
 // a line about each choice, shown under the options when it's picked
 const OPT_NOTES = {
   vinyl:{ black:'The classic. Deep, glossy and quiet.', solid:'One solid colour of your choosing.', translucent:'Tinted and see-through. Hold it up to the light.', clear:'Clear as glass, as if there is nothing there.',
@@ -2181,7 +2207,7 @@ function renderTextUI(){ const S = surf(); if (!S) return;
   $('imgPad').hidden = S.kind !== 'label' || !S.img; if (S.kind === 'label') $('imgZoomV').textContent = Math.round(draft.lab[S.side].z*100) + '%';
   const rows = S.list.map((t, i) => [i, t]).reverse().map(([i, t]) => `<div class="ly${i === selText ? ' on' : ''}" data-i="${i}" role="button" tabindex="0"><b>T</b><span>${esc(t.t || 'Empty text')}</span><small>${TEXT_FONTS[t.f][1]}</small><button data-del="${i}" aria-label="Delete">&times;</button></div>`);
   if (S.img) rows.push(`<div class="ly pic" data-img="1"><b style="background-image:url(${S.img})"></b><span>Picture</span><small>${S.kind === 'label' ? 'under the words' : 'the cover'}</small><button data-delimg="1" aria-label="Remove">&times;</button></div>`);
-  $('layerList').innerHTML = rows.join('') || '<p class="empty">Nothing here yet. Add some text or a picture.</p>';
+  $('layerList').innerHTML = rows.join('') || '<p class="empty">Anything you add shows up here, so you can reorder or remove it.</p>';
   $('layerList').querySelectorAll('.ly[data-i]').forEach(el => el.addEventListener('click', e => { if (e.target.dataset.del){ S.list.splice(+e.target.dataset.del, 1); selectText(-1); layersChanged(); return; } selectText(+el.dataset.i); }));
   $('layerList').querySelectorAll('[data-delimg]').forEach(b => b.addEventListener('click', () => { if (S.kind === 'label') draft.lab[S.side].img = ''; else draft.photo = ''; layersChanged(); }));
   $('textHint').textContent = !S.list.length ? '' : t ? 'On the preview: drag the words to move them, pull the corner to resize, pull the knob on top to turn them.' : 'Tap any words on the preview to change them.';
@@ -2332,11 +2358,11 @@ const LABEL_LAYOUTS = [['solid','Classic','The record\'s name and side, on plain
 const labSt = () => draft.lab[tabs.labels].st || (draft.d.label === 'split' ? 'split' : 'solid');
 const LABEL_NOTES = { solid:'One flat colour, with the title and side printed on it.', split:'Two colours, half and half.', ring:'A plain centre with a ring around it.', art:'A small copy of your cover.', minimal:'Just the words, very quiet.' };
 const FLOW = [
-  { id:'shape', name:'Shape', mode:'disc', lede:'Pick the shape of your record. Its size follows the songs you add later: up to 10 makes a 10-inch, more makes a 12-inch LP.',
+  { id:'shape', name:'Shape', mode:'disc', lede:'Start with the shape. Round is the classic, but a heart or a star makes it feel even more like a gift.',
     val:() => nameOf(SHAPES, draft.d.shape),
     rows:[ { tiles:1, spin:1, items:() => SHAPES.map(([k, l]) => ({ v:k, l, img:vinylURL(variant({ shape:k, vinyl:'black' }), 120, 'A'), round:1, on:draft.d.shape === k })), pick:setKey('shape') } ],
     note:() => [nameOf(SHAPES, draft.d.shape), OPT_NOTES.shape[draft.d.shape] || ''] },
-  { id:'vinyl', name:'Vinyl', mode:'disc', lede:'Pick a kind of pressing, then its colours.',
+  { id:'vinyl', name:'Vinyl', mode:'disc', lede:'Choose what it\'s pressed in: classic black, a colour or two, something special, or your own picture.',
     val:() => nameOf(VINYLS, draft.d.vinyl) + (needCols() >= 1 ? ' ' + chip(draft.d.v1) : '') + (needCols() >= 2 ? chip(draft.d.v2) : ''),
     rows:[ { seg:1, items:() => VCATS.map(([k, l]) => ({ v:k, l, on:(vcat || catOf(draft.d.vinyl)) === k })), pick:v => { vcat = v; const c = VCATS.find(c => c[0] === v)[2]; if (c.length === 1 && draft.d.vinyl !== c[0]){ draft.d.vinyl = c[0]; return true; } }, local:1 },
            { tiles:1, cols:3, spin:1, items:() => VINYLS.filter(([k]) => VCATS.find(c => c[0] === (vcat || catOf(draft.d.vinyl)))[2].includes(k)).map(([k, l]) => ({ v:k, l, img:vinylURL(variant(draft.d.vinyl === k ? { vinyl:k } : { vinyl:k, ...VDEF[k] }), 120, 'A'), round:1, on:draft.d.vinyl === k })), pick:v => { if (draft.d.vinyl !== v) Object.assign(draft.d, VDEF[v] || {}); draft.d.vinyl = v; } },
@@ -2348,11 +2374,11 @@ const FLOW = [
            { l:() => needCols() >= 2 ? 'Main colour' : 'Colour', show:() => needCols() >= 1, spin:1, items:() => colourChips(VCOLS, 'v1', VCOLNAMES), pick:setKey('v1') },
            { l:'Second colour', show:() => needCols() >= 2, spin:1, items:() => colourChips(VCOLS, 'v2', VCOLNAMES), pick:setKey('v2') } ],
     note:() => [nameOf(VINYLS, draft.d.vinyl), OPT_NOTES.vinyl[draft.d.vinyl] || ''] },
-  { id:'labels', name:'Labels', mode:'label', sec:['st-layers'], lede:'The paper circle in the middle of each side. Double-click its words to change them, or add your own text and a picture.',
+  { id:'labels', name:'Labels', mode:'label', sec:['st-layers'], lede:'Each side has a paper label in the middle. Pick its colour, change the printed words, or add your own words and a picture.',
     tabs:{ key:'labels', items:[['A','Side A'],['B','Side B']] },
     val:() => `${nameOf(LABEL_LAYOUTS, draft.lab.A.st || 'solid')} ${chip(draft.d.lab)}` + (['A','B'].some(k => draft.lab[k].texts.length || draft.lab[k].img) ? ', your own words' : ''),
     rows:[            { l:'Paper colour', items:() => colourChips(SLEEVE_SWATCHES.slice(0, 10), 'lab'), pick:setKey('lab') } ] },
-  { id:'sleeve', name:'Sleeve', mode:'front', lede:() => tabs.sleeve === 'F' ? 'Upload your own picture or artwork, or draw straight onto the sleeve. Then add words on top if you like.' : 'The back shows your tracklist, filled in as you add songs. Tap Show the front to keep designing.',
+  { id:'sleeve', name:'Sleeve', mode:'front', lede:() => tabs.sleeve === 'F' ? 'The cover is what they see first. Use a photo or artwork, or draw your own, then add words, a sticker or an obi strip.' : 'The back shows your tracklist, filled in as you add songs. Tap Show the front to keep designing.',
     sec:() => tabs.sleeve !== 'F' ? [] : ['st-layers'],
     val:() => `${draft.d.cover === 'draw' ? 'Drawn on' : draft.photo ? 'Your picture' : 'No picture yet'}${draft.d.cover === 'photo' && draft.photo && draft.d.filt !== 'none' ? ', ' + nameOf(FILTERS, draft.d.filt).toLowerCase() : ''}${draft.texts.length ? ', ' + plural(draft.texts.length, 'bit') + ' of text' : ''}`,
     rows:[ { l:'Cover', cards:1, show:() => tabs.sleeve === 'F', items:() => COVERS.filter(c => c[0] !== 'plain').map(([k, l, desc]) => ({ v:k, l, desc, on:draft.d.cover === k })),
@@ -2361,11 +2387,11 @@ const FLOW = [
                else { if (drawMode) setDrawMode(false); if (!draft.photo) $('photoIn').click(); } } },
            { l:'Picture', show:() => tabs.sleeve === 'F' && draft.d.cover === 'photo', items:() => [{ v:'add', l:draft.photo ? 'Change the picture' : '+ Upload a picture', on:!draft.photo }], pick:() => $('photoIn').click() },
            { l:'Filter', tiles:1, show:() => tabs.sleeve === 'F' && draft.d.cover === 'photo' && !!draft.photo, items:() => FILTERS.map(([k, l]) => ({ v:k, l, img:sleeveURL(variant({ filt:k, texts:[] }), 120), on:draft.d.filt === k })), pick:setKey('filt') },
-           { l:'Finishing touches', multi:1, show:() => tabs.sleeve === 'F', items:() => FRONT_EXTRAS.filter(([k]) => ['obi','sticker'].includes(k)).map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; } },
+           { l:'Extras', multi:1, show:() => tabs.sleeve === 'F', items:() => FRONT_EXTRAS.filter(([k]) => ['obi','sticker'].includes(k)).map(([k, l]) => ({ v:k, l, on:!!draft.d[k] })), pick:v => { draft.d[v] = !draft.d[v]; } },
            ] },
-  { id:'songs', name:'Pick the songs', short:'Songs', sec:['st-songs'], lede:'At least 6. Up to 10 makes a 10-inch, more makes a 12-inch LP.', mode:'front',
+  { id:'songs', name:'Pick the songs', short:'Songs', sec:['st-songs'], lede:'Search for any song and put it on side A or B. You need at least 6. Up to 10 makes a 10-inch, more makes a 12-inch LP.', mode:'front',
     val:() => { const n = draft.A.length + draft.B.length; return n ? `${plural(n, 'song')}, ${n < MINS ? `${MINS - n} more to press` : recSize(draft) === 12 ? '12-inch LP' : '10-inch'}` : 'None yet'; } },
-  { id:'press', name:'Ready to press', short:'Press', sec:['st-press'], mode:'front', lede:'Give it a name, look it over, then press it. Tap any line to change it.', val:() => '' } ];
+  { id:'press', name:'Ready to press', short:'Press', sec:['st-press'], mode:'front', lede:'Give it a name and say who it\'s for. Look it over, tap any line to change it, then press it.', val:() => '' } ];
 let fstep = 'shape';
 const fIdx = id => FLOW.findIndex(f => f.id === id), cur = () => FLOW[fIdx(fstep)];
 const live = () => FLOW;
@@ -2418,7 +2444,7 @@ const chipHTML = (it, r, R) => `<button class="chip${it.dot ? ' dot' : ''}${R.ti
   + (it.img ? `<img alt="" src="${it.img}">` : it.trio ? `<span class="trio">${it.trio.map(c => `<i style="background:${c}"></i>`).join('')}</span>` : it.sw ? `<i class="sw${it.any ? ' anysw' : ''}" style="--c:${esc(it.sw)}"></i>` : '')
   + (it.l ? `<span class="cl">${esc(it.l)}</span>` : '') + (it.desc ? `<small>${esc(it.desc)}</small>` : '') + (it.any ? `<input type="color" value="${esc(String(draft.d[it.any]).toLowerCase())}" aria-label="Any colour">` : '') + `</button>`;
 // the panel and the bar: the step's name, its tabs, its choices, back and next
-let sliding = false;
+let sliding = false, flipping = false;
 function renderDock(now){ if (sliding) return; clearTimeout(dockTimer); if (!now){ dockTimer = setTimeout(() => renderDock(true), 40); return; }
   const F = cur(), L = live(), i = L.findIndex(f => f.id === fstep), n = draft.A.length + draft.B.length;
   $('dkGroup').textContent = `Step ${i + 1} of ${L.length}`; $('dkTitle').textContent = F.short || F.name;
@@ -2429,10 +2455,16 @@ function renderDock(now){ if (sliding) return; clearTimeout(dockTimer); if (!now
   const lede = fv(F.lede); $('stLede').textContent = lede || ''; $('stLede').hidden = !lede;
   const T = $('stTabs'); T.hidden = !F.tabs;
   if (F.tabs){ T.innerHTML = F.tabs.items.map(([k, l]) => `<button role="tab" data-k="${k}" aria-selected="${tabs[F.tabs.key] === k}">${l}</button>`).join('');
-    T.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { if (tabs[F.tabs.key] === b.dataset.k) return; sfx.click(); tabs[F.tabs.key] = b.dataset.k; selText = -1;
+    T.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { if (tabs[F.tabs.key] === b.dataset.k || flipping) return; sfx.click();
+      const apply = () => { tabs[F.tabs.key] = b.dataset.k; selText = -1; refreshPreview(); renderDock(true); renderTextLayer(); renderTextUI(); };
       if (F.id === 'sleeve'){ if (drawMode) setDrawMode(false); setFace(b.dataset.k); sfx.flip(); }
-      if (F.id === 'labels'){ const pl = $('pLabel'); pl.classList.remove('flip'); void pl.offsetWidth; pl.classList.add('flip'); }
-      refreshPreview(); renderDock(true); renderTextLayer(); renderTextUI(); })); }
+      // the other side of the record: the whole record turns over, and the other label comes round
+      if (F.id === 'labels' && !reduceMotion){ const rw = $('recwrap'), dir = b.dataset.k === 'B' ? 1 : -1; flipping = true; sfx.flip();
+        T.querySelectorAll('button').forEach(x => x.setAttribute('aria-selected', x === b));
+        rw.animate([{ transform:'perspective(1400px) rotateY(0deg)' }, { transform:`perspective(1400px) rotateY(${90*dir}deg)` }], { duration:260, easing:'cubic-bezier(.5,0,.9,.6)' }).finished.then(() => {
+          apply(); return rw.animate([{ transform:`perspective(1400px) rotateY(${-90*dir}deg)` }, { transform:'perspective(1400px) rotateY(0deg)' }], { duration:380, easing:'cubic-bezier(.15,.55,.3,1)' }).finished; })
+          .finally(() => { flipping = false; }); return; }
+      apply(); })); }
   const box = $('stOpts');
   if (F.rows){ const vis = F.rows.map((R, r) => [R, r]).filter(([R]) => !R.show || R.show());
     box.innerHTML = vis.map(([R, r]) => { const l = fv(R.l); if (R.slider) return `${l ? `<p class="minihead">${l}</p>` : ''}<div class="amtrow"><span>Less</span><input type="range" class="amt" data-r="${r}" min="0" max="2" step="0.05" value="${R.get()}" aria-label="${esc(l || 'Amount')}"><span>More</span></div>`; return `${l ? `<p class="minihead">${l}</p>` : ''}${(its => `<div class="chips${R.tiles ? ' tiles' : ''}${R.cards ? ' cards' : ''}${R.seg ? ' segrow' : ''}"${R.tiles ? ` style="grid-template-columns:repeat(${R.cols || Math.max(3, Math.ceil(its.length/Math.ceil(its.length/4)))},minmax(0,1fr))"` : R.cards ? ` style="grid-template-columns:repeat(${Math.min(3, its.length)},minmax(0,1fr))"` : its.every(it => it.dot) ? ` style="${dotCols(its.length)}"` : ''}>${its.map(it => chipHTML(it, r, R)).join('')}</div>`)(R.items())}`; }).join('');
